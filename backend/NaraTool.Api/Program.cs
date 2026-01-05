@@ -13,11 +13,22 @@ builder.Services.AddSingleton<INaraClient, NaraClient>();
 builder.Services.AddScoped<QueryService>();
 builder.Services.AddHttpClient<DownloadService>();
 
-var app = builder.Build();
-// app.UseSwagger();
-// app.UseSwaggerUI();
-// app.UseHttpsRedirection();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCors", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
+var app = builder.Build();
+
+app.UseCors("DevCors");
+
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
