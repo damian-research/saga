@@ -8,14 +8,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.Configure<NaraSettings>(
     builder.Configuration.GetSection("Nara")
 );
-builder.Services.AddHttpClient<INaraClient, NaraClient>();
+
+builder.Services.AddSingleton<INaraClient, NaraClient>();
 builder.Services.AddScoped<QueryService>();
 builder.Services.AddHttpClient<DownloadService>();
 
 var app = builder.Build();
 // app.UseSwagger();
 // app.UseSwaggerUI();
-//app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.MapControllers();
 

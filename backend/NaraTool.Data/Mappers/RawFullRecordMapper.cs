@@ -6,23 +6,24 @@ public static class RawFullRecordMapper
     {
         using var doc = JsonDocument.Parse(json);
 
-        // API v2: record/{naId}
-        // shape: { "record": { ... } }  OR sometimes wrapped deeper
         var root = doc.RootElement;
 
-        JsonElement record;
-        if (root.TryGetProperty("record", out var directRecord))
-        {
-            record = directRecord;
-        }
-        else if (root.TryGetProperty("_source", out var source) && source.TryGetProperty("record", out var nestedRecord))
-        {
-            record = nestedRecord;
-        }
-        else
-        {
-            throw new InvalidOperationException("Cannot locate record object in FULL response JSON");
-        }
+        if (!root.TryGetProperty("body", out var body))
+            throw new InvalidOperationException("Missing body in NARA search response");
+
+        if (!body.TryGetProperty("hits", out var hits))
+            throw new InvalidOperationException("Missing hits in NARA search response");
+
+        if (!hits.TryGetProperty("hits", out var hitArray) || hitArray.GetArrayLength() == 0)
+            throw new InvalidOperationException("No records found in NARA search response");
+
+        var hit = hitArray[0];
+
+        if (!hit.TryGetProperty("_source", out var source))
+            throw new InvalidOperationException("Missing _source in NARA search hit");
+
+        if (!source.TryGetProperty("record", out var record))
+            throw new InvalidOperationException("Missing record in NARA search hit");
 
         var model = new RawFullRecord
         {

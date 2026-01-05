@@ -24,15 +24,15 @@ public class QueryController(QueryService service, DownloadService downloadServi
     [HttpPost("download/{naId:long}")]
     public async Task<IActionResult> Download(long naId, [FromQuery] string? dir = null, CancellationToken ct = default)
     {
-        //var full = await _service.GetFullAsync(naId);
+        var full = await _service.GetFullAsync(naId);
 
-        //var urls = DownloadService.BuildPlan(full);
+        var urls = DownloadService.BuildPlan(full);
 
-        var urls = new List<string>()
-        {
-            "https://s3.amazonaws.com/NARAprodstorage/lz/microfilm-publications/M1935-ConCampFlossenburg_1938-1945/M1935_0001/M1935_0001/images/0020b.jpg",
-            "https://s3.amazonaws.com/NARAprodstorage/lz/microfilm-publications/M1935-ConCampFlossenburg_1938-1945/M1935_0001/M1935_0001/images/0021a.jpg"
-        };
+        // var urls = new List<string>()
+        // {
+        //     "https://s3.amazonaws.com/NARAprodstorage/lz/microfilm-publications/M1935-ConCampFlossenburg_1938-1945/M1935_0001/M1935_0001/images/0020b.jpg",
+        //     "https://s3.amazonaws.com/NARAprodstorage/lz/microfilm-publications/M1935-ConCampFlossenburg_1938-1945/M1935_0001/M1935_0001/images/0021a.jpg"
+        // };
 
         var targetDir = string.IsNullOrWhiteSpace(dir)
             ? Path.Combine("downloads", naId.ToString())
