@@ -1,0 +1,2 @@
+namespace NaraTool.Data.Models;
+

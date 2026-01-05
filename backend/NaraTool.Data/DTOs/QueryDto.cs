@@ -1,0 +1,8 @@
+namespace NaraTool.Data.Dtos;
+
+public class QueryDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string QueryText { get; set; }
+}
