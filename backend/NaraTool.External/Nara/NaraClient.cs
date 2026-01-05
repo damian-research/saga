@@ -19,19 +19,38 @@ public sealed class NaraClient : INaraClient
         _http.DefaultRequestHeaders.Add("x-api-key", cfg.ApiKey);
     }
 
-    public async Task<string> SearchAsync(string query)
+    public async Task<IEnumerable<RawRecord>> SearchBriefAsync(string query)
     {
-        var url = $"records/search?q={Uri.EscapeDataString(query)}";
+        var url = $"proxy/records/search?q={Uri.EscapeDataString(query)}&abbreviated=true";
         var res = await _http.GetAsync(url);
 
         res.EnsureSuccessStatusCode();
 
-        var ct = res.Content.Headers.ContentType?.MediaType;
-        if (ct is null || !ct.Contains("json"))
+        var json = await res.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(json);
+
+        var hits = doc.RootElement
+            .GetProperty("body")
+            .GetProperty("hits")
+            .GetProperty("hits");
+
+        var results = new List<RawRecord>();
+        foreach (var hit in hits.EnumerateArray())
         {
-            throw new InvalidOperationException("NARA returned non-JSON response");
+            results.Add(RawRecordMapper.FromProxyHit(hit));
         }
 
-        return await res.Content.ReadAsStringAsync();
+        return results;
+    }
+
+    public async Task<RawFullRecord> GetFullAsync(long naId)
+    {
+        var url = $"records/{naId}";
+        var res = await _http.GetAsync(url);
+
+        res.EnsureSuccessStatusCode();
+
+        var json = await res.Content.ReadAsStringAsync();
+        return RawFullRecordMapper.FromJson(json);
     }
 }

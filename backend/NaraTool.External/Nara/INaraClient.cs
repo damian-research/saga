@@ -2,5 +2,6 @@ namespace NaraTool.External.Nara;
 
 public interface INaraClient
 {
-    Task<string> SearchAsync(string query);
+    Task<IEnumerable<RawRecord>> SearchBriefAsync(string query);
+    Task<RawFullRecord> GetFullAsync(long naId);
 }

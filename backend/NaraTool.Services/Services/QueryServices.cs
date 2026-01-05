@@ -1,14 +1,14 @@
 namespace NaraTool.Services.Services;
 
-public class QueryService(INaraClient client)
+public class QueryService(INaraClient source)
 {
-    private readonly INaraClient _client = client;
+    private readonly INaraClient _client = source;
 
-    public async Task<string> ExecuteAsync(string query)
-    {
-        var raw = await _client.SearchAsync(query);
+    // BRIEF
+    public Task<IEnumerable<RawRecord>> SearchBriefAsync(string query)
+        => _client.SearchBriefAsync(query);
 
-        // tu kiedyś: transformacje
-        return raw;
-    }
+    // FULL
+    public Task<RawFullRecord> GetFullAsync(long naId)
+        => _client.GetFullAsync(naId);
 }
