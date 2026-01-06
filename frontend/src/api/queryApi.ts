@@ -72,12 +72,18 @@ export async function searchRecords(
     Boolean(form.microfilmId?.trim());
 
   if (hasControl) {
-    const controlValue =
+    const raw =
       form.naId?.trim() || form.localId?.trim() || form.microfilmId?.trim();
 
-    // Identifier search: q is a required placeholder only
+    // Identifier search: fast path via controlNumbers
     params.set("q", "*");
-    params.set("controlNumbers", controlValue!);
+    params.set("controlNumbers", raw!);
+
+    // If this looks like a numeric NAID, add a narrowing post-filter
+    // (keeps controlNumbers fast path, avoids multi-hit results)
+    if (/^\d+$/.test(raw!)) {
+      params.set("naid_is", raw!);
+    }
   } else {
     // Text search
     params.set("q", form.q?.trim() || "*");
