@@ -16,13 +16,8 @@ export default function SearchList({ results, selectedNaId, onSelect }: Props) {
           className={`list-item ${r.naId === selectedNaId ? "active" : ""}`}
           onClick={() => onSelect(r.naId)}
         >
+          <div className="path">{r.path.map((p) => p.label).join(" > ")}</div>
           <div className="title">{r.title}</div>
-          <div className="meta">
-            {r.level}
-            {r.ancestors?.length
-              ? " · " + r.ancestors.map((a) => a.title).join(" → ")
-              : ""}
-          </div>
           {r.totalDigitalObjects !== undefined && (
             <div className="meta">Digital objects: {r.totalDigitalObjects}</div>
           )}

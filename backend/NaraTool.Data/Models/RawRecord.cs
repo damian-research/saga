@@ -6,6 +6,7 @@ public class RawRecord
     public string Title { get; set; }
     public LevelOfDescription Level { get; set; }
     public List<Ancestor> Ancestors { get; set; } = [];
+    public List<PathSegment> Path { get; set; } = [];
     public int TotalDigitalObjects { get; set; }
     public DigitalObject? FirstDigitalObject { get; set; }
 }

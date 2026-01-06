@@ -79,7 +79,6 @@
 }
 
 /* --- SEARCH FORM LAYOUT --- */
-
 .search label {
   display: flex;
   flex-direction: column;
@@ -115,7 +114,6 @@
 }
 
 /* --- SECTIONS --- */
-
 .search-section {
   margin-bottom: 16px;
   padding-bottom: 12px;
@@ -147,4 +145,55 @@
 
 .checkbox-row input[type="checkbox"] {
   margin: 0;
+}
+
+/* ===== Section spacing refinement ===== */
+.panel.search .divider {
+  height: 1px;
+  background-color: var(--border-subtle, #2a2a2a);
+  margin: 14px 0 10px;
+}
+
+.panel.search .panel-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.65;
+
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+
+.panel.search .panel-subtitle + label {
+  margin-top: 2px;
+}
+
+/* Optional: tighten labels under headers */
+.panel.search label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+/* Inputs consistency */
+.panel.search input,
+.panel.search select {
+  font-size: 13px;
+  padding: 6px 8px;
+}
+
+/* --- Ancestor path in result list --- */
+.list-item .path {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #777;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+.list-item.active .path {
+  color: #444;
 }

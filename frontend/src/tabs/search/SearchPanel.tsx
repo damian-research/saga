@@ -93,7 +93,38 @@ export default function SearchPanel({ onSearch }: Props) {
         </label>
       </div>
 
-      {/* STRUCTURE */}
+      <div className="divider" />
+      <div className="panel-subtitle">Text & Authority</div>
+
+      <label>
+        Title
+        <input
+          placeholder="title contains"
+          value={form.title ?? ""}
+          onChange={(e) => update("title", e.target.value)}
+        />
+      </label>
+
+      <label>
+        Person / Organization
+        <input
+          placeholder="authority heading"
+          value={form.personOrOrg ?? ""}
+          onChange={(e) => update("personOrOrg", e.target.value)}
+        />
+      </label>
+
+      <label>
+        Data Source
+        <input
+          placeholder="e.g. description"
+          value={form.dataSource ?? ""}
+          onChange={(e) => update("dataSource", e.target.value)}
+        />
+      </label>
+
+      <div className="divider" />
+      <div className="panel-subtitle">Structure</div>
       <label>
         Level
         <select
@@ -123,7 +154,8 @@ export default function SearchPanel({ onSearch }: Props) {
         />
       </label>
 
-      {/* IDENTIFIERS */}
+      <div className="divider" />
+      <div className="panel-subtitle">Identifiers</div>
       <label>
         NAID
         <input
