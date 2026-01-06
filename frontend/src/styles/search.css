@@ -77,3 +77,74 @@
   padding-bottom: 6px;
   border-bottom: 1px solid #ddd;
 }
+
+/* --- SEARCH FORM LAYOUT --- */
+
+.search label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #333;
+}
+
+.search input[type="text"],
+.search input[type="number"],
+.search select {
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.search input[type="checkbox"] {
+  margin-right: 6px;
+}
+
+.search button {
+  margin-top: 12px;
+  padding: 8px;
+  font-size: 13px;
+  align-items: right;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* --- SECTIONS --- */
+
+.search-section {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #ddd;
+}
+
+.search-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.search-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #777;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.checkbox-row label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #333;
+}
+
+.checkbox-row input[type="checkbox"] {
+  margin: 0;
+}

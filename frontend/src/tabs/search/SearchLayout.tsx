@@ -5,20 +5,20 @@ import SearchPanel from "./SearchPanel";
 
 interface Props {
   results: RawRecord[];
-  onResults: (r: RawRecord[]) => void;
+  onSearch: (form: import("./SearchPanel").SearchFormState) => void;
   selectedNaId: number | null;
   onSelect: (id: number) => void;
 }
 
 export default function SearchLayout({
   results,
-  onResults,
+  onSearch,
   selectedNaId,
   onSelect,
 }: Props) {
   return (
     <div className="search-grid">
-      <SearchPanel onResults={onResults} />
+      <SearchPanel onSearch={onSearch} />
       <SearchList
         results={results}
         selectedNaId={selectedNaId}
