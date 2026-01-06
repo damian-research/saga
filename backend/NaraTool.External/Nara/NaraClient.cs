@@ -20,18 +20,40 @@ public sealed class NaraClient : INaraClient
 
     public async Task<IEnumerable<RawRecord>> SearchBriefAsync(string rawQuery)
     {
-        var url = $"https://catalog.archives.gov/proxy/records/search{rawQuery}" +
-            (rawQuery.Contains("abbreviated=") ? string.Empty : "&abbreviated=true");
+        var useMock = true;
 
-        var sw = Stopwatch.StartNew();
-        var res = await _http.GetAsync(url);
-        sw.Stop();
-        Console.WriteLine($"[NARA] SearchBriefAsync took {sw.ElapsedMilliseconds} ms | URL: {url}");
+        string json;
 
+        if (useMock)
+        {
+            string mockFilePath = string.Empty;
 
-        res.EnsureSuccessStatusCode();
+            if (rawQuery.Contains("=1"))
+                mockFilePath = Path.Combine("Mocks", "nara_response_1_rg.json");
+            else if (rawQuery.Contains("=2"))
+                mockFilePath = Path.Combine("Mocks", "nara_response_2_s.json");
+            else if (rawQuery.Contains("=3"))
+                mockFilePath = Path.Combine("Mocks", "nara_response_3_fu.json");
+            else //if (rawQuery.Contains("=4"))
+                mockFilePath = Path.Combine("Mocks", "nara_response_4_item.json");
 
-        var json = await res.Content.ReadAsStringAsync();
+            json = await File.ReadAllTextAsync(mockFilePath);
+            Console.WriteLine($"[NARA] Using MOCK data from {mockFilePath}");
+        }
+        else
+        {
+            var url = $"https://catalog.archives.gov/proxy/records/search{rawQuery}" +
+                (rawQuery.Contains("abbreviated=") ? string.Empty : "&abbreviated=true");
+
+            var sw = Stopwatch.StartNew();
+            var res = await _http.GetAsync(url);
+            sw.Stop();
+            Console.WriteLine($"[NARA] SearchBriefAsync took {sw.ElapsedMilliseconds} ms | URL: {url}");
+
+            res.EnsureSuccessStatusCode();
+            json = await res.Content.ReadAsStringAsync();
+        }
+
         using var doc = JsonDocument.Parse(json);
 
         var hits = doc.RootElement
