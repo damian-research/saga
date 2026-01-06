@@ -18,10 +18,16 @@ public sealed class NaraClient : INaraClient
         _http.DefaultRequestHeaders.Add("Accept", "application/json");
     }
 
-    public async Task<IEnumerable<RawRecord>> SearchBriefAsync(string query)
+    public async Task<IEnumerable<RawRecord>> SearchBriefAsync(string rawQuery)
     {
-        var url = $"https://catalog.archives.gov/proxy/records/search?q={Uri.EscapeDataString(query)}&abbreviated=true";
+        var url = $"https://catalog.archives.gov/proxy/records/search{rawQuery}" +
+            (rawQuery.Contains("abbreviated=") ? string.Empty : "&abbreviated=true");
+
+        var sw = Stopwatch.StartNew();
         var res = await _http.GetAsync(url);
+        sw.Stop();
+        Console.WriteLine($"[NARA] SearchBriefAsync took {sw.ElapsedMilliseconds} ms | URL: {url}");
+
 
         res.EnsureSuccessStatusCode();
 

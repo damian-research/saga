@@ -8,9 +8,10 @@ public class QueryController(QueryService service, DownloadService downloadServi
     private readonly DownloadService _downloadService = downloadService;
 
     [HttpGet("search")]
-    public async Task<IActionResult> Search([FromQuery] string q)
+    public async Task<IActionResult> Search()
     {
-        var results = await _service.SearchBriefAsync(q);
+        var rawQuery = HttpContext.Request.QueryString.Value ?? string.Empty;
+        var results = await _service.SearchBriefAsync(rawQuery);
         return Ok(results);
     }
 
