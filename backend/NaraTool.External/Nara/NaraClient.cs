@@ -21,8 +21,8 @@ public sealed class NaraClient : INaraClient
     public async Task<IEnumerable<RawRecord>> SearchBriefAsync(string rawQuery)
     {
         var useMock = true;
-
         string json;
+        Console.WriteLine($"[NARA] Request: {rawQuery}");
 
         if (useMock)
         {

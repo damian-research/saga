@@ -54,6 +54,14 @@ function buildNaraQuery(form: SearchFormState): string {
     clauses.push(`dataSource:${form.dataSource.trim()}`);
   }
 
+  if (form.title?.trim()) {
+    clauses.push(`title:${form.title.trim()}`);
+  }
+
+  if (form.onlineAvailable === true) {
+    clauses.push(`availableOnline:true`);
+  }
+
   if (clauses.length === 0) {
     return "*";
   }
@@ -86,7 +94,8 @@ export async function searchRecords(
     }
   } else {
     // Text search
-    params.set("q", form.q?.trim() || "*");
+    const q = buildNaraQuery(form);
+    params.set("q", q);
   }
 
   // COMMON
