@@ -1,4 +1,5 @@
 import type { DigitalObject } from "../../../api/models/record.types";
+import "../../../styles/ObjectViewer.css";
 
 interface Props {
   object: DigitalObject;
@@ -25,63 +26,20 @@ export default function ObjectViewer({
     <div className="object-viewer-overlay" onClick={onClose}>
       <div className="object-viewer" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            padding: "6px 16px",
-            borderBottom: "1px solid #e0e0e0",
-            backgroundColor: "#fafafa",
-            borderRadius: "6px 6px 0 0",
-          }}
-        >
+        <div className="object-viewer-header">
           {/* Left spacer */}
           <div style={{ width: "95px" }}></div>
-
-          {/* Center - Title + Counter */}
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-            }}
-          >
-            <h3
-              style={{
-                margin: 0,
-                fontSize: "14px",
-                fontWeight: 600,
-                color: "#222",
-              }}
-            >
-              {object.objectType}
-            </h3>
-            <span
-              style={{
-                fontSize: "12px",
-                color: "#999",
-                padding: "2px 6px",
-                backgroundColor: "#f0f0f0",
-                borderRadius: "3px",
-              }}
-            >
+          {/* Title + Counter */}
+          <div className="object-viewer-title-section">
+            <h3 className="object-viewer-title">{object.objectType}</h3>
+            <span className="object-viewer-counter">
               {currentIndex + 1} / {objects.length}
             </span>
           </div>
-
-          {/* Right - Download + Close */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              width: "60px",
-              justifyContent: "flex-end",
-            }}
-          >
+          {/* Actions */}
+          <div className="object-viewer-header-actions">
             <button
+              className="object-viewer-download-btn "
               title="Download this object"
               onClick={() => {
                 const a = document.createElement("a");
@@ -89,38 +47,13 @@ export default function ObjectViewer({
                 a.download = "";
                 a.click();
               }}
-              style={{
-                background: "none",
-                border: "none",
-                fontSize: "14px",
-                cursor: "pointer",
-                padding: 0,
-                color: "#666",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "20px",
-                height: "20px",
-              }}
             >
               ↓
             </button>
             <button
+              className="object-viewer-close"
               onClick={onClose}
               title="Close"
-              style={{
-                background: "none",
-                border: "none",
-                fontSize: "16px",
-                cursor: "pointer",
-                padding: 0,
-                color: "#666",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "20px",
-                height: "20px",
-              }}
             >
               ×
             </button>
