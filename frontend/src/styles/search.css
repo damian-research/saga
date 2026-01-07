@@ -24,8 +24,51 @@
   gap: 6px;
   padding: 10px 8px;
   border-bottom: 1px solid #eee;
+  transition: background-color 0.15s ease;
+  position: relative;
+}
+
+.list-item-content {
+  flex: 1;
+  pointer-events: none;
+}
+
+.list-item-click {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 50px;
   cursor: pointer;
   transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list-item-click:hover {
+  background-color: #e3f2fd;
+}
+
+.list-item-arrow {
+  font-size: 28px;
+  color: #999;
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.list-item:hover .list-item-arrow,
+.list-item.active .list-item-arrow {
+  opacity: 1;
+}
+
+.list-item:hover .list-item-arrow {
+  color: #0066cc;
+  transform: translateX(3px);
+}
+
+.list-item.active .list-item-arrow {
+  color: #0066cc;
 }
 
 .list-item:hover {
@@ -266,6 +309,7 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .search-grid {
   height: 100%;
   display: grid;
@@ -635,4 +679,8 @@
 
 .app-root.dark-mode .panel.search .panel-subtitle {
   color: #aaa;
+}
+
+.app-root.dark-mode .list-item-click:hover {
+  background-color: #1a3a52;
 }
