@@ -1,4 +1,5 @@
 import type { RawRecord } from "../../api/models/record.types";
+import SearchListItem from "./components/SearchListItem";
 
 interface Props {
   results: RawRecord[];
@@ -20,17 +21,12 @@ export default function SearchList({ results, selectedNaId, onSelect }: Props) {
     <div className="panel list">
       <div className="panel-title">Results ({results.length})</div>{" "}
       {results.map((r) => (
-        <div
+        <SearchListItem
           key={r.naId}
-          className={`list-item ${r.naId === selectedNaId ? "active" : ""}`}
-          onClick={() => onSelect(r.naId)}
-        >
-          <div className="path">{r.path.map((p) => p.label).join(" > ")}</div>
-          <div className="title">{r.title}</div>
-          {r.totalDigitalObjects !== undefined && (
-            <div className="meta">Digital objects: {r.totalDigitalObjects}</div>
-          )}
-        </div>
+          record={r}
+          isSelected={r.naId === selectedNaId}
+          onSelect={onSelect}
+        />
       ))}
     </div>
   );

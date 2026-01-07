@@ -8,7 +8,10 @@ export interface Ancestor {
 export interface RawRecord {
   naId: number;
   title: string;
-  level: string;
+  levelDescription: string;
+  materialType?: string;
+  sourceReference?: string;
+  description?: string;
   ancestors: Ancestor[];
   path: PathSegment[];
   totalDigitalObjects?: number;

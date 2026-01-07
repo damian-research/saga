@@ -41,53 +41,89 @@ export default function SearchPreview({ selectedNaId }: Props) {
   }
 
   if (!selectedNaId) {
-    return <div className="panel preview">Select a record to preview</div>;
+    return (
+      <div className="panel preview">
+        <div className="panel-title">Details</div>
+        <div className="preview-empty">Select a record to view details</div>
+      </div>
+    );
   }
 
   if (loading) {
-    return <div className="panel preview">Loading…</div>;
+    return (
+      <div className="panel preview">
+        <div className="panel-title">Details</div>
+        <div className="preview-empty">Loading…</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="panel preview error">{error}</div>;
+    return (
+      <div className="panel preview">
+        <div className="panel-title">Details</div>
+        <div className="preview-error">{error}</div>
+      </div>
+    );
   }
 
   if (!record) {
-    return <div className="panel preview">No data</div>;
+    return (
+      <div className="panel preview">
+        <div className="panel-title">Details</div>
+        <div className="preview-empty">No data</div>
+      </div>
+    );
   }
 
   return (
     <div className="panel preview">
-      <div className="panel-title">Preview</div>
-      <h3>{record.title}</h3>
+      <div className="panel-title">Details</div>
 
-      <div className="breadcrumbs">
-        {record.ancestors
-          .slice()
-          .sort((a, b) => b.distance - a.distance)
-          .map((a) => a.title)
-          .join(" → ")}
+      <div className="preview-content">
+        <h2 className="preview-title">{record.title}</h2>
+
+        <div className="preview-breadcrumbs">
+          {record.ancestors
+            .slice()
+            .sort((a, b) => b.distance - a.distance)
+            .map((a) => a.title)
+            .join(" → ")}
+        </div>
+
+        <div className="preview-section">
+          <h4 className="preview-section-title">Digital Objects</h4>
+          {record.digitalObjects.length > 0 ? (
+            <ul className="preview-objects-list">
+              {record.digitalObjects.map((o, i) => (
+                <li key={i} className="preview-object-item">
+                  <span className="object-type">{o.objectType}</span>
+                  <a
+                    href={o.objectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="object-link"
+                  >
+                    View
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="preview-empty-state">No digital objects available</p>
+          )}
+        </div>
+
+        <div className="preview-actions">
+          <button
+            onClick={onDownload}
+            disabled={downloading}
+            className="btn btn-primary"
+          >
+            {downloading ? "Downloading…" : "📥 Download Record"}
+          </button>
+        </div>
       </div>
-
-      {/* ✅ Check if digitalObjects exist */}
-      {record.digitalObjects.length > 0 ? (
-        <ul>
-          {record.digitalObjects.map((o, i) => (
-            <li key={i}>
-              {o.objectType} —{" "}
-              <a href={o.objectUrl} target="_blank" rel="noopener noreferrer">
-                open
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No digital objects available</p>
-      )}
-
-      <button onClick={onDownload} disabled={downloading}>
-        {downloading ? "Downloading…" : "Download"}
-      </button>
     </div>
   );
 }

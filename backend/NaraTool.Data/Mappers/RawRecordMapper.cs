@@ -9,12 +9,20 @@ public static class RawRecordMapper
 
         var level = ParseLevel(record.GetProperty("levelOfDescription").GetString());
         var ancestors = ParseAncestors(record);
+        var materialType = ParseGeneralRecordsTypes(record);
+        var sourceReference = ParseSourceReference(record);
+        var description = record.TryGetProperty("scopeAndContentNote", out var descProp)
+            ? descProp.GetString()
+            : null;
 
         var model = new RawRecord
         {
             NaId = record.GetProperty("naId").GetInt64(),
             Title = record.GetProperty("title").GetString() ?? string.Empty,
-            Level = level,
+            LevelDescription = GetLevelDescription(level),
+            MaterialType = materialType,
+            SourceReference = sourceReference,
+            Description = description,
             Ancestors = ancestors,
             Path = BuildPath(ancestors, level, record),
             TotalDigitalObjects = ParseTotalDigitalObjects(hit),
@@ -62,7 +70,7 @@ public static class RawRecordMapper
     {
         var path = new List<PathSegment>();
 
-        // ancestors first (already parents only)
+        // ancestors only (excluding current record)
         foreach (var a in ancestors)
         {
             if (a.Level == LevelOfDescription.RecordGroup)
@@ -87,14 +95,6 @@ public static class RawRecordMapper
             }
         }
 
-        // current record always last
-        path.Add(new PathSegment
-        {
-            SegmentType = currentLevel,
-            NaId = record.GetProperty("naId").GetInt64(),
-            Label = $"{LevelShort(currentLevel)} {record.GetProperty("naId").GetInt64()}"
-        });
-
         return path;
     }
 
@@ -103,22 +103,36 @@ public static class RawRecordMapper
         return lvl switch
         {
             LevelOfDescription.RecordGroup => "RG",
-            LevelOfDescription.Series => "S",
-            LevelOfDescription.FileUnit => "FU",
-            LevelOfDescription.Item => "I",
+            LevelOfDescription.Series => "Series",
+            LevelOfDescription.FileUnit => "FileUnit",
+            LevelOfDescription.Item => "Item",
             _ => "?"
         };
     }
 
     private static int ParseTotalDigitalObjects(JsonElement hit)
     {
-        if (!hit.TryGetProperty("fields", out var fields))
-            return 0;
+        // 1. Preferred: abbreviated search results (aggregated, fast)
+        if (hit.TryGetProperty("fields", out var fields) &&
+            fields.TryGetProperty("totalDigitalObjects", out var arr) &&
+            arr.ValueKind == JsonValueKind.Array &&
+            arr.GetArrayLength() > 0)
+        {
+            var value = arr[0].GetInt32();
+            if (value > 0)
+                return value;
+        }
 
-        if (!fields.TryGetProperty("totalDigitalObjects", out var arr) || arr.ValueKind != JsonValueKind.Array)
-            return 0;
+        // 2. Fallback: full record digitalObjects array (exact)
+        if (hit.TryGetProperty("_source", out var source) &&
+            source.TryGetProperty("record", out var record) &&
+            record.TryGetProperty("digitalObjects", out var digitalObjects) &&
+            digitalObjects.ValueKind == JsonValueKind.Array)
+        {
+            return digitalObjects.GetArrayLength();
+        }
 
-        return arr.GetArrayLength() > 0 ? arr[0].GetInt32() : 0;
+        return 0;
     }
 
     private static DigitalObject? ParseFirstDigitalObject(JsonElement hit)
@@ -159,5 +173,54 @@ public static class RawRecordMapper
             "item" => LevelOfDescription.Item,
             _ => LevelOfDescription.FileUnit
         };
+    }
+
+    private static string GetLevelDescription(LevelOfDescription level)
+    {
+        return level switch
+        {
+            LevelOfDescription.RecordGroup => "Record Group",
+            LevelOfDescription.Series => "Series",
+            LevelOfDescription.FileUnit => "File Unit",
+            LevelOfDescription.Item => "Item",
+            _ => level.ToString()
+        };
+    }
+
+    private static string? ParseGeneralRecordsTypes(JsonElement record)
+    {
+        if (!record.TryGetProperty("generalRecordsTypes", out var typesArr))
+            return null;
+
+        if (typesArr.ValueKind != JsonValueKind.Array || typesArr.GetArrayLength() == 0)
+            return null;
+
+        // Get the first general record type
+        var firstType = typesArr[0];
+        return firstType.GetString();
+    }
+
+    private static string? ParseSourceReference(JsonElement record)
+    {
+        if (!record.TryGetProperty("physicalOccurrences", out var occurrences))
+            return null;
+
+        if (occurrences.ValueKind != JsonValueKind.Array || occurrences.GetArrayLength() == 0)
+            return null;
+
+        var firstOccurrence = occurrences[0];
+
+        if (!firstOccurrence.TryGetProperty("mediaOccurrences", out var mediaOccurrences))
+            return null;
+
+        if (mediaOccurrences.ValueKind != JsonValueKind.Array || mediaOccurrences.GetArrayLength() == 0)
+            return null;
+
+        var firstMedia = mediaOccurrences[0];
+
+        if (!firstMedia.TryGetProperty("specificMediaType", out var specificType))
+            return null;
+
+        return specificType.GetString();
     }
 }
