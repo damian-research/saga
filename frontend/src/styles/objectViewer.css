@@ -161,6 +161,16 @@
   color: #0066cc;
 }
 
+.app-root.dark-mode .object-viewer-edge-nav {
+  background: rgba(255, 255, 255, 0.1);
+  color: #aaa;
+}
+
+.app-root.dark-mode .object-viewer-edge-nav:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #66b3ff;
+}
+
 .object-viewer-edge-prev {
   left: 0;
   border-radius: 0 4px 4px 0;

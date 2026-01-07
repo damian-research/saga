@@ -70,7 +70,11 @@ export default function SearchPanel({ onSearch }: Props) {
       {/* CORE */}
       <label>
         Query
-        <input value={form.q} onChange={(e) => update("q", e.target.value)} />
+        <input
+          type="text"
+          value={form.q}
+          onChange={(e) => update("q", e.target.value)}
+        />
       </label>
 
       <label>
@@ -99,6 +103,7 @@ export default function SearchPanel({ onSearch }: Props) {
       <label>
         Title
         <input
+          type="text"
           placeholder="title contains"
           value={form.title ?? ""}
           onChange={(e) => update("title", e.target.value)}
@@ -108,6 +113,7 @@ export default function SearchPanel({ onSearch }: Props) {
       <label>
         Person / Organization
         <input
+          type="text"
           placeholder="authority heading"
           value={form.personOrOrg ?? ""}
           onChange={(e) => update("personOrOrg", e.target.value)}
@@ -117,6 +123,7 @@ export default function SearchPanel({ onSearch }: Props) {
       <label>
         Data Source
         <input
+          type="text"
           placeholder="e.g. description"
           value={form.dataSource ?? ""}
           onChange={(e) => update("dataSource", e.target.value)}
@@ -149,6 +156,7 @@ export default function SearchPanel({ onSearch }: Props) {
       <label>
         RG #
         <input
+          type="number"
           placeholder="e.g. 11, 59"
           onChange={(e) => update("recordGroupNumber", e.target.value)}
         />
@@ -159,6 +167,7 @@ export default function SearchPanel({ onSearch }: Props) {
       <label>
         NAID
         <input
+          type="text"
           placeholder="single or CSV"
           onChange={(e) => update("naId", e.target.value)}
         />
@@ -167,6 +176,7 @@ export default function SearchPanel({ onSearch }: Props) {
       <label>
         Microfilm ID
         <input
+          type="number"
           placeholder="M234, T455"
           onChange={(e) => update("microfilmId", e.target.value)}
         />
@@ -175,6 +185,7 @@ export default function SearchPanel({ onSearch }: Props) {
       <label>
         Local ID
         <input
+          type="text"
           placeholder="M2-3-4, T-45-5"
           onChange={(e) => update("localId", e.target.value)}
         />

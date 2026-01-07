@@ -402,3 +402,237 @@
   color: #0066cc;
   font-weight: 600;
 }
+
+/* --- Dark Mode Styles --- */
+.app-root.dark-mode .panel {
+  background: #2a2a2a;
+  border-right-color: #444;
+}
+
+.app-root.dark-mode .list {
+  background: #1e1e1e;
+}
+
+.app-root.dark-mode .preview {
+  background: #2a2a2a;
+}
+
+.app-root.dark-mode .search {
+  background: #1e1e1e;
+}
+
+.app-root.dark-mode .list-item {
+  border-bottom-color: #333;
+  color: #e0e0e0;
+}
+
+.app-root.dark-mode .list-item:hover {
+  background-color: #333;
+}
+
+.app-root.dark-mode .list-item.active {
+  background-color: #1a3a52;
+  border-left-color: #0088ff;
+}
+
+.app-root.dark-mode .list-item .path,
+.app-root.dark-mode .list-item .path-link {
+  color: #66b3ff;
+}
+
+.app-root.dark-mode .list-item .path-link:hover {
+  color: #88ccff;
+}
+
+.app-root.dark-mode .list-item .title {
+  color: #e0e0e0;
+}
+
+.app-root.dark-mode .list-item .title:hover {
+  color: #66b3ff;
+}
+
+.app-root.dark-mode .list-item .item-meta {
+  color: #a0a0a0;
+}
+
+.app-root.dark-mode .list-item .naid {
+  color: #c0c0c0;
+}
+
+.app-root.dark-mode .list-item .separator {
+  color: #666;
+}
+
+.app-root.dark-mode .list-item .level {
+  color: #a0a0a0;
+}
+
+.app-root.dark-mode .list-item .material-type {
+  color: #a0a0a0;
+}
+
+.app-root.dark-mode .path {
+  color: #888;
+}
+
+.app-root.dark-mode .list-item.active .path {
+  color: #66b3ff;
+}
+
+.app-root.dark-mode .breadcrumbs {
+  color: #888;
+}
+
+.app-root.dark-mode .preview h3 {
+  color: #e0e0e0;
+}
+
+.app-root.dark-mode .preview button {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+.app-root.dark-mode .preview button:hover {
+  background-color: #444;
+  border-color: #777;
+}
+
+.app-root.dark-mode .preview-title {
+  color: #e0e0e0;
+}
+
+.app-root.dark-mode .preview-breadcrumbs {
+  color: #888;
+  background-color: #333;
+}
+
+.app-root.dark-mode .preview-section-title {
+  color: #aaa;
+}
+
+.app-root.dark-mode .preview-object-item {
+  background-color: #333;
+  border-left-color: #555;
+  color: #a0a0a0;
+}
+
+.app-root.dark-mode .preview-object-item .object-type {
+  color: #a0a0a0;
+}
+
+.app-root.dark-mode .list-item .digital-objects {
+  color: #888;
+}
+
+.app-root.dark-mode .btn {
+  border: 1px solid #555;
+}
+
+.app-root.dark-mode .btn-primary {
+  background-color: #0066cc;
+  color: white;
+}
+
+.app-root.dark-mode .btn-primary:hover:not(:disabled) {
+  background-color: #0052a3;
+}
+
+.app-root.dark-mode .panel-title {
+  color: #aaa;
+}
+
+.app-root.dark-mode .search-grid {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+.app-root.dark-mode .object-viewer {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+.app-root.dark-mode .object-viewer-header {
+  background-color: #333;
+  border-bottom-color: #444;
+}
+
+.app-root.dark-mode .object-viewer-title {
+  color: #e0e0e0;
+}
+
+.app-root.dark-mode .object-viewer-counter {
+  background-color: #444;
+  color: #aaa;
+}
+
+.app-root.dark-mode .object-viewer-download-btn:hover {
+  background-color: #444;
+  color: #66b3ff;
+}
+
+.app-root.dark-mode .object-viewer-body {
+  background-color: #1a1a1a;
+}
+
+.app-root.dark-mode .object-viewer-message {
+  color: #aaa;
+}
+
+.app-root.dark-mode .object-viewer-link {
+  color: #66b3ff;
+}
+
+.app-root.dark-mode .object-viewer-link:hover {
+  color: #88ccff;
+}
+
+.app-root.dark-mode .search label {
+  color: #aaa;
+}
+
+.app-root.dark-mode .checkbox-row label {
+  color: #aaa;
+}
+
+.app-root.dark-mode .panel.search label {
+  color: #aaa;
+}
+
+.app-root.dark-mode .search label input[type="text"],
+.app-root.dark-mode .search label input[type="number"] {
+  background-color: #3a3a3a;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+.app-root.dark-mode .search label select {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+.app-root.dark-mode .search button {
+  background-color: #0066cc;
+}
+
+.app-root.dark-mode .search button:hover {
+  background-color: #0052a3;
+}
+
+.app-root.dark-mode .search-section {
+  border-bottom-color: #444;
+}
+
+.app-root.dark-mode .search-section-title {
+  color: #888;
+}
+
+.app-root.dark-mode .panel.search .divider {
+  background-color: #444;
+}
+
+.app-root.dark-mode .panel.search .panel-subtitle {
+  color: #aaa;
+}
