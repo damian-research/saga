@@ -1,11 +1,14 @@
-import type { RawRecord } from "../../api/models";
-import SearchList from "./SearchList";
-import SearchPreview from "./SearchPreview";
-import SearchPanel from "./SearchPanel";
+import type { RawRecord } from "../../api/models/record.types";
+import {
+  SearchPanel,
+  SearchList,
+  SearchPreview,
+  type SearchFormState,
+} from ".";
 
 interface Props {
   results: RawRecord[];
-  onSearch: (form: import("./SearchPanel").SearchFormState) => void;
+  onSearch: (form: SearchFormState) => void;
   selectedNaId: number | null;
   onSelect: (id: number) => void;
 }

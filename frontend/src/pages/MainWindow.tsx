@@ -1,5 +1,5 @@
-import Header from "../layout/Header";
-import SearchTab from "../tabs/search/SearchTab";
+import Header from "../components/layout/Header/Header";
+import { SearchTab } from '../pages/search';
 
 export default function MainWindow() {
   return (

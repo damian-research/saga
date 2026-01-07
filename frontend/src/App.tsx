@@ -1,4 +1,4 @@
-import MainWindow from "./MainWindow";
+import MainWindow from "./pages/MainWindow";
 
 export default function App() {
   return <MainWindow />;

@@ -1,8 +1,10 @@
 import { useState } from "react";
-import SearchLayout from "./SearchLayout";
-import type { RawRecord } from "../../api/models";
-import type { SearchFormState } from "./SearchPanel";
-import { searchRecords } from "../../api/queryApi";
+import {
+  SearchLayout,
+  searchRecords,
+  type SearchFormState,
+  type RawRecord,
+} from ".";
 
 export default function SearchTab() {
   const [results, setResults] = useState<RawRecord[]>([]);
