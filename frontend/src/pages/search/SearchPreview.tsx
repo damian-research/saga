@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getRecord, downloadRecord } from "../../api/services/queryService";
-import type { FullRecord } from "../../api/models/record.types";
+import type { FullRecord, DigitalObject } from "../../api/models/record.types";
+import ObjectViewer from "./components/ObjectViewer";
 
 interface Props {
   selectedNaId: number | null;
@@ -11,6 +12,9 @@ export default function SearchPreview({ selectedNaId }: Props) {
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [viewingObject, setViewingObject] = useState<DigitalObject | null>(
+    null
+  );
 
   useEffect(() => {
     if (!selectedNaId) {
@@ -98,14 +102,12 @@ export default function SearchPreview({ selectedNaId }: Props) {
               {record.digitalObjects.map((o, i) => (
                 <li key={i} className="preview-object-item">
                   <span className="object-type">{o.objectType}</span>
-                  <a
-                    href={o.objectUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="object-link"
+                  <button
+                    onClick={() => setViewingObject(o)}
+                    className="object-link-btn"
                   >
                     View
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -124,6 +126,30 @@ export default function SearchPreview({ selectedNaId }: Props) {
           </button>
         </div>
       </div>
+
+      {viewingObject && record && (
+        <ObjectViewer
+          object={viewingObject}
+          objects={record.digitalObjects}
+          onClose={() => setViewingObject(null)}
+          onNext={() => {
+            const currentIndex = record.digitalObjects.findIndex(
+              (o) => o.objectUrl === viewingObject.objectUrl
+            );
+            if (currentIndex < record.digitalObjects.length - 1) {
+              setViewingObject(record.digitalObjects[currentIndex + 1]);
+            }
+          }}
+          onPrev={() => {
+            const currentIndex = record.digitalObjects.findIndex(
+              (o) => o.objectUrl === viewingObject.objectUrl
+            );
+            if (currentIndex > 0) {
+              setViewingObject(record.digitalObjects[currentIndex - 1]);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
