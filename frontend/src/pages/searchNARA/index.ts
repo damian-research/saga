@@ -1,7 +1,7 @@
 // Components
 export { default as SearchTab } from "./SearchTab";
 export { default as SearchLayout } from "./SearchLayout";
-export { default as SearchPreview } from "./SearchDetails";
+export { default as SearchPreview } from "./components/SearchDetails";
 export { default as SearchPanel } from "./SearchPanel";
 
 // Types

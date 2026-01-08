@@ -1,11 +1,17 @@
 import SearchListItemShell from "../../../components/common/search/SearchListItemShell";
 import PathBreadcrumbShell from "../../../components/common/search/PathBreadcrumbShell";
-import type { RawRecord } from "../../../api/models/record.types";
+
+interface UkSearchRecord {
+  id: string; // Cxxxx
+  title: string;
+  path: { id: string; title: string }[];
+  level?: string;
+}
 
 interface Props {
-  record: RawRecord;
+  record: UkSearchRecord;
   isSelected: boolean;
-  onSelect: (naId: number) => void;
+  onSelect: (id: string) => void;
 }
 
 export default function SearchListItem({
@@ -16,49 +22,23 @@ export default function SearchListItem({
   return (
     <SearchListItemShell
       isSelected={isSelected}
-      onClick={() => onSelect(record.naId)}
+      onClick={() => onSelect(record.id)}
     >
       <PathBreadcrumbShell
         path={record.path.map((p) => ({
-          key: p.naId,
-          label: p.label,
+          key: p.id,
+          label: p.title,
         }))}
-        onSelect={(naId) => onSelect(naId as number)}
+        onSelect={(id) => onSelect(id as string)}
       />
 
-      <div
-        className="title"
-        title={record.description || "Click to view details"}
-      >
-        {record.title}
-      </div>
+      <div className="title">{record.title}</div>
 
-      <div className="item-meta">
-        <span className="naid">NAID: {record.naId}</span>
-        <span className="separator">·</span>
-        <span className="level">{record.levelDescription}</span>
-
-        {record.materialType && (
-          <>
-            <span className="separator">·</span>
-            <span className="material-type">[{record.materialType}]</span>
-          </>
-        )}
-
-        {record.sourceReference && (
-          <>
-            <span className="separator">→</span>
-            <span className="source-reference">{record.sourceReference}</span>
-          </>
-        )}
-      </div>
-
-      {typeof record.totalDigitalObjects === "number" &&
-        record.totalDigitalObjects > 0 && (
-          <div className="digital-objects">
-            Digital objects: {record.totalDigitalObjects}
-          </div>
-        )}
+      {record.level && (
+        <div className="item-meta">
+          <span className="level">{record.level}</span>
+        </div>
+      )}
     </SearchListItemShell>
   );
 }

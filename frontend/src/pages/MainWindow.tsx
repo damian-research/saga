@@ -1,9 +1,13 @@
 import { useState } from "react";
 import Header from "../components/layout/Header/Header";
-import { SearchTab } from "./searchNARA";
+import { SearchTab as SearchNARATab } from "./searchNARA";
+import { SearchTab as SearchNAUKTab } from "./searchNAUK";
+
+type TabId = "nara" | "uk";
 
 export default function MainWindow() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabId>("nara");
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -12,8 +16,26 @@ export default function MainWindow() {
   return (
     <div className={`app-root ${isDarkMode ? "dark-mode" : ""}`}>
       <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
+
+      {/* Simple tab switch (no refactor needed) */}
+      <div className="app-tabs">
+        <button
+          className={activeTab === "nara" ? "active" : ""}
+          onClick={() => setActiveTab("nara")}
+        >
+          NARA
+        </button>
+        <button
+          className={activeTab === "uk" ? "active" : ""}
+          onClick={() => setActiveTab("uk")}
+        >
+          UK National Archives
+        </button>
+      </div>
+
       <div className="app-content">
-        <SearchTab />
+        {activeTab === "nara" && <SearchNARATab />}
+        {activeTab === "uk" && <SearchNAUKTab />}
       </div>
     </div>
   );
