@@ -47,6 +47,11 @@ export default function SearchDetails({ selectedNaId }: Props) {
     }
   }
 
+  function onSaveBookmark() {
+    if (!record) return;
+    console.log("Save bookmark:", record.naId);
+  }
+
   if (!selectedNaId) {
     return <DetailsPanelShell isEmpty />;
   }
@@ -58,13 +63,19 @@ export default function SearchDetails({ selectedNaId }: Props) {
       isEmpty={!record}
       footer={
         record && (
-          <button
-            onClick={onDownload}
-            disabled={downloading}
-            className="btn btn-primary"
-          >
-            {downloading ? "Downloading…" : "📥 Download Record"}
-          </button>
+          <>
+            <button onClick={onSaveBookmark} className="details-save">
+              ☆ Save to Bookmarks
+            </button>
+
+            <button
+              onClick={onDownload}
+              disabled={downloading}
+              className="btn btn-primary"
+            >
+              {downloading ? "Downloading…" : "📥 Download Record"}
+            </button>
+          </>
         )
       }
     >
@@ -127,6 +138,11 @@ export default function SearchDetails({ selectedNaId }: Props) {
               setViewingObject(record.digitalObjects[currentIndex - 1]);
             }
           }}
+          onSaveBookmark={() => {
+            // Placeholder handler for save bookmark in preview viewer header
+            console.log("Save bookmark from preview viewer:", record.naId);
+          }}
+          isSaved={false}
         />
       )}
     </DetailsPanelShell>

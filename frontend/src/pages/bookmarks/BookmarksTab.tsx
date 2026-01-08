@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { BookmarksLayout } from ".";
-import { BookmarkModal } from ".";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 
 export default function BookmarksTab() {
@@ -17,16 +16,6 @@ export default function BookmarksTab() {
     setBookmarks((prev) => prev.filter((b) => b.id !== id));
   }
 
-  function submitBookmark(data: { category: string; customName?: string }) {
-    if (mode === "edit" && editing) {
-      setBookmarks((prev) =>
-        prev.map((b) => (b.id === editing.id ? { ...b, ...data } : b))
-      );
-    }
-    setEditing(null);
-    setMode(null);
-  }
-
   function exportBookmarks(list: Bookmark[]) {
     const blob = new Blob([JSON.stringify(list, null, 2)], {
       type: "application/json",
@@ -38,16 +27,12 @@ export default function BookmarksTab() {
     a.click();
     URL.revokeObjectURL(url);
   }
-  const categories = Array.from(
-    new Set(bookmarks.map((b) => b.category))
-  ).sort();
 
   return (
     <>
       <BookmarksLayout
         bookmarks={bookmarks}
         onOpen={openBookmark}
-        onAdd={() => setMode("add")}
         onEdit={(b) => {
           setEditing(b);
           setMode("edit");
@@ -55,19 +40,6 @@ export default function BookmarksTab() {
         onRemove={(id) => removeBookmark(id)}
         onExport={(list) => exportBookmarks(list)}
       />
-
-      {mode && (
-        <BookmarkModal
-          mode={mode}
-          bookmark={editing}
-          categories={categories}
-          onCancel={() => {
-            setEditing(null);
-            setMode(null);
-          }}
-          onSubmit={submitBookmark}
-        />
-      )}
     </>
   );
 }

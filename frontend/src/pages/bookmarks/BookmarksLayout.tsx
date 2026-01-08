@@ -4,7 +4,6 @@ import type { Bookmark } from "../../api/models/bookmarks.types";
 interface Props {
   bookmarks: Bookmark[];
   onOpen: (b: Bookmark) => void;
-  onAdd: () => void;
   onEdit: (b: Bookmark) => void;
   onRemove: (id: string) => void;
   onExport: (list: Bookmark[]) => void;
@@ -13,7 +12,6 @@ interface Props {
 export default function BookmarksLayout({
   bookmarks,
   onOpen,
-  onAdd,
   onEdit,
   onRemove,
   onExport,
@@ -75,7 +73,6 @@ export default function BookmarksLayout({
         <div className="panel-title">Saved Records</div>
 
         <div className="bookmark-actions">
-          <button onClick={onAdd}>Add</button>
           <button
             disabled={!selectedId}
             onClick={() => {

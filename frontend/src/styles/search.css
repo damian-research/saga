@@ -81,6 +81,56 @@
   padding-left: 5px;
 }
 
+/* Save (bookmark) icon in list item */
+.list-item-save {
+  position: absolute;
+  right: 50px; /* sits left of the arrow zone */
+  top: 50%;
+  transform: translateY(-50%);
+
+  background: none;
+  border: none;
+  padding: 4px;
+
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+
+  color: #999;
+  opacity: 0.6;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+/* Show on hover / active */
+.list-item:hover .list-item-save,
+.list-item.active .list-item-save {
+  opacity: 1;
+}
+
+/* Hover state */
+.list-item-save:hover {
+  color: #0066cc;
+}
+
+/* Saved state */
+.list-item-save[title="Saved"] {
+  color: #f5b400; /* muted gold */
+  opacity: 1;
+}
+
+/* Dark mode */
+.app-root.dark-mode .list-item-save {
+  color: #aaa;
+}
+
+.app-root.dark-mode .list-item-save:hover {
+  color: #66b3ff;
+}
+
+.app-root.dark-mode .list-item-save[title="Saved"] {
+  color: #ffd166;
+}
+
 /* Path breadcrumb */
 .list-item .path {
   font-size: 11px;

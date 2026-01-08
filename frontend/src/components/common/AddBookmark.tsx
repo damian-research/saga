@@ -9,7 +9,7 @@ interface Props {
   onSubmit: (data: { category: string; customName: string }) => void;
 }
 
-export default function BookmarkModal({
+export default function AddBookmark({
   mode,
   bookmark,
   categories,
