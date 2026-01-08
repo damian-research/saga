@@ -6,7 +6,6 @@ import "./styles/reset.css";
 import "./styles/variables.css";
 import "./styles/layout.css";
 import "./styles/search.css";
-import "./styles/bookmarks.css";
 import "./styles/tokens.css";
 import "./styles/theme.css";
 

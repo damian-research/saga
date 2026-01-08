@@ -10,6 +10,7 @@ import {
 } from "../../../components/common/search";
 import BookmarkStar from "../../../components/common/bookmarks/BookmarkStar";
 import type { Bookmark } from "../../../api/models/bookmarks.types";
+import styles from "./SearchDetails.module.css";
 
 interface Props {
   selectedNaId: number | null;
@@ -81,23 +82,24 @@ export default function SearchDetails({ selectedNaId }: Props) {
       isLoading={loading}
       error={error}
       isEmpty={!record}
-      footer={
+      headerAction={
         record && (
           <button
             onClick={onDownload}
             disabled={downloading}
-            className="search-button"
+            className={styles.downloadButton}
+            title="Download record"
           >
-            {downloading ? "Downloading…" : "📥 Download Record"}
+            ↓
           </button>
         )
       }
     >
       {record && (
         <>
-          <h2 className="preview-title">{record.title}</h2>
+          <h2 className={styles.title}>{record.title}</h2>
 
-          <div className="preview-breadcrumbs">
+          <div className={styles.breadcrumbs}>
             {record.ancestors
               .slice()
               .sort((a, b) => b.distance - a.distance)
@@ -105,24 +107,23 @@ export default function SearchDetails({ selectedNaId }: Props) {
               .join(" → ")}
           </div>
 
-          <div className="preview-section">
-            <h4 className="preview-section-title">Digital Objects</h4>
+          <div className={styles.section}>
+            <h4 className={styles.sectionTitle}>Digital Objects</h4>
 
             {record.digitalObjects.length > 0 ? (
-              <ul className="preview-objects-list">
+              <ul className={styles.objectsList}>
                 {record.digitalObjects.map((o, i) => (
-                  <li key={i} className="preview-object-item">
-                    <span className="object-type">{o.objectType}</span>
+                  <li key={i} className={styles.objectItem}>
+                    <span className={styles.objectType}>{o.objectType}</span>
 
-                    <div className="preview-object-actions">
+                    <div className={styles.objectActions}>
                       <BookmarkStar
                         bookmark={buildObjectBookmark(record, o, i)}
-                        className="bookmark-star"
                       />
 
                       <button
                         onClick={() => setViewingObject(o)}
-                        className="search-button"
+                        className={styles.button}
                       >
                         View
                       </button>
@@ -131,9 +132,7 @@ export default function SearchDetails({ selectedNaId }: Props) {
                 ))}
               </ul>
             ) : (
-              <p className="preview-empty-state">
-                No digital objects available
-              </p>
+              <p className={styles.emptyState}>No digital objects available</p>
             )}
           </div>
         </>

@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./DetailsPanelShell.module.css";
 
 interface Props {
   title?: string;
@@ -7,7 +8,7 @@ interface Props {
   error?: string | null;
   emptyText?: string;
   children?: React.ReactNode;
-  footer?: React.ReactNode;
+  headerAction?: React.ReactNode;
 }
 
 export default function DetailsPanelShell({
@@ -17,25 +18,28 @@ export default function DetailsPanelShell({
   error,
   emptyText = "Select a record to view details",
   children,
-  footer,
+  headerAction,
 }: Props) {
   return (
-    <div className="panel preview">
-      <div className="panel-title">{title}</div>
+    <div className={styles.panel}>
+      <div className={styles.header}>
+        <div className={styles.title}>{title}</div>
+        {headerAction && (
+          <div className={styles.headerAction}>{headerAction}</div>
+        )}
+      </div>
 
-      {isLoading && <div className="preview-empty">Loading…</div>}
+      {isLoading && <div className={styles.empty}>Loading…</div>}
 
-      {!isLoading && error && <div className="preview-error">{error}</div>}
+      {!isLoading && error && <div className={styles.error}>{error}</div>}
 
       {!isLoading && !error && isEmpty && (
-        <div className="preview-empty">{emptyText}</div>
+        <div className={styles.empty}>{emptyText}</div>
       )}
 
       {!isLoading && !error && !isEmpty && (
-        <div className="preview-content">{children}</div>
+        <div className={styles.content}>{children}</div>
       )}
-
-      {footer && <div className="preview-actions">{footer}</div>}
     </div>
   );
 }

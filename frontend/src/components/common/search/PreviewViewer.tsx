@@ -1,5 +1,5 @@
 import type { DigitalObject } from "../../../api/models/record.types";
-import "../../../styles/ObjectViewer.css";
+import styles from "./PreviewViewer.module.css";
 
 interface Props {
   object: DigitalObject;
@@ -9,7 +9,7 @@ interface Props {
   onPrev?: () => void;
 }
 
-export default function ObjectViewer({
+export default function PreviewViewer({
   object,
   objects,
   onClose,
@@ -23,23 +23,19 @@ export default function ObjectViewer({
   const hasPrev = currentIndex > 0;
 
   return (
-    <div className="object-viewer-overlay" onClick={onClose}>
-      <div className="object-viewer" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className="object-viewer-header">
-          {/* Left spacer */}
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.viewer} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
           <div style={{ width: "95px" }}></div>
-          {/* Title + Counter */}
-          <div className="object-viewer-title-section">
-            <h3 className="object-viewer-title">{object.objectType}</h3>
-            <span className="object-viewer-counter">
+          <div className={styles.titleSection}>
+            <h3 className={styles.title}>{object.objectType}</h3>
+            <span className={styles.counter}>
               {currentIndex + 1} / {objects.length}
             </span>
           </div>
-          {/* Actions */}
-          <div className="object-viewer-header-actions">
+          <div className={styles.headerActions}>
             <button
-              className="object-viewer-download-btn "
+              className={styles.downloadBtn}
               title="Download this object"
               onClick={() => {
                 const a = document.createElement("a");
@@ -50,21 +46,16 @@ export default function ObjectViewer({
             >
               ↓
             </button>
-            <button
-              className="object-viewer-close"
-              onClick={onClose}
-              title="Close"
-            >
+            <button className={styles.closeBtn} onClick={onClose} title="Close">
               ×
             </button>
           </div>
         </div>
 
-        {/* Body */}
-        <div className="object-viewer-container">
+        <div className={styles.container}>
           {hasPrev && (
             <button
-              className="object-viewer-edge-nav object-viewer-edge-prev"
+              className={`${styles.edgeNav} ${styles.edgePrev}`}
               onClick={onPrev}
               title="Previous object"
             >
@@ -72,12 +63,12 @@ export default function ObjectViewer({
             </button>
           )}
 
-          <div className="object-viewer-body">
+          <div className={styles.body}>
             {object.objectUrl.toLowerCase().endsWith(".pdf") ? (
               <iframe
                 src={object.objectUrl}
                 title={object.objectType}
-                className="object-viewer-iframe"
+                className={styles.iframe}
               />
             ) : object.objectUrl
                 .toLowerCase()
@@ -85,16 +76,16 @@ export default function ObjectViewer({
               <img
                 src={object.objectUrl}
                 alt={object.objectType}
-                className="object-viewer-image"
+                className={styles.image}
               />
             ) : (
-              <div className="object-viewer-message">
+              <div className={styles.message}>
                 <p>Unable to preview this object type.</p>
                 <a
                   href={object.objectUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="object-viewer-link"
+                  className={styles.link}
                 >
                   Open in new tab
                 </a>
@@ -104,7 +95,7 @@ export default function ObjectViewer({
 
           {hasNext && (
             <button
-              className="object-viewer-edge-nav object-viewer-edge-next"
+              className={`${styles.edgeNav} ${styles.edgeNext}`}
               onClick={onNext}
               title="Next object"
             >

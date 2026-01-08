@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./SearchListShell.module.css";
 
 interface Props<T> {
   items: T[];
@@ -15,16 +16,16 @@ export default function SearchListShell<T>({
 }: Props<T>) {
   if (!items || items.length === 0) {
     return (
-      <div className="panel list">
-        <div className="panel-title">Results</div>
-        <div className="preview-empty">No results found</div>
+      <div className={styles.panel}>
+        <div className={styles.title}>Results</div>
+        <div className={styles.empty}>No results found</div>
       </div>
     );
   }
 
   return (
-    <div className="panel list">
-      <div className="panel-title">Results ({items.length})</div>
+    <div className={styles.panel}>
+      <div className={styles.title}>Results ({items.length})</div>
       {items.map((item) => {
         const key = getKey(item);
         return (

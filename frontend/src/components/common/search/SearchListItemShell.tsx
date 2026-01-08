@@ -1,6 +1,7 @@
 import React from "react";
 import BookmarkStar from "../bookmarks/BookmarkStar";
 import type { Bookmark } from "../../../api/models/bookmarks.types";
+import styles from "./SearchListItemShell.module.css";
 
 interface Props {
   isSelected: boolean;
@@ -18,18 +19,16 @@ export default function SearchListItemShell({
   isSaved,
 }: Props) {
   return (
-    <div className={`list-item ${isSelected ? "active" : ""}`}>
-      <div className="list-item-content">{children}</div>
+    <div className={`${styles.item} ${isSelected ? styles.active : ""}`}>
+      <div className={styles.content}>{children}</div>
 
-      <div className="list-item-actions">
-        <BookmarkStar
-          bookmark={bookmark}
-          isSaved={isSaved}
-          className="bookmark-star"
-        />
+      <div className={styles.actions}>
+        <div className={styles.star}>
+          <BookmarkStar bookmark={bookmark} isSaved={isSaved} />
+        </div>
 
-        <div className="list-item-click" onClick={onClick}>
-          <span className="list-item-arrow">›</span>
+        <div className={styles.clickZone} onClick={onClick}>
+          <span className={styles.arrow}>›</span>
         </div>
       </div>
     </div>
