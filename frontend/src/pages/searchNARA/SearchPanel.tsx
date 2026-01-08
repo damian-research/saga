@@ -65,7 +65,7 @@ export default function SearchPanel({ onSearch }: Props) {
 
   return (
     <div className="panel search">
-      <div className="panel-title">Search</div>
+      <div className="panel-title">Search in US National Archives</div>
 
       {/* CORE */}
       <label>

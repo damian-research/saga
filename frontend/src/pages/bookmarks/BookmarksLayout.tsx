@@ -72,16 +72,10 @@ export default function BookmarksLayout({
     <div className="bookmarks-grid">
       {/* Filters / actions */}
       <div className="panel search">
-        <div className="panel-title">Bookmarks</div>
+        <div className="panel-title">Saved Records</div>
 
         <div className="bookmark-actions">
           <button onClick={onAdd}>Add</button>
-          <button
-            disabled={!selectedId}
-            onClick={() => selectedId && onRemove(selectedId)}
-          >
-            Remove
-          </button>
           <button
             disabled={!selectedId}
             onClick={() => {
@@ -91,9 +85,14 @@ export default function BookmarksLayout({
           >
             Change
           </button>
-          <button onClick={() => onExport(filteredBookmarks)}>
-            Export
+
+          <button
+            disabled={!selectedId}
+            onClick={() => selectedId && onRemove(selectedId)}
+          >
+            Remove
           </button>
+          <button onClick={() => onExport(filteredBookmarks)}>Export</button>
         </div>
 
         <div className="bookmark-filters">
@@ -104,20 +103,22 @@ export default function BookmarksLayout({
             }
           >
             <option value="">Category</option>
-            {[...new Set(bookmarks.map(b => b.category))].sort().map(c => (
-              <option key={c} value={c}>{c}</option>
+            {[...new Set(bookmarks.map((b) => b.category))].sort().map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
 
           <select
             value={filters.level}
-            onChange={(e) =>
-              setFilters({ ...filters, level: e.target.value })
-            }
+            onChange={(e) => setFilters({ ...filters, level: e.target.value })}
           >
             <option value="">Level</option>
-            {[...new Set(bookmarks.map(b => b.level))].sort().map(l => (
-              <option key={l} value={l}>{l}</option>
+            {[...new Set(bookmarks.map((b) => b.level))].sort().map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
             ))}
           </select>
 
@@ -128,9 +129,13 @@ export default function BookmarksLayout({
             }
           >
             <option value="">Archive</option>
-            {[...new Set(bookmarks.map(b => b.archiveName))].sort().map(a => (
-              <option key={a} value={a}>{a}</option>
-            ))}
+            {[...new Set(bookmarks.map((b) => b.archiveName))]
+              .sort()
+              .map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
           </select>
 
           <input
@@ -146,9 +151,13 @@ export default function BookmarksLayout({
             }
           >
             <option value="">Record type</option>
-            {[...new Set(bookmarks.map(b => b.recordType))].sort().map(r => (
-              <option key={r} value={r}>{r}</option>
-            ))}
+            {[...new Set(bookmarks.map((b) => b.recordType))]
+              .sort()
+              .map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
           </select>
         </div>
       </div>
