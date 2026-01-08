@@ -17,7 +17,7 @@ export default function SearchListShell<T>({
     return (
       <div className="panel list">
         <div className="panel-title">Results</div>
-        <div className="empty-state">No results found</div>
+        <div className="preview-empty">No results found</div>
       </div>
     );
   }
