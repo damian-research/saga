@@ -29,7 +29,7 @@ export default function MainWindow() {
           className={activeTab === "uk" ? "active" : ""}
           onClick={() => setActiveTab("uk")}
         >
-          UK National Archives
+          UK NA
         </button>
       </div>
 

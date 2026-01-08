@@ -7,19 +7,41 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Header frame */
 .app-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #cccccc;
-  background-color: #f9f9f9;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  padding: 5px 15px;
+  background-color: #f4f4f4;
+  border-bottom: 1px solid #c8c8c8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-.header-title {
+.header-logo {
+  image-rendering: auto;
+  shape-rendering: geometricPrecision;
+}
+
+/* Title */
+/* .header-title {
   font-size: 18px;
   font-weight: 600;
+  letter-spacing: 0.3px;
+  color: #111111;
+} */
+
+/* Optional subtle underline accent */
+.app-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #007acc, transparent);
+  opacity: 0.25;
 }
 
 .app-content {
@@ -35,8 +57,18 @@
 }
 
 .app-root.dark-mode .app-header {
-  border-bottom-color: #333333;
-  background-color: #2a2a2a;
+  background-color: #242424;
+  border-bottom-color: #3a3a3a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.app-root.dark-mode .header-title {
+  color: #ffffff;
+}
+
+.app-root.dark-mode .app-header::after {
+  background: linear-gradient(to right, transparent, #4fa3ff, transparent);
+  opacity: 0.35;
 }
 
 .dark-mode-toggle {
@@ -114,4 +146,117 @@
 .app-root.dark-mode .app-tabs button.active {
   color: #ffffff;
   border-bottom-color: #4fa3ff;
+}
+
+/* Header actions */
+.header-actions {
+  position: relative;
+}
+
+/* Hamburger button */
+.hamburger-btn {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.hamburger-btn:hover {
+  background-color: #eaeaea;
+}
+
+.app-root.dark-mode .hamburger-btn {
+  border-color: #555;
+}
+
+.app-root.dark-mode .hamburger-btn:hover {
+  background-color: #3a3a3a;
+}
+
+/* Settings panel */
+.settings-panel {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  width: 260px;
+
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.app-root.dark-mode .settings-panel {
+  background-color: #2a2a2a;
+  border-color: #444;
+}
+
+/* Settings layout */
+.hamburger-btn {
+  color: #1e1e1e;
+}
+
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-section {
+  margin-bottom: 10px;
+}
+
+.settings-section:last-child {
+  margin-bottom: 0;
+}
+
+.settings-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.settings-divider {
+  height: 1px;
+  margin: 10px 0;
+  background-color: #e0e0e0;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-root.dark-mode .hamburger-btn {
+  color: #aaa;
+}
+
+.app-root.dark-mode .settings-label {
+  color: #aaa;
+}
+
+.app-root.dark-mode .settings-divider {
+  background-color: #aaa;
+}
+
+.settings-panel input[type="text"],
+.settings-panel input[type="password"] {
+  width: 100%;
+  padding: 6px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.app-root.dark-mode .settings-panel input {
+  background-color: #1e1e1e;
+  color: #fff;
+  border-color: #555;
 }
