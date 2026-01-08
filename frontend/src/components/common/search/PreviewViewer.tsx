@@ -7,8 +7,6 @@ interface Props {
   onClose: () => void;
   onNext?: () => void;
   onPrev?: () => void;
-  onSaveBookmark?: () => void;
-  isSaved?: boolean;
 }
 
 export default function ObjectViewer({
@@ -17,8 +15,6 @@ export default function ObjectViewer({
   onClose,
   onNext,
   onPrev,
-  onSaveBookmark,
-  isSaved,
 }: Props) {
   const currentIndex = objects.findIndex(
     (o) => o.objectUrl === object.objectUrl
@@ -42,18 +38,6 @@ export default function ObjectViewer({
           </div>
           {/* Actions */}
           <div className="object-viewer-header-actions">
-            {onSaveBookmark && (
-              <button
-                className="object-viewer-save-btn"
-                title={isSaved ? "Saved" : "Save to Bookmarks"}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSaveBookmark();
-                }}
-              >
-                {isSaved ? "★" : "☆"}
-              </button>
-            )}
             <button
               className="object-viewer-download-btn "
               title="Download this object"

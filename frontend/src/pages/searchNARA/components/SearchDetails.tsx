@@ -138,11 +138,6 @@ export default function SearchDetails({ selectedNaId }: Props) {
               setViewingObject(record.digitalObjects[currentIndex - 1]);
             }
           }}
-          onSaveBookmark={() => {
-            // Placeholder handler for save bookmark in preview viewer header
-            console.log("Save bookmark from preview viewer:", record.naId);
-          }}
-          isSaved={false}
         />
       )}
     </DetailsPanelShell>

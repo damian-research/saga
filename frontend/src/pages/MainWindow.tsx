@@ -3,12 +3,38 @@ import Header from "../components/layout/Header/Header";
 import { SearchTab as SearchNARATab } from "./searchNARA";
 import { SearchTab as SearchNAUKTab } from "./searchNAUK";
 import { BookmarksTab } from "./bookmarks";
+import type { Bookmark } from "../api/models/bookmarks.types";
+import AddBookmark from "../components/common/AddBookmark";
 
 type TabId = "bookmarks" | "nara" | "uk";
 
 export default function MainWindow() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("nara");
+  const [addBookmarkState, setAddBookmarkState] = useState<{
+    mode: "add" | "edit";
+    bookmark: Bookmark;
+  } | null>(null);
+
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+
+  function submitBookmarkFromMain(
+    base: Bookmark,
+    data: { category: string; customName: string }
+  ) {
+    const record: Bookmark = {
+      ...base,
+      category: data.category,
+      customName: data.customName,
+    };
+
+    setBookmarks((prev) => {
+      const exists = prev.some((b) => b.id === record.id);
+      return exists
+        ? prev.map((b) => (b.id === record.id ? record : b))
+        : [...prev, record];
+    });
+  }
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -23,8 +49,23 @@ export default function MainWindow() {
         onTabChange={setActiveTab}
       />
 
+      {addBookmarkState && (
+        <AddBookmark
+          mode={addBookmarkState.mode}
+          bookmark={addBookmarkState.bookmark}
+          categories={[...new Set(bookmarks.map((b) => b.category))]}
+          onCancel={() => setAddBookmarkState(null)}
+          onSubmit={(data) => {
+            submitBookmarkFromMain(addBookmarkState.bookmark, data);
+            setAddBookmarkState(null);
+          }}
+        />
+      )}
+
       <div className="app-content">
-        {activeTab === "bookmarks" && <BookmarksTab />}
+        {activeTab === "bookmarks" && (
+          <BookmarksTab bookmarks={bookmarks} setBookmarks={setBookmarks} />
+        )}
         {activeTab === "nara" && <SearchNARATab />}
         {activeTab === "uk" && <SearchNAUKTab />}
       </div>

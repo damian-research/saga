@@ -1,14 +1,14 @@
-import { useState } from "react";
 import { BookmarksLayout } from ".";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 
-export default function BookmarksTab() {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [editing, setEditing] = useState<Bookmark | null>(null);
-  const [mode, setMode] = useState<"add" | "edit" | null>(null);
+interface Props {
+  bookmarks: Bookmark[];
+  setBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
+}
 
+export default function BookmarksTab({ bookmarks, setBookmarks }: Props) {
   function openBookmark(b: Bookmark) {
-    console.log("Open bookmark", b);
+    //console.log("Open bookmark", b);
   }
 
   function removeBookmark(id: string) {
@@ -34,8 +34,7 @@ export default function BookmarksTab() {
         bookmarks={bookmarks}
         onOpen={openBookmark}
         onEdit={(b) => {
-          setEditing(b);
-          setMode("edit");
+          // Editing handled outside now
         }}
         onRemove={(id) => removeBookmark(id)}
         onExport={(list) => exportBookmarks(list)}

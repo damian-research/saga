@@ -6,23 +6,17 @@ interface Props {
   record: RawRecord;
   isSelected: boolean;
   onSelect: (naId: number) => void;
-  onSaveBookmark: (record: RawRecord) => void;
-  isSaved: boolean;
 }
 
 export default function SearchListItem({
   record,
   isSelected,
   onSelect,
-  onSaveBookmark,
-  isSaved,
 }: Props) {
   return (
     <SearchListItemShell
       isSelected={isSelected}
       onClick={() => onSelect(record.naId)}
-      onSave={() => onSaveBookmark(record)}
-      isSaved={isSaved}
     >
       <PathBreadcrumbShell
         path={record.path.map((p) => ({
