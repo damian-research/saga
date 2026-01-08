@@ -1,54 +1,18 @@
-import type { RawRecord } from "../../../api/models/record.types";
-import { PathBreadcrumbShell } from ".";
-
 interface Props {
-  record: RawRecord;
   isSelected: boolean;
-  onSelect: (id: number) => void;
+  onClick: () => void;
+  children: React.ReactNode;
 }
 
 export default function SearchListItemShell({
-  record,
   isSelected,
-  onSelect,
+  onClick,
+  children,
 }: Props) {
   return (
     <div className={`list-item ${isSelected ? "active" : ""}`}>
-      <div className="list-item-content">
-        <PathBreadcrumbShell path={record.path} onSelect={onSelect} />
-        <div
-          className="title"
-          title={record.description || "Click to view details"}
-        >
-          {record.title}
-        </div>
-        <div className="item-meta">
-          <span className="naid">NAID: {record.naId}</span>
-          <span className="separator">·</span>
-          <span className="level">{record.levelDescription}</span>
-          {record.materialType && (
-            <>
-              <span className="separator">·</span>
-              <span className="material-type">[{record.materialType}</span>
-            </>
-          )}
-          {record.sourceReference && (
-            <>
-              <span className="separator">→</span>
-              <span className="source-reference">
-                {record.sourceReference}]
-              </span>
-            </>
-          )}
-        </div>
-        {typeof record.totalDigitalObjects === "number" &&
-          record.totalDigitalObjects > 0 && (
-            <div className="digital-objects">
-              Digital objects: {record.totalDigitalObjects}
-            </div>
-          )}
-      </div>
-      <div className="list-item-click" onClick={() => onSelect(record.naId)}>
+      <div className="list-item-content">{children}</div>
+      <div className="list-item-click" onClick={onClick}>
         <span className="list-item-arrow">›</span>
       </div>
     </div>

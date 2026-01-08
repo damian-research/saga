@@ -1,14 +1,19 @@
-import type { RawRecord } from "../../../api/models/record.types";
-import { SearchListItemShell } from ".";
+import React from "react";
 
-interface Props {
-  results: RawRecord[];
-  selectedNaId: number | null;
-  onSelect: (id: number) => void;
+interface Props<T> {
+  items: T[];
+  getKey: (item: T) => string | number;
+  renderItem: (item: T, isSelected: boolean) => React.ReactNode;
+  selectedKey: string | number | null;
 }
 
-export default function SearchList({ results, selectedNaId, onSelect }: Props) {
-  if (results.length === 0) {
+export default function SearchListShell<T>({
+  items,
+  getKey,
+  renderItem,
+  selectedKey,
+}: Props<T>) {
+  if (!items || items.length === 0) {
     return (
       <div className="panel list">
         <div className="panel-title">Results</div>
@@ -19,15 +24,15 @@ export default function SearchList({ results, selectedNaId, onSelect }: Props) {
 
   return (
     <div className="panel list">
-      <div className="panel-title">Results ({results.length})</div>{" "}
-      {results.map((r) => (
-        <SearchListItemShell
-          key={r.naId}
-          record={r}
-          isSelected={r.naId === selectedNaId}
-          onSelect={onSelect}
-        />
-      ))}
+      <div className="panel-title">Results ({items.length})</div>
+      {items.map((item) => {
+        const key = getKey(item);
+        return (
+          <React.Fragment key={key}>
+            {renderItem(item, key === selectedKey)}
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 }

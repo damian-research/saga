@@ -1,18 +1,10 @@
-import type { PathSegment } from "../../../api/models/record.types";
-import { getRecord } from "../../../api/services/queryService";
-
-interface Props {
-  path: PathSegment[];
-  onSelect: (id: number) => void;
+interface BreadcrumbSegment {
+  key: string | number;
+  label: string;
 }
-
-async function handlePathClick(naId: number, onSelect: (id: number) => void) {
-  try {
-    await getRecord(naId);
-    onSelect(naId);
-  } catch (error) {
-    console.error("Failed to load record:", error);
-  }
+interface Props {
+  path: BreadcrumbSegment[];
+  onSelect: (key: string | number) => void;
 }
 
 export default function PathBreadcrumbShell({ path, onSelect }: Props) {
@@ -23,12 +15,12 @@ export default function PathBreadcrumbShell({ path, onSelect }: Props) {
   return (
     <div className="path">
       {path.map((p, index) => (
-        <span key={p.naId}>
+        <span key={p.key}>
           <a
             href="#"
             onClick={(e) => {
               e.stopPropagation();
-              handlePathClick(p.naId, onSelect);
+              onSelect(p.key);
             }}
             className="path-link"
           >
