@@ -50,7 +50,7 @@
   overflow: hidden;
 }
 
-/* Dark Mode Styles */
+/* Header - Dark Mode */
 .app-root.dark-mode {
   background-color: #1e1e1e;
   color: #ffffff;
@@ -129,7 +129,7 @@
   border-bottom-color: #007acc; /* accent */
 }
 
-/* Dark mode */
+/* App Tabs - Dark mode */
 .app-root.dark-mode .app-tabs {
   background-color: #2a2a2a;
   border-bottom-color: #333333;
@@ -191,12 +191,6 @@
   z-index: 1000;
 }
 
-.app-root.dark-mode .settings-panel {
-  background-color: #2a2a2a;
-  border-color: #444;
-}
-
-/* Settings layout */
 .hamburger-btn {
   color: #1e1e1e;
 }
@@ -232,6 +226,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 14px;
+  padding-top: 10px;
+  align-self: auto;
+}
+
+/* Settings panel - Dark mode */
+.app-root.dark-mode .settings-panel {
+  background-color: #2a2a2a;
+  border-color: #444;
 }
 
 .app-root.dark-mode .hamburger-btn {
