@@ -4,9 +4,20 @@ import type { Bookmark } from "../../api/models/bookmarks.types";
 interface Props {
   bookmarks: Bookmark[];
   onOpen: (b: Bookmark) => void;
+  onAdd: () => void;
+  onEdit: (b: Bookmark) => void;
+  onRemove: (id: string) => void;
+  onExport: (list: Bookmark[]) => void;
 }
 
-export default function BookmarksLayout({ bookmarks, onOpen }: Props) {
+export default function BookmarksLayout({
+  bookmarks,
+  onOpen,
+  onAdd,
+  onEdit,
+  onRemove,
+  onExport,
+}: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const [filters, setFilters] = useState({
@@ -64,10 +75,25 @@ export default function BookmarksLayout({ bookmarks, onOpen }: Props) {
         <div className="panel-title">Bookmarks</div>
 
         <div className="bookmark-actions">
-          <button>Add</button>
-          <button disabled={!selectedId}>Remove</button>
-          <button disabled={!selectedId}>Change</button>
-          <button>Export</button>
+          <button onClick={onAdd}>Add</button>
+          <button
+            disabled={!selectedId}
+            onClick={() => selectedId && onRemove(selectedId)}
+          >
+            Remove
+          </button>
+          <button
+            disabled={!selectedId}
+            onClick={() => {
+              const b = bookmarks.find((x) => x.id === selectedId);
+              if (b) onEdit(b);
+            }}
+          >
+            Change
+          </button>
+          <button onClick={() => onExport(filteredBookmarks)}>
+            Export
+          </button>
         </div>
 
         <div className="bookmark-filters">
