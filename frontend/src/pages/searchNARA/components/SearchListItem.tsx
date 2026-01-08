@@ -41,14 +41,14 @@ export default function SearchListItem({
         {record.materialType && (
           <>
             <span className="separator">·</span>
-            <span className="material-type">[{record.materialType}]</span>
+            <span className="material-type">[{record.materialType}</span>
           </>
         )}
 
         {record.sourceReference && (
           <>
             <span className="separator">→</span>
-            <span className="source-reference">{record.sourceReference}</span>
+            <span className="material-type">{record.sourceReference}]</span>
           </>
         )}
       </div>

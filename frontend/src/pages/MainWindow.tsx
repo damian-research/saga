@@ -4,7 +4,8 @@ import { SearchTab as SearchNARATab } from "./searchNARA";
 import { SearchTab as SearchNAUKTab } from "./searchNAUK";
 import { BookmarksTab } from "./bookmarks";
 import type { Bookmark } from "../api/models/bookmarks.types";
-import AddBookmark from "../components/common/AddBookmark";
+import AddBookmark from "../components/common/bookmarks/AddBookmark";
+import { BookmarkContext } from "../context/BookmarkContext";
 
 type TabId = "bookmarks" | "nara" | "uk";
 
@@ -17,6 +18,13 @@ export default function MainWindow() {
   } | null>(null);
 
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+
+  function openAddBookmark(bookmark: Bookmark) {
+    setAddBookmarkState({
+      mode: "add",
+      bookmark,
+    });
+  }
 
   function submitBookmarkFromMain(
     base: Bookmark,
@@ -41,7 +49,8 @@ export default function MainWindow() {
   };
 
   return (
-    <div className={`app-root ${isDarkMode ? "dark-mode" : ""}`}>
+    <BookmarkContext.Provider value={{ openAddBookmark }}>
+      <div className={`app-root ${isDarkMode ? "dark-mode" : ""}`}>
       <Header
         isDarkMode={isDarkMode}
         onToggleDarkMode={toggleDarkMode}
@@ -69,6 +78,7 @@ export default function MainWindow() {
         {activeTab === "nara" && <SearchNARATab />}
         {activeTab === "uk" && <SearchNAUKTab />}
       </div>
-    </div>
+      </div>
+    </BookmarkContext.Provider>
   );
 }

@@ -33,17 +33,44 @@
   pointer-events: none;
 }
 
-.list-item-click {
+.list-item-actions {
   position: absolute;
   right: 0;
   top: 0;
   bottom: 0;
-  width: 50px;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+
+  display: grid;
+  grid-template-columns: 28px 40px; /* ⭐ | > */
+  align-items: center;
+
+  pointer-events: none; /* container itself is passive */
+}
+
+.list-item-click {
+  grid-column: 2;
+
+  width: 40px;
+  height: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  pointer-events: auto;
+}
+
+/* NEW: restrict hover/click to the arrow itself */
+.list-item-arrow {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.list-item-click {
+  pointer-events: none;
+}
+
+.list-item-click .list-item-arrow {
+  pointer-events: auto;
 }
 
 .list-item-click:hover {
@@ -81,49 +108,43 @@
   padding-left: 5px;
 }
 
-/* Save (bookmark) icon in list item */
-.list-item-save {
-  position: absolute;
-  right: 50px; /* sits left of the arrow zone */
-  top: 50%;
-  transform: translateY(-50%);
+.list-item-actions .bookmark-star {
+  grid-column: 1;
+  pointer-events: auto;
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background: none;
   border: none;
-  padding: 4px;
-
-  font-size: 16px;
-  line-height: 1;
   cursor: pointer;
 
+  font-size: 16px;
   color: #999;
-  opacity: 0.6;
-  transition: opacity 0.15s ease, color 0.15s ease;
+  z-index: 2;
 }
 
 /* Show on hover / active */
-.list-item:hover .list-item-save,
-.list-item.active .list-item-save {
+.list-item:hover .bookmark-star,
+.list-item.active .bookmark-star {
   opacity: 1;
 }
 
 /* Hover state */
-.list-item-save:hover {
+.list-item-actions .bookmark-star:hover {
   color: #0066cc;
 }
 
-/* Saved state */
-.list-item-save[title="Saved"] {
-  color: #f5b400; /* muted gold */
-  opacity: 1;
-}
-
 /* Dark mode */
-.app-root.dark-mode .list-item-save {
+.app-root.dark-mode .list-item-actions .bookmark-star {
   color: #aaa;
 }
 
-.app-root.dark-mode .list-item-save:hover {
+.app-root.dark-mode .list-item-actions .bookmark-star:hover {
   color: #66b3ff;
 }
 
@@ -335,7 +356,13 @@
   border-top: 1px solid #e0e0e0;
 }
 
-.btn {
+.preview-object-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* .btn {
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 500;
@@ -353,7 +380,7 @@
 .btn-primary:hover:not(:disabled) {
   background-color: #0056b3;
   box-shadow: 0 2px 4px rgba(0, 86, 179, 0.2);
-}
+} */
 
 .btn-primary:disabled {
   opacity: 0.6;
@@ -400,16 +427,34 @@
   margin-right: 6px;
 }
 
-.search button {
+.search-button {
   margin-top: 12px;
-  padding: 8px;
-  font-size: 13px;
-  align-items: right;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 3px;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
   cursor: pointer;
+}
+
+.search-button:hover:not(:disabled) {
+  background-color: #eaeaea;
+}
+
+.search-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.preview-object-actions .search-button {
+  margin-top: 0; /* remove form spacing */
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 3px;
+
+  background-color: transparent;
+  border: 1px solid #ccc;
 }
 
 /* --- SECTIONS --- */
@@ -620,17 +665,29 @@
   color: #888;
 }
 
-.app-root.dark-mode .btn {
-  border: 1px solid #555;
+.app-root.dark-mode .search-button {
+  background-color: #2a2a2a;
+  border-color: #555;
+  color: #fff;
 }
 
-.app-root.dark-mode .btn-primary {
-  background-color: #0066cc;
-  color: white;
+.app-root.dark-mode .search-button:hover:not(:disabled) {
+  background-color: #3a3a3a;
 }
 
-.app-root.dark-mode .btn-primary:hover:not(:disabled) {
-  background-color: #0052a3;
+.search-button:hover:not(:disabled) {
+  background-color: #eaeaea;
+}
+
+.search-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.app-root.dark-mode .preview-object-actions .search-button {
+  background-color: transparent;
+  border-color: #555;
+  color: #ddd;
 }
 
 .app-root.dark-mode .panel-title {
@@ -705,14 +762,6 @@
   background-color: #333;
   color: #e0e0e0;
   border-color: #555;
-}
-
-.app-root.dark-mode .search button {
-  background-color: #0066cc;
-}
-
-.app-root.dark-mode .search button:hover {
-  background-color: #0052a3;
 }
 
 .app-root.dark-mode .search-section {

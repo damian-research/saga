@@ -5,5 +5,6 @@ export async function addBookmarkMock(bookmark: Bookmark): Promise<Bookmark> {
   await new Promise((r) => setTimeout(r, 300));
 
   // echo back the same record (mock persistence)
+  console.log("Bookmark saved:", bookmark);
   return bookmark;
 }

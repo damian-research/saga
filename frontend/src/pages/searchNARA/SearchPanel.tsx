@@ -191,7 +191,11 @@ export default function SearchPanel({ onSearch }: Props) {
         />
       </label>
 
-      <button onClick={submit} disabled={!hasAnySearchValue(form)}>
+      <button
+        className="search-button"
+        onClick={submit}
+        disabled={!hasAnySearchValue(form)}
+      >
         Search
       </button>
     </div>

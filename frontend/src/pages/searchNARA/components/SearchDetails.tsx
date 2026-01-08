@@ -4,8 +4,12 @@ import type {
   FullRecord,
   DigitalObject,
 } from "../../../api/models/record.types";
-import { PreviewViewer } from "../../../components/common/search";
-import DetailsPanelShell from "../../../components/common/search/DetailsPanelShell";
+import {
+  PreviewViewer,
+  DetailsPanelShell,
+} from "../../../components/common/search";
+import BookmarkStar from "../../../components/common/bookmarks/BookmarkStar";
+import type { Bookmark } from "../../../api/models/bookmarks.types";
 
 interface Props {
   selectedNaId: number | null;
@@ -19,6 +23,27 @@ export default function SearchDetails({ selectedNaId }: Props) {
   const [viewingObject, setViewingObject] = useState<DigitalObject | null>(
     null
   );
+
+  function buildObjectBookmark(
+    record: FullRecord,
+    object: DigitalObject,
+    index: number
+  ): Bookmark {
+    return {
+      id: `nara-${record.naId}-obj-${index}`,
+      originalTitle: record.title,
+      archiveName: "NARA",
+      level: "DigitalObject",
+      recordType: object.objectType,
+      onlineAvailable: true,
+      openRef: {
+        archive: "NARA",
+        id: record.naId,
+      },
+      category: "",
+      customName: "",
+    };
+  }
 
   useEffect(() => {
     if (!selectedNaId) {
@@ -47,11 +72,6 @@ export default function SearchDetails({ selectedNaId }: Props) {
     }
   }
 
-  function onSaveBookmark() {
-    if (!record) return;
-    console.log("Save bookmark:", record.naId);
-  }
-
   if (!selectedNaId) {
     return <DetailsPanelShell isEmpty />;
   }
@@ -63,19 +83,13 @@ export default function SearchDetails({ selectedNaId }: Props) {
       isEmpty={!record}
       footer={
         record && (
-          <>
-            <button onClick={onSaveBookmark} className="details-save">
-              ☆ Save to Bookmarks
-            </button>
-
-            <button
-              onClick={onDownload}
-              disabled={downloading}
-              className="btn btn-primary"
-            >
-              {downloading ? "Downloading…" : "📥 Download Record"}
-            </button>
-          </>
+          <button
+            onClick={onDownload}
+            disabled={downloading}
+            className="search-button"
+          >
+            {downloading ? "Downloading…" : "📥 Download Record"}
+          </button>
         )
       }
     >
@@ -99,12 +113,20 @@ export default function SearchDetails({ selectedNaId }: Props) {
                 {record.digitalObjects.map((o, i) => (
                   <li key={i} className="preview-object-item">
                     <span className="object-type">{o.objectType}</span>
-                    <button
-                      onClick={() => setViewingObject(o)}
-                      className="object-link-btn"
-                    >
-                      View
-                    </button>
+
+                    <div className="preview-object-actions">
+                      <BookmarkStar
+                        bookmark={buildObjectBookmark(record, o, i)}
+                        className="bookmark-star"
+                      />
+
+                      <button
+                        onClick={() => setViewingObject(o)}
+                        className="search-button"
+                      >
+                        View
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
