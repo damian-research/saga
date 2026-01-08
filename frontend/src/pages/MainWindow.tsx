@@ -16,29 +16,12 @@ export default function MainWindow() {
 
   return (
     <div className={`app-root ${isDarkMode ? "dark-mode" : ""}`}>
-      <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
-
-      {/* Simple tab switch (no refactor needed) */}
-      <div className="app-tabs">
-        <button
-          className={activeTab === "bookmarks" ? "active" : ""}
-          onClick={() => setActiveTab("bookmarks")}
-        >
-          Bookmarks
-        </button>
-        <button
-          className={activeTab === "nara" ? "active" : ""}
-          onClick={() => setActiveTab("nara")}
-        >
-          NARA
-        </button>
-        <button
-          className={activeTab === "uk" ? "active" : ""}
-          onClick={() => setActiveTab("uk")}
-        >
-          UK NA
-        </button>
-      </div>
+      <Header
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={toggleDarkMode}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
       <div className="app-content">
         {activeTab === "bookmarks" && <BookmarksTab />}

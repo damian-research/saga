@@ -4,9 +4,16 @@ import SettingsMenu from "./SettingsMenu";
 interface HeaderProps {
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
+  activeTab: "bookmarks" | "nara" | "uk";
+  onTabChange: (tab: "bookmarks" | "nara" | "uk") => void;
 }
 
-export default function Header({ isDarkMode, onToggleDarkMode }: HeaderProps) {
+export default function Header({
+  isDarkMode,
+  onToggleDarkMode,
+  activeTab,
+  onTabChange,
+}: HeaderProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -39,6 +46,28 @@ export default function Header({ isDarkMode, onToggleDarkMode }: HeaderProps) {
         />
         {/* <span>Saga</span> */}
       </div>
+
+      <nav className="header-tabs">
+        <button
+          className={activeTab === "bookmarks" ? "active" : ""}
+          onClick={() => onTabChange("bookmarks")}
+        >
+          Bookmarks
+        </button>
+        <button
+          className={activeTab === "nara" ? "active" : ""}
+          onClick={() => onTabChange("nara")}
+        >
+          NARA
+        </button>
+        <button
+          className={activeTab === "uk" ? "active" : ""}
+          onClick={() => onTabChange("uk")}
+        >
+          UK NA
+        </button>
+      </nav>
+
       <div className="header-actions" ref={containerRef}>
         <button
           className="hamburger-btn"

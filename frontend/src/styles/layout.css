@@ -13,7 +13,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 15px;
+  padding: 8px 15px;
   background-color: #f4f4f4;
   border-bottom: 1px solid #c8c8c8;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
@@ -22,6 +22,50 @@
 .header-logo {
   image-rendering: auto;
   shape-rendering: geometricPrecision;
+}
+
+/* Header tabs (global navigation) */
+.header-tabs {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 24px;
+  flex: 1;
+}
+
+.header-tabs button {
+  background: none;
+  border: none;
+  padding: 6px 2px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.header-tabs button:hover {
+  color: #000;
+}
+
+.header-tabs button.active {
+  color: #000;
+  border-bottom-color: #000;
+}
+
+/* Header tabs — Dark mode */
+.app-root.dark-mode .header-tabs button {
+  color: #bbb;
+}
+
+.app-root.dark-mode .header-tabs button:hover {
+  color: #fff;
+}
+
+.app-root.dark-mode .header-tabs button.active {
+  color: #fff;
+  border-bottom-color: #fff;
 }
 
 /* Title */
@@ -98,59 +142,10 @@
   border-color: #777;
 }
 
-/* App Tabs (MainWindow) */
-.app-tabs {
-  display: flex;
-  gap: 8px;
-  padding: 8px 16px;
-  border-bottom: 1px solid #cccccc;
-  background-color: #f9f9f9;
-}
-
-.app-tabs button {
-  appearance: none;
-  background: none;
-  border: none;
-  padding: 6px 12px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #555555;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.app-tabs button:hover {
-  color: #000000;
-}
-
-.app-tabs button.active {
-  color: #000000;
-  border-bottom-color: #007acc; /* accent */
-}
-
-/* App Tabs - Dark mode */
-.app-root.dark-mode .app-tabs {
-  background-color: #2a2a2a;
-  border-bottom-color: #333333;
-}
-
-.app-root.dark-mode .app-tabs button {
-  color: #bbbbbb;
-}
-
-.app-root.dark-mode .app-tabs button:hover {
-  color: #ffffff;
-}
-
-.app-root.dark-mode .app-tabs button.active {
-  color: #ffffff;
-  border-bottom-color: #4fa3ff;
-}
-
 /* Header actions */
 .header-actions {
   position: relative;
+  margin-left: auto;
 }
 
 /* Hamburger button */
