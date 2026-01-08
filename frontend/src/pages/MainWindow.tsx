@@ -2,8 +2,9 @@ import { useState } from "react";
 import Header from "../components/layout/Header/Header";
 import { SearchTab as SearchNARATab } from "./searchNARA";
 import { SearchTab as SearchNAUKTab } from "./searchNAUK";
+import { BookmarksTab } from "./bookmarks";
 
-type TabId = "nara" | "uk";
+type TabId = "bookmarks" | "nara" | "uk";
 
 export default function MainWindow() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -20,6 +21,12 @@ export default function MainWindow() {
       {/* Simple tab switch (no refactor needed) */}
       <div className="app-tabs">
         <button
+          className={activeTab === "bookmarks" ? "active" : ""}
+          onClick={() => setActiveTab("bookmarks")}
+        >
+          Bookmarks
+        </button>
+        <button
           className={activeTab === "nara" ? "active" : ""}
           onClick={() => setActiveTab("nara")}
         >
@@ -34,6 +41,7 @@ export default function MainWindow() {
       </div>
 
       <div className="app-content">
+        {activeTab === "bookmarks" && <BookmarksTab />}
         {activeTab === "nara" && <SearchNARATab />}
         {activeTab === "uk" && <SearchNAUKTab />}
       </div>

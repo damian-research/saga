@@ -1,0 +1,110 @@
+.bookmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.bookmark-table th,
+.bookmark-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.bookmark-table tr:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.app-root.dark-mode .bookmark-table tr:hover {
+  background-color: #333;
+}
+
+/* ===== Buttons ===== */
+.bookmark-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.bookmark-actions button {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #333;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+}
+
+.bookmark-actions button:hover:not(:disabled) {
+  background-color: #eaeaea;
+}
+
+.bookmark-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ===== Filters ===== */
+.bookmark-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.bookmark-filters select,
+.bookmark-filters input {
+  padding: 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* ===== Table ===== */
+.bookmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.bookmark-table th {
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  font-weight: 600;
+}
+
+.bookmark-table td {
+  border: 1px solid #ddd;
+}
+
+.bookmark-table tr.selected {
+  background-color: #dbeafe;
+}
+
+/* ===== Dark mode ===== */
+.app-root.dark-mode .bookmark-actions button {
+  background-color: #2a2a2a;
+  border-color: #555;
+  color: #fff;
+}
+
+.app-root.dark-mode .bookmark-actions button:hover:not(:disabled) {
+  background-color: #3a3a3a;
+}
+
+.app-root.dark-mode .bookmark-filters select,
+.app-root.dark-mode .bookmark-filters input {
+  background-color: #1e1e1e;
+  color: #fff;
+  border-color: #555;
+}
+
+.app-root.dark-mode .bookmark-table th {
+  background-color: #2a2a2a;
+  border-color: #444;
+}
+
+.app-root.dark-mode .bookmark-table td {
+  border-color: #333;
+}
