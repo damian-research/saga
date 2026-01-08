@@ -1,5 +1,5 @@
-import type { RawRecord } from "../../api/models/record.types";
-import SearchListItem from "./components/SearchListItem";
+import type { RawRecord } from "../../../api/models/record.types";
+import { SearchListItemShell } from ".";
 
 interface Props {
   results: RawRecord[];
@@ -21,7 +21,7 @@ export default function SearchList({ results, selectedNaId, onSelect }: Props) {
     <div className="panel list">
       <div className="panel-title">Results ({results.length})</div>{" "}
       {results.map((r) => (
-        <SearchListItem
+        <SearchListItemShell
           key={r.naId}
           record={r}
           isSelected={r.naId === selectedNaId}

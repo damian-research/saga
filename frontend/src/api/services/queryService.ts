@@ -1,5 +1,5 @@
 import { buildNaraQuery } from "../../utils/queryBuilder";
-import type { SearchFormState } from "../../pages/search/SearchPanel";
+import type { SearchFormState } from "../../pages/searchNARA/SearchPanel";
 import type { RawRecord, FullRecord } from "../models/record.types";
 import { API_BASE_URL } from "../config";
 
@@ -15,7 +15,10 @@ export async function searchRecords(
 
   if (hasControl) {
     const raw =
-      form.naId?.trim() || form.localId?.trim() || form.microfilmId?.trim() || ""; 
+      form.naId?.trim() ||
+      form.localId?.trim() ||
+      form.microfilmId?.trim() ||
+      "";
 
     params.set("q", "*");
     params.set("controlNumbers", raw);

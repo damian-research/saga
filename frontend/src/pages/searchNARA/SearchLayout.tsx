@@ -1,10 +1,6 @@
 import type { RawRecord } from "../../api/models/record.types";
-import {
-  SearchPanel,
-  SearchList,
-  SearchPreview,
-  type SearchFormState,
-} from ".";
+import { SearchListShell } from "../../components/common/search";
+import { SearchPanel, SearchPreview, type SearchFormState } from ".";
 
 interface Props {
   results: RawRecord[];
@@ -22,7 +18,7 @@ export default function SearchLayout({
   return (
     <div className="search-grid">
       <SearchPanel onSearch={onSearch} />
-      <SearchList
+      <SearchListShell
         results={results}
         selectedNaId={selectedNaId}
         onSelect={onSelect}

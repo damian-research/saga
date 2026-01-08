@@ -1,5 +1,5 @@
 import type { RawRecord } from "../../../api/models/record.types";
-import PathBreadcrumb from "./PathBreadcrumb";
+import { PathBreadcrumbShell } from ".";
 
 interface Props {
   record: RawRecord;
@@ -7,7 +7,7 @@ interface Props {
   onSelect: (id: number) => void;
 }
 
-export default function SearchListItem({
+export default function SearchListItemShell({
   record,
   isSelected,
   onSelect,
@@ -15,7 +15,7 @@ export default function SearchListItem({
   return (
     <div className={`list-item ${isSelected ? "active" : ""}`}>
       <div className="list-item-content">
-        <PathBreadcrumb path={record.path} onSelect={onSelect} />
+        <PathBreadcrumbShell path={record.path} onSelect={onSelect} />
         <div
           className="title"
           title={record.description || "Click to view details"}

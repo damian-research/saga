@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Header from "../components/layout/Header/Header";
-import { SearchTab } from "../pages/search";
+import { SearchTab } from "./searchNARA";
 
 export default function MainWindow() {
   const [isDarkMode, setIsDarkMode] = useState(false);

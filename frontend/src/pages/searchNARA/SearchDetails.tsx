@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { getRecord, downloadRecord } from "../../api/services/queryService";
 import type { FullRecord, DigitalObject } from "../../api/models/record.types";
-import ObjectViewer from "./components/ObjectViewer";
+import { PreviewViewer } from "../../components/common/search";
 
 interface Props {
   selectedNaId: number | null;
 }
 
-export default function SearchPreview({ selectedNaId }: Props) {
+export default function SearchDetails({ selectedNaId }: Props) {
   const [record, setRecord] = useState<FullRecord | null>(null);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -128,7 +128,7 @@ export default function SearchPreview({ selectedNaId }: Props) {
       </div>
 
       {viewingObject && record && (
-        <ObjectViewer
+        <PreviewViewer
           object={viewingObject}
           objects={record.digitalObjects}
           onClose={() => setViewingObject(null)}

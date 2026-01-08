@@ -1,4 +1,4 @@
-import type { SearchFormState } from "../pages/search/SearchPanel";
+import type { SearchFormState } from "../pages/searchNARA/SearchPanel";
 
 export function buildNaraQuery(form: SearchFormState): string {
   const clauses: string[] = [];

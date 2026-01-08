@@ -15,7 +15,7 @@ async function handlePathClick(naId: number, onSelect: (id: number) => void) {
   }
 }
 
-export default function PathBreadcrumb({ path, onSelect }: Props) {
+export default function PathBreadcrumbShell({ path, onSelect }: Props) {
   if (path.length === 0) {
     return null;
   }
