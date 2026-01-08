@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import SettingsMenu from "./SettingsMenu";
+import styles from "./Header.module.css";
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -33,8 +34,8 @@ export default function Header({
   }, [open]);
 
   return (
-    <header className="app-header">
-      <div className="header-logo">
+    <header className={styles.header}>
+      <div className={styles.logo}>
         <img
           src={
             isDarkMode
@@ -42,35 +43,41 @@ export default function Header({
               : "/logo/saga_logo_small.png"
           }
           alt="Saga"
-          className="header-logo"
+          className="styled-logo"
         />
         {/* <span>Saga</span> */}
       </div>
 
-      <nav className="header-tabs">
+      <nav className={styles.tabs}>
         <button
-          className={activeTab === "bookmarks" ? "active" : ""}
+          className={`${styles.tabButton} ${
+            activeTab === "bookmarks" ? styles.active : ""
+          }`}
           onClick={() => onTabChange("bookmarks")}
         >
           Bookmarks
         </button>
         <button
-          className={activeTab === "nara" ? "active" : ""}
+          className={`${styles.tabButton} ${
+            activeTab === "nara" ? styles.active : ""
+          }`}
           onClick={() => onTabChange("nara")}
         >
           NARA
         </button>
         <button
-          className={activeTab === "uk" ? "active" : ""}
+          className={`${styles.tabButton} ${
+            activeTab === "uk" ? styles.active : ""
+          }`}
           onClick={() => onTabChange("uk")}
         >
           UK NA
         </button>
       </nav>
 
-      <div className="header-actions" ref={containerRef}>
+      <div className={styles.actions} ref={containerRef}>
         <button
-          className="hamburger-btn"
+          className={styles.hamburgerBtn}
           aria-label="Settings"
           onClick={() => setOpen((v) => !v)}
         >

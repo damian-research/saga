@@ -1,5 +1,6 @@
 import { BookmarksLayout } from ".";
 import type { Bookmark } from "../../api/models/bookmarks.types";
+import styles from "./BookmarksTab.module.css";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -29,7 +30,7 @@ export default function BookmarksTab({ bookmarks, setBookmarks }: Props) {
   }
 
   return (
-    <>
+    <div className={styles.container}>
       <BookmarksLayout
         bookmarks={bookmarks}
         onOpen={openBookmark}
@@ -39,6 +40,6 @@ export default function BookmarksTab({ bookmarks, setBookmarks }: Props) {
         onRemove={(id) => removeBookmark(id)}
         onExport={(list) => exportBookmarks(list)}
       />
-    </>
+    </div>
   );
 }

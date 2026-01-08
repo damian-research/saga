@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Bookmark } from "../../api/models/bookmarks.types";
+import styles from "./BookmarksLayout.module.css";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -67,12 +68,11 @@ export default function BookmarksLayout({
   }, [orderedBookmarks, filters]);
 
   return (
-    <div className="bookmarks-grid">
-      {/* Filters / actions */}
-      <div className="panel search">
-        <div className="panel-title">Saved Records</div>
+    <div className={styles.container}>
+      <div className={styles.panel}>
+        <div className={styles.panelTitle}>Saved Records</div>
 
-        <div className="bookmark-actions">
+        <div className={styles.actions}>
           <button
             disabled={!selectedId}
             onClick={() => {
@@ -92,7 +92,7 @@ export default function BookmarksLayout({
           <button onClick={() => onExport(filteredBookmarks)}>Export</button>
         </div>
 
-        <div className="bookmark-filters">
+        <div className={styles.filters}>
           <select
             value={filters.category}
             onChange={(e) =>
@@ -159,11 +159,8 @@ export default function BookmarksLayout({
         </div>
       </div>
 
-      {/* Table */}
-      <div className="panel list">
-        <div className="panel-title" />
-
-        <table className="bookmark-table">
+      <div className={`${styles.panel} ${styles.listPanel}`}>
+        <table className={styles.table}>
           <thead>
             <tr>
               <th>Category</th>
@@ -181,7 +178,7 @@ export default function BookmarksLayout({
                 key={b.id}
                 onClick={() => setSelectedId(b.id)}
                 onDoubleClick={() => onOpen(b)}
-                className={b.id === selectedId ? "selected" : ""}
+                className={b.id === selectedId ? styles.selected : ""}
               >
                 <td>{b.category}</td>
                 <td>{b.customName ?? "—"}</td>

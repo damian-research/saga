@@ -1,5 +1,6 @@
 import { useState } from "react";
-import type { Bookmark } from "../../api/models/bookmarks.types";
+import type { Bookmark } from "../../../api/models/bookmarks.types";
+import styles from "./AddBookmark.module.css";
 
 interface Props {
   mode: "add" | "edit";
@@ -20,9 +21,9 @@ export default function AddBookmark({
   const [customName, setCustomName] = useState(bookmark?.customName ?? "");
 
   return (
-    <div className="modal-backdrop" onClick={onCancel}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-title">
+    <div className={styles.backdrop} onClick={onCancel}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.title}>
           {mode === "add" ? "Add bookmark" : "Edit bookmark"}
         </div>
 
@@ -51,15 +52,15 @@ export default function AddBookmark({
         </label>
 
         {bookmark && (
-          <div className="modal-preview">
-            <div className="modal-preview-title">{bookmark.originalTitle}</div>
-            <div className="modal-preview-meta">
+          <div className={styles.preview}>
+            <div className={styles.previewTitle}>{bookmark.originalTitle}</div>
+            <div className={styles.previewMeta}>
               {bookmark.archiveName} · {bookmark.level} · {bookmark.recordType}
             </div>
           </div>
         )}
 
-        <div className="modal-actions">
+        <div className={styles.actions}>
           <button onClick={onCancel}>Cancel</button>
           <button
             disabled={!category || !customName.trim()}

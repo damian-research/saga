@@ -1,0 +1,13 @@
+.star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  font-size: inherit;
+  color: inherit;
+  transition: transform var(--transition-fast);
+}
+
+.star:hover {
+  transform: scale(1.2);
+}

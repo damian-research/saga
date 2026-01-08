@@ -1,0 +1,101 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.panel {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+
+.panelTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: 10px;
+}
+
+.actions button {
+  padding: 6px 12px;
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background-color: var(--bg-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition-normal);
+}
+
+.actions button:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+}
+
+.actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.filters select,
+.filters input {
+  padding: 6px;
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.listPanel {
+  flex: 1;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.table th {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  font-weight: var(--font-weight-bold);
+  padding: 6px 8px;
+  text-align: left;
+  color: var(--text-primary);
+}
+
+.table td {
+  border: 1px solid var(--border-primary);
+  padding: 6px 8px;
+  color: var(--text-primary);
+}
+
+.table tbody tr:hover {
+  background-color: var(--bg-hover);
+  cursor: pointer;
+}
+
+.table tbody tr.selected {
+  background-color: #dbeafe;
+}
+
+.dark-mode .table tbody tr.selected {
+  background-color: #1e3a5f;
+}
