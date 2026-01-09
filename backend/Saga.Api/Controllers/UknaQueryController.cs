@@ -23,7 +23,7 @@ public sealed class UknaQueryController(
         var item = await _service.GetItemAsync(cid);
 
         if (item == null)
-            return NotFound();
+            return NoContent();
 
         return Ok(item);
     }

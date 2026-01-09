@@ -1,45 +1,50 @@
 import { useEffect, useState } from "react";
 import DetailsPanelShell from "../../../components/common/search/DetailsPanelShell";
-import { PreviewViewer } from "../../../components/common/search";
-import BookmarkStar from "../../../components/common/bookmarks/BookmarkStar";
-import type { Bookmark } from "../../../api/models/bookmarks.types";
 import styles from "../../../styles/commonSearchDetails.module.css";
+import { getUknaDetails } from "../../../api/services/uknaSearch.service";
+import type { UknaDetailsRecord } from "../../../api/models/ukna.types";
 
 interface Props {
   selectedId: string | null;
 }
 
 export default function SearchDetails({ selectedId }: Props) {
-  //const [record, setRecord] = useState<FullRecord | null>(null);
   const [loading, setLoading] = useState(false);
-  const [downloading, setDownloading] = useState(false);
+  const [downloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // const [viewingObject, setViewingObject] = useState<DigitalObject | null>(
-  //   null
-  // );
+  const [record, setRecord] = useState<UknaDetailsRecord | null>(null);
 
   useEffect(() => {
     if (!selectedId) {
-      //setRecord(null);
       setError(null);
+      setRecord(null);
       return;
     }
 
     setLoading(true);
     setError(null);
-    // getRecord(selectedId)
-    //   .then(setRecord)
-    //   .catch(() => setError("Failed to load record"))
-    //   .finally(() => setLoading(false));
+
+    getUknaDetails(selectedId)
+      .then((data) => {
+        setRecord(data);
+      })
+      .catch(() => {
+        setError("Failed to load UK National Archives record");
+        setRecord(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [selectedId]);
 
   async function onDownload() {
-    if (!selectedId) return;
-    window.open(
-      `https://discovery.nationalarchives.gov.uk/details/r/${selectedId}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    if (!record) return;
+    window.open(record.detailsUrl, "_blank", "noopener,noreferrer");
+  }
+
+  function onPreview() {
+    if (!record) return;
+    window.open(record.detailsUrl, "_blank");
   }
 
   if (!selectedId) {
@@ -50,17 +55,27 @@ export default function SearchDetails({ selectedId }: Props) {
     <DetailsPanelShell
       isLoading={loading}
       error={error}
-      isEmpty={true}
+      isEmpty={!record}
       headerAction={
-        true && (
-          <button
-            onClick={onDownload}
-            disabled={downloading}
-            className={styles.downloadButton}
-            title="Download record"
-          >
-            ↓
-          </button>
+        record && (
+          <>
+            <button
+              onClick={onPreview}
+              disabled={!record.hasPreview}
+              className={styles.downloadButton}
+              title="View images"
+            >
+              👁
+            </button>
+
+            <button
+              onClick={onDownload}
+              className={styles.downloadButton}
+              title="Open in UK National Archives"
+            >
+              ↓
+            </button>
+          </>
         )
       }
     >

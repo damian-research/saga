@@ -147,33 +147,105 @@ public sealed partial class UknaClient(HttpClient http) : IUknaClient
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
 
-        var previewSection =
-            doc.DocumentNode.SelectSingleNode("//section[contains(@class,'record-preview')]");
-
-        if (previewSection == null)
-            return null;
-
         var title =
             doc.DocumentNode.SelectSingleNode("//h1")?.InnerText.Trim()
             ?? cid;
 
-        var imageUrl = previewSection
-            .SelectSingleNode(".//img")
-            ?.GetAttributeValue("src", null);
+        // ------------------------
+        // Parse hierarchy (breadcrumb)
+        // ------------------------
 
-        if (string.IsNullOrWhiteSpace(imageUrl))
-            return null;
+        var path = new List<UknaPathNode>();
+
+        var hierarchyRoot = doc.DocumentNode
+       .SelectSingleNode("//div[@id='hierarchy']//ul");
+
+        if (hierarchyRoot != null)
+        {
+            foreach (var li in hierarchyRoot.SelectNodes("./li") ?? Enumerable.Empty<HtmlNode>())
+            {
+                var a = li.SelectSingleNode(".//a");
+                if (a == null) continue;
+
+                path.Add(new UknaPathNode
+                {
+                    Title = HtmlEntity.DeEntitize(a.InnerText.Trim()),
+                    Reference = ExtractReference(a.InnerText),
+                    Level = MapUknaLevel(a.InnerText)
+                });
+            }
+        }
+
+        // ------------------------
+        // Parse preview image
+        // ------------------------
+        var previewAnchor =
+            doc.DocumentNode.SelectSingleNode("//a[@id='imageViewerLink']");
+
+        var hasPreview = previewAnchor != null;
+
+        var detailsUrl = $"https://discovery.nationalarchives.gov.uk/details/r/{cid}";
+
+        string? previewUrl = hasPreview
+            ? $"{detailsUrl}#imageViewerLink"
+            : null;
 
         return new UknaItemDetails
         {
             Id = cid,
-            Source = "UKNA",
             Title = title,
-            ObjectType = "Image",
-            ObjectUrl = imageUrl
+            DetailsUrl = detailsUrl,
+
+            HasPreview = hasPreview,
+            PreviewUrl = previewUrl,
+
+            Path = path
         };
+    }
+
+    private static int GuessLevelFromText(string text)
+    {
+        if (text.StartsWith("CAB ", StringComparison.OrdinalIgnoreCase))
+            return 3; // Series
+        if (text.Contains('/'))
+            return 6; // Piece
+        return 7;     // Item (fallback)
+    }
+
+    private static string? ExtractReference(string text)
+    {
+        // Matches things like "CAB 79", "CAB 79/76"
+        var match = MyRegex1().Match(text);
+        return match.Success ? match.Value.Trim() : null;
     }
 
     [GeneratedRegex(@"\/details\/r\/(C\d+)")]
     private static partial Regex MyRegex();
+
+    [GeneratedRegex(@"^[A-Z]{2,5}\s+\d+(\s*/\s*\d+)?")]
+    private static partial Regex MyRegex1();
+
+    private static int MapUknaLevel(string text)
+    {
+        // Department
+        if (text.Contains("Records of", StringComparison.OrdinalIgnoreCase))
+            return 1;
+
+        // Series (e.g. "CAB 79 - ...")
+        if (MyRegex3().IsMatch(text))
+            return 3;
+
+        // Piece (e.g. "CAB 79/76 - ...")
+        if (MyRegex2().IsMatch(text))
+            return 6;
+
+        // Item (fallback)
+        return 7;
+    }
+
+    [GeneratedRegex(@"^[A-Z]{2,5}\s+\d+/\d+")]
+    private static partial Regex MyRegex2();
+
+    [GeneratedRegex(@"^[A-Z]{2,5}\s+\d+\s+-")]
+    private static partial Regex MyRegex3();
 }

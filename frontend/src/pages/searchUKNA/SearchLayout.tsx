@@ -3,20 +3,13 @@ import { SearchPanel, type SearchFormState } from ".";
 import SearchListItem from "./components/SearchListItem";
 import SearchDetails from "./components/SearchDetails";
 import styles from "../../styles/commonSearchLayout.module.css";
-
-interface UkSearchRecord {
-  id: string; // Cxxxx
-  title: string;
-  path: { id: string; title: string }[];
-  level?: string;
-  hasDigitalObjects?: boolean;
-}
+import type { UknaSearchRecord } from "../../api/models/ukna.types";
 
 interface Props {
-  results: UkSearchRecord[];
+  results: UknaSearchRecord[];
   onSearch: (form: SearchFormState) => void;
   selectedId: string | null;
-  onSelect: (id: string) => void;
+  onSelect: (id: string | null) => void;
 }
 
 export default function SearchLayout({
@@ -36,7 +29,7 @@ export default function SearchLayout({
           <SearchListItem
             record={record}
             isSelected={isSelected}
-            onSelect={onSelect}
+            onSelect={(id) => onSelect(id)}
           />
         )}
       />

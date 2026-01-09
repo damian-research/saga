@@ -1,21 +1,21 @@
 import SearchListItemShell from "../../../components/common/search/SearchListItemShell";
-import PathBreadcrumbShell from "../../../components/common/search/PathBreadcrumbShell";
 import type { Bookmark } from "../../../api/models/bookmarks.types";
 import styles from "../../../styles/commonSearchListItem.module.css";
-
-interface UkSearchRecord {
-  id: string; // Cxxxx
-  title: string;
-  path: { id: string; title: string }[];
-  level?: string;
-  hasDigitalObjects?: boolean;
-}
+import type { UknaSearchRecord } from "../../../api/models/ukna.types";
 
 interface Props {
-  record: UkSearchRecord;
+  record: UknaSearchRecord;
   isSelected: boolean;
   onSelect: (id: string) => void;
 }
+
+const LEVEL_LABELS: Record<number, string> = {
+  1: "Department",
+  2: "Division",
+  3: "Series",
+  6: "Piece",
+  7: "Item",
+};
 
 export default function SearchListItem({
   record,
@@ -25,12 +25,12 @@ export default function SearchListItem({
   const bookmark: Bookmark = {
     id: `ukna-${record.id}`,
     originalTitle: record.title,
-    archiveName: "UK", // CHANGE FROM "UK NA" to "UK"
-    level: record.level || "Unknown",
+    archiveName: "UK",
+    level: LEVEL_LABELS[record.level] ?? "Unknown",
     recordType: "",
     onlineAvailable: record.hasDigitalObjects ?? false,
     openRef: {
-      archive: "UK", // CHANGE FROM "UKNA" to "UK"
+      archive: "UK",
       id: record.id,
     },
     category: "",
@@ -43,14 +43,6 @@ export default function SearchListItem({
       onClick={() => onSelect(record.id)}
       bookmark={bookmark}
     >
-      <PathBreadcrumbShell
-        path={record.path?.map((p) => ({
-          key: p.id,
-          label: p.title,
-        }))}
-        onSelect={(id) => onSelect(id as string)}
-      />
-
       <div className={styles.title} title="Click to view details">
         {record.title}
       </div>
@@ -60,7 +52,7 @@ export default function SearchListItem({
         {record.level && (
           <>
             <span className={styles.separator}>·</span>
-            <span className={styles.level}>{record.level}</span>
+            <span className={styles.level}>{LEVEL_LABELS[record.level]}</span>
           </>
         )}
       </div>
