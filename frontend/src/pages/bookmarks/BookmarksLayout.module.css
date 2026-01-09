@@ -92,10 +92,11 @@
   cursor: pointer;
 }
 
-.table tbody tr.selected {
+.table tbody tr.selected td {
   background-color: #dbeafe;
 }
 
-.dark-mode .table tbody tr.selected {
+:global(.dark-mode) .table tbody tr.selected td {
   background-color: #1e3a5f;
+  color: #e5e7eb;
 }

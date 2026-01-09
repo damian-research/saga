@@ -19,6 +19,15 @@ export default function MainWindow() {
 
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
+  const TEMP_CATEGORIES = [
+    "General",
+    "Research",
+    "WWII",
+    "Intelligence",
+    "Operations",
+    "Technology",
+  ];
+
   function openAddBookmark(bookmark: Bookmark) {
     setAddBookmarkState({
       mode: "add",
@@ -62,7 +71,8 @@ export default function MainWindow() {
           <AddBookmark
             mode={addBookmarkState.mode}
             bookmark={addBookmarkState.bookmark}
-            categories={[...new Set(bookmarks.map((b) => b.category))]}
+            // categories={[...new Set(bookmarks.map((b) => b.category))]}
+            categories={TEMP_CATEGORIES}
             onCancel={() => setAddBookmarkState(null)}
             onSubmit={(data) => {
               submitBookmarkFromMain(addBookmarkState.bookmark, data);
