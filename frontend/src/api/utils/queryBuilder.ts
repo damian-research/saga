@@ -1,6 +1,16 @@
-import type { SearchFormState } from "../pages/searchNARA/SearchPanel";
-
-export function buildNaraQuery(form: SearchFormState): string {
+export interface NaraQueryInput {
+  q?: string;
+  naId?: string;
+  localId?: string;
+  microfilmId?: string;
+  levelOfDescription?: string;
+  recordGroupNumber?: string;
+  personOrOrg?: string;
+  dataSource?: string;
+  title?: string;
+  onlineAvailable?: boolean;
+}
+export function buildNaraQuery(form: NaraQueryInput): string {
   const clauses: string[] = [];
 
   if (form.q && form.q.trim()) {

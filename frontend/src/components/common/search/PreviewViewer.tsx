@@ -1,4 +1,4 @@
-import type { DigitalObject } from "../../../api/models/record.types";
+import type { DigitalObject } from "../../../api/models/nara.types";
 import styles from "./PreviewViewer.module.css";
 
 interface Props {

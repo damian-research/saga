@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { getRecord, downloadRecord } from "../../../api/services/queryService";
-import type {
-  FullRecord,
-  DigitalObject,
-} from "../../../api/models/record.types";
+import {
+  getRecord,
+  downloadRecord,
+} from "../../../api/services/naraSearch.service";
+import type { FullRecord, DigitalObject } from "../../../api/models/nara.types";
 import {
   PreviewViewer,
   DetailsPanelShell,

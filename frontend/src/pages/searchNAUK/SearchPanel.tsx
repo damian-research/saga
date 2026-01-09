@@ -51,8 +51,7 @@ export default function SearchPanel({ onSearch }: Props) {
     return Boolean(form.q?.trim());
   }
 
-  function submit() {
-    if (!hasAnySearchValue(form)) return;
+  function runSearch() {
     onSearch(form);
   }
 
@@ -144,7 +143,7 @@ export default function SearchPanel({ onSearch }: Props) {
 
       <button
         className={styles.button}
-        onClick={submit}
+        onClick={runSearch}
         disabled={!hasAnySearchValue(form)}
       >
         Search

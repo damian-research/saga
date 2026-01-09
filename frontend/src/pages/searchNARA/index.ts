@@ -12,7 +12,7 @@ export {
   searchRecords,
   getRecord,
   downloadRecord,
-} from "../../api/services/queryService";
+} from "../../api/services/naraSearch.service";
 
 // Models (re-export for convenience)
-export type { RawRecord, FullRecord } from "../../api/models/record.types";
+export type { RawRecord, FullRecord } from "../../api/models/nara.types";

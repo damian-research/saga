@@ -1,23 +1,24 @@
-import { buildNaraQuery } from "../../utils/queryBuilder";
-import type { SearchFormState } from "../../pages/searchNARA/SearchPanel";
-import type { RawRecord, FullRecord } from "../models/record.types";
+import { buildNaraQuery } from "../utils/queryBuilder";
+import type { NaraSearchParams } from "../dto/naraSearch.dto";
+import type { RawRecord, FullRecord } from "../models/nara.types";
 import { API_BASE_URL } from "../config";
 
 export async function searchRecords(
-  form: SearchFormState
+  paramsInput: NaraSearchParams
 ): Promise<RawRecord[]> {
   const params = new URLSearchParams();
+  const paramsInputSafe = paramsInput;
 
   const hasControl =
-    Boolean(form.naId?.trim()) ||
-    Boolean(form.localId?.trim()) ||
-    Boolean(form.microfilmId?.trim());
+    Boolean(paramsInputSafe.naId?.trim()) ||
+    Boolean(paramsInputSafe.localId?.trim()) ||
+    Boolean(paramsInputSafe.microfilmId?.trim());
 
   if (hasControl) {
     const raw =
-      form.naId?.trim() ||
-      form.localId?.trim() ||
-      form.microfilmId?.trim() ||
+      paramsInputSafe.naId?.trim() ||
+      paramsInputSafe.localId?.trim() ||
+      paramsInputSafe.microfilmId?.trim() ||
       "";
 
     params.set("q", "*");
@@ -27,13 +28,16 @@ export async function searchRecords(
       params.set("naid_is", raw);
     }
   } else {
-    const q = buildNaraQuery(form);
+    const q = buildNaraQuery({
+      ...paramsInputSafe,
+      q: paramsInputSafe.q ?? "",
+    });
     params.set("q", q);
   }
 
-  if (form.limit) params.set("limit", String(form.limit));
-  if (form.onlineAvailable !== undefined) {
-    params.set("availableOnline", String(form.onlineAvailable));
+  if (paramsInputSafe.limit) params.set("limit", String(paramsInputSafe.limit));
+  if (paramsInputSafe.onlineAvailable !== undefined) {
+    params.set("availableOnline", String(paramsInputSafe.onlineAvailable));
   }
 
   const res = await fetch(`${API_BASE_URL}/search?${params.toString()}`);

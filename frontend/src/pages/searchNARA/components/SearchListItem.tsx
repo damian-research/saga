@@ -1,6 +1,6 @@
 import SearchListItemShell from "../../../components/common/search/SearchListItemShell";
 import PathBreadcrumbShell from "../../../components/common/search/PathBreadcrumbShell";
-import type { RawRecord } from "../../../api/models/record.types";
+import type { RawRecord } from "../../../api/models/nara.types";
 import type { Bookmark } from "../../../api/models/bookmarks.types";
 import styles from "../../../styles/commonSearchListItem.module.css";
 

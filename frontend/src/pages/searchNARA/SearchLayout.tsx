@@ -1,4 +1,4 @@
-import type { RawRecord } from "../../api/models/record.types";
+import type { RawRecord } from "../../api/models/nara.types";
 import SearchListShell from "../../components/common/search/SearchListShell";
 import { SearchPanel, SearchPreview, type SearchFormState } from ".";
 import SearchListItem from "./components/SearchListItem";
