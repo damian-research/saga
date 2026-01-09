@@ -1,4 +1,4 @@
-namespace Saga.Data.Models;
+namespace Saga.Data.Models.Nara;
 
 public class Ancestor
 {

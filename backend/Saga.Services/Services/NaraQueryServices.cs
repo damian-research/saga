@@ -1,6 +1,6 @@
 namespace Saga.Services.Services;
 
-public class QueryService(INaraClient source)
+public class NaraQueryService(INaraClient source)
 {
     private readonly INaraClient _client = source;
 

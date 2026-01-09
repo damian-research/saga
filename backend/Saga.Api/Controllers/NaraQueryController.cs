@@ -1,10 +1,10 @@
 namespace Saga.Api.Controllers;
 
 [ApiController]
-[Route("api/query")]
-public class QueryController(QueryService service, DownloadService downloadService) : ControllerBase
+[Route("api/nara")]
+public class NaraQueryController(NaraQueryService service, DownloadService downloadService) : ControllerBase
 {
-    private readonly QueryService _service = service;
+    private readonly NaraQueryService _service = service;
     private readonly DownloadService _downloadService = downloadService;
 
     [HttpGet("search")]

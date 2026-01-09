@@ -40,7 +40,7 @@ export async function searchRecords(
     params.set("availableOnline", String(paramsInputSafe.onlineAvailable));
   }
 
-  const res = await fetch(`${API_BASE_URL}/search?${params.toString()}`);
+  const res = await fetch(`${API_BASE_URL}/nara/search?${params.toString()}`);
   if (!res.ok) {
     throw new Error("Search failed");
   }
@@ -49,7 +49,7 @@ export async function searchRecords(
 }
 
 export async function getRecord(naId: number): Promise<FullRecord> {
-  const res = await fetch(`${API_BASE_URL}/full/${naId}`);
+  const res = await fetch(`${API_BASE_URL}/nara/full/${naId}`);
   if (!res.ok) {
     throw new Error("Failed to load record");
   }
@@ -61,7 +61,7 @@ export async function downloadRecord(
   dir?: string
 ): Promise<void> {
   const url =
-    `${API_BASE_URL}/download/${naId}` +
+    `${API_BASE_URL}/nara/download/${naId}` +
     (dir ? `?dir=${encodeURIComponent(dir)}` : "");
 
   const res = await fetch(url, { method: "POST" });

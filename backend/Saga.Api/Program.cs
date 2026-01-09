@@ -10,7 +10,9 @@ builder.Services.Configure<NaraSettings>(
 );
 
 builder.Services.AddSingleton<INaraClient, NaraClient>();
-builder.Services.AddScoped<QueryService>();
+builder.Services.AddScoped<NaraQueryService>();
+builder.Services.AddSingleton<IUknaClient, UknaClient>();
+builder.Services.AddScoped<UknaQueryService>();
 builder.Services.AddHttpClient<DownloadService>();
 
 builder.Services.AddCors(options =>

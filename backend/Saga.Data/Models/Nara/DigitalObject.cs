@@ -1,6 +1,6 @@
-namespace Saga.Data.Models;
+namespace Saga.Data.Models.Nara;
 
-public class DigitalObject
+public sealed class DigitalObject
 {
     public long ObjectId { get; set; }
     public string ObjectDescription { get; set; }
