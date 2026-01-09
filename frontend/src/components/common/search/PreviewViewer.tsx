@@ -7,6 +7,8 @@ interface Props {
   onClose: () => void;
   onNext?: () => void;
   onPrev?: () => void;
+  archive?: "NARA" | "UKNA";
+  uknaRecordId?: string;
 }
 
 export default function PreviewViewer({
@@ -15,6 +17,8 @@ export default function PreviewViewer({
   onClose,
   onNext,
   onPrev,
+  archive,
+  uknaRecordId,
 }: Props) {
   const currentIndex = objects.findIndex(
     (o) => o.objectUrl === object.objectUrl
@@ -38,6 +42,17 @@ export default function PreviewViewer({
               className={styles.downloadBtn}
               title="Download this object"
               onClick={async () => {
+                // UKNA: open Discovery record page
+                if (archive === "UKNA" && uknaRecordId) {
+                  window.open(
+                    `https://discovery.nationalarchives.gov.uk/details/r/${uknaRecordId}`,
+                    "_blank",
+                    "noopener,noreferrer"
+                  );
+                  return;
+                }
+
+                // NARA (existing behavior)
                 try {
                   const res = await fetch(object.objectUrl);
                   const blob = await res.blob();

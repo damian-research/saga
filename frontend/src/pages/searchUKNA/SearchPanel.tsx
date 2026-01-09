@@ -24,11 +24,19 @@ export interface SearchFormState {
   department?: string;
 }
 
+const LEVEL_LABELS: Record<1 | 2 | 3 | 6 | 7, string> = {
+  1: "Department",
+  2: "Division",
+  3: "Series",
+  6: "Piece",
+  7: "Item",
+};
+
 export default function SearchPanel({ onSearch }: Props) {
   const [form, setForm] = useState<SearchFormState>({
     q: "",
     onlyOnline: true,
-    levels: [1, 2, 3, 6, 7],
+    levels: [7],
   });
 
   function update<K extends keyof SearchFormState>(
@@ -83,14 +91,14 @@ export default function SearchPanel({ onSearch }: Props) {
       <div className={styles.divider} />
       <div className={styles.subtitle}>Catalogue level</div>
 
-      {[1, 2, 3, 6, 7].map((l) => (
+      {([1, 2, 3, 6, 7] as const).map((l) => (
         <div key={l} className={styles.checkboxRow}>
           <label>
-            <span>Level {l}</span>
+            <span>{LEVEL_LABELS[l]}</span>
             <input
               type="checkbox"
-              checked={form.levels.includes(l as any)}
-              onChange={() => toggleLevel(l as any)}
+              checked={form.levels.includes(l)}
+              onChange={() => toggleLevel(l)}
             />
           </label>
         </div>

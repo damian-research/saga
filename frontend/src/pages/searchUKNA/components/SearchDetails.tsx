@@ -34,15 +34,12 @@ export default function SearchDetails({ selectedId }: Props) {
   }, [selectedId]);
 
   async function onDownload() {
-    // if (!record) return;
-    // setDownloading(true);
-    // try {
-    //   await downloadRecord(record.id);
-    // } catch (err) {
-    //   setError("Download failed");
-    // } finally {
-    //   setDownloading(false);
-    // }
+    if (!selectedId) return;
+    window.open(
+      `https://discovery.nationalarchives.gov.uk/details/r/${selectedId}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   }
 
   if (!selectedId) {
@@ -55,7 +52,7 @@ export default function SearchDetails({ selectedId }: Props) {
       error={error}
       isEmpty={true}
       headerAction={
-        false && (
+        true && (
           <button
             onClick={onDownload}
             disabled={downloading}
