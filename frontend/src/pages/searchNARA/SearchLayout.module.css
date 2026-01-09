@@ -1,0 +1,7 @@
+.grid {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  padding: 12px 12px 12px 12px;
+  background-color: var(--bg-secondary);
+}

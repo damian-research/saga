@@ -52,6 +52,10 @@
   padding-top: 10px;
 }
 
+.row span {
+  color: var(--text-primary);
+}
+
 .panel input[type="text"],
 .panel input[type="password"] {
   width: 100%;

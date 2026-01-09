@@ -1,33 +1,27 @@
 import { useState } from "react";
+import styles from "./SearchPanel.module.css";
 
 interface Props {
   onSearch: (form: SearchFormState) => void;
 }
 
 export interface SearchFormState {
-  q: string; // REQUIRED
-
+  q: string;
   limit: number;
-
   title?: string;
-  naId?: string; // string → może zawierać CSV
-
+  naId?: string;
   onlineAvailable: boolean;
-
   personOrOrg?: string;
   dataSource?: string;
-
   levelOfDescription?:
     | "recordGroup"
     | "collection"
     | "series"
     | "fileUnit"
     | "item";
-
   recordGroupNumber?: string;
-
-  microfilmId?: string; // CSV
-  localId?: string; // CSV
+  microfilmId?: string;
+  localId?: string;
 }
 
 export default function SearchPanel({ onSearch }: Props) {
@@ -64,10 +58,9 @@ export default function SearchPanel({ onSearch }: Props) {
   }
 
   return (
-    <div className="panel search">
-      <div className="panel-title">Search in US National Archives</div>
+    <div className={styles.panel}>
+      <div className={styles.title}>Search in US National Archives</div>
 
-      {/* CORE */}
       <label>
         Query
         <input
@@ -86,7 +79,7 @@ export default function SearchPanel({ onSearch }: Props) {
         />
       </label>
 
-      <div className="checkbox-row">
+      <div className={styles.checkboxRow}>
         <label>
           <span>Online available</span>
           <input
@@ -97,8 +90,8 @@ export default function SearchPanel({ onSearch }: Props) {
         </label>
       </div>
 
-      <div className="divider" />
-      <div className="panel-subtitle">Text & Authority</div>
+      <div className={styles.divider} />
+      <div className={styles.subtitle}>Text & Authority</div>
 
       <label>
         Title
@@ -130,8 +123,9 @@ export default function SearchPanel({ onSearch }: Props) {
         />
       </label>
 
-      <div className="divider" />
-      <div className="panel-subtitle">Structure</div>
+      <div className={styles.divider} />
+      <div className={styles.subtitle}>Structure</div>
+
       <label>
         Level
         <select
@@ -162,8 +156,9 @@ export default function SearchPanel({ onSearch }: Props) {
         />
       </label>
 
-      <div className="divider" />
-      <div className="panel-subtitle">Identifiers</div>
+      <div className={styles.divider} />
+      <div className={styles.subtitle}>Identifiers</div>
+
       <label>
         NAID
         <input
@@ -192,7 +187,7 @@ export default function SearchPanel({ onSearch }: Props) {
       </label>
 
       <button
-        className="search-button"
+        className={styles.button}
         onClick={submit}
         disabled={!hasAnySearchValue(form)}
       >

@@ -1,0 +1,101 @@
+.panel {
+  padding: 12px;
+  background: var(--bg-secondary);
+  overflow: auto;
+  border-right: 1px solid var(--border-primary);
+}
+
+.title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+}
+
+.panel input[type="text"],
+.panel input[type="number"],
+.panel select {
+  padding: 6px 8px;
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.panel input:focus,
+.panel select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.checkboxRow {
+  margin-bottom: 12px;
+}
+
+.checkboxRow label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+}
+
+.checkboxRow input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--border-primary);
+  margin: 14px 0 10px;
+}
+
+.subtitle {
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  margin-top: 6px;
+  margin-bottom: var(--spacing-md);
+}
+
+.button {
+  margin-top: 12px;
+  padding: 6px 12px;
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  width: 100%;
+  transition: background-color var(--transition-normal);
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

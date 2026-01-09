@@ -51,33 +51,33 @@ export default function MainWindow() {
   return (
     <BookmarkContext.Provider value={{ openAddBookmark }}>
       <div className={`app-root ${isDarkMode ? "dark-mode" : ""}`}>
-      <Header
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
-
-      {addBookmarkState && (
-        <AddBookmark
-          mode={addBookmarkState.mode}
-          bookmark={addBookmarkState.bookmark}
-          categories={[...new Set(bookmarks.map((b) => b.category))]}
-          onCancel={() => setAddBookmarkState(null)}
-          onSubmit={(data) => {
-            submitBookmarkFromMain(addBookmarkState.bookmark, data);
-            setAddBookmarkState(null);
-          }}
+        <Header
+          isDarkMode={isDarkMode}
+          onToggleDarkMode={toggleDarkMode}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
         />
-      )}
 
-      <div className="app-content">
-        {activeTab === "bookmarks" && (
-          <BookmarksTab bookmarks={bookmarks} setBookmarks={setBookmarks} />
+        {addBookmarkState && (
+          <AddBookmark
+            mode={addBookmarkState.mode}
+            bookmark={addBookmarkState.bookmark}
+            categories={[...new Set(bookmarks.map((b) => b.category))]}
+            onCancel={() => setAddBookmarkState(null)}
+            onSubmit={(data) => {
+              submitBookmarkFromMain(addBookmarkState.bookmark, data);
+              setAddBookmarkState(null);
+            }}
+          />
         )}
-        {activeTab === "nara" && <SearchNARATab />}
-        {activeTab === "uk" && <SearchNAUKTab />}
-      </div>
+
+        <div className="app-content">
+          {activeTab === "bookmarks" && (
+            <BookmarksTab bookmarks={bookmarks} setBookmarks={setBookmarks} />
+          )}
+          {activeTab === "nara" && <SearchNARATab />}
+          {activeTab === "uk" && <SearchNAUKTab />}
+        </div>
       </div>
     </BookmarkContext.Provider>
   );

@@ -18,8 +18,8 @@
   padding-left: 5px;
 }
 
-.dark-mode .item.active {
-  background-color: #1a3a52;
+:global(.dark-mode) .item.active {
+  background-color: #1a3a5f;
   border-left-color: #0088ff;
 }
 
