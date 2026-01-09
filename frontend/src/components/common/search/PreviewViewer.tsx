@@ -37,11 +37,26 @@ export default function PreviewViewer({
             <button
               className={styles.downloadBtn}
               title="Download this object"
-              onClick={() => {
-                const a = document.createElement("a");
-                a.href = object.objectUrl;
-                a.download = "";
-                a.click();
+              onClick={async () => {
+                try {
+                  const res = await fetch(object.objectUrl);
+                  const blob = await res.blob();
+
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+
+                  a.href = url;
+                  a.download = object.objectUrl.split("/").pop() ?? "download";
+
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+
+                  URL.revokeObjectURL(url);
+                } catch (e) {
+                  console.error("Download failed", e);
+                  window.open(object.objectUrl, "_blank");
+                }
               }}
             >
               ↓

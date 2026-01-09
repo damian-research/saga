@@ -44,7 +44,7 @@ export default function SearchListItem({
       bookmark={bookmark}
     >
       <PathBreadcrumbShell
-        path={record.path.map((p) => ({
+        path={record.path?.map((p) => ({
           key: p.id,
           label: p.title,
         }))}

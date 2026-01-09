@@ -52,6 +52,7 @@ export default function SearchPanel({ onSearch }: Props) {
   }
 
   function runSearch() {
+    console.log("UKNA Search clicked", form);
     onSearch(form);
   }
 

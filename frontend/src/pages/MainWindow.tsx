@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Header from "../components/layout/Header/Header";
 import { SearchTab as SearchNARATab } from "./searchNARA";
-import { SearchTab as SearchNAUKTab } from "./searchNAUK";
+import { SearchTab as SearchNAUKTab } from "./searchUKNA";
 import { BookmarksTab } from "./bookmarks";
 import type { Bookmark } from "../api/models/bookmarks.types";
 import AddBookmark from "../components/common/bookmarks/AddBookmark";

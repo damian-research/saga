@@ -1,15 +1,10 @@
 namespace Saga.External.UKNA;
 
-public sealed class UknaClient : IUknaClient
+public sealed partial class UknaClient(HttpClient http) : IUknaClient
 {
-    private readonly HttpClient _http;
+    private readonly HttpClient _http = http;
 
-    public UknaClient(HttpClient http)
-    {
-        _http = http;
-    }
-
-    public async Task<IReadOnlyList<UknaSearchRecord>> SearchAsync(UknaSearchParams queryParams)
+    public async Task<List<UknaSearchRecord>> SearchAsync(UknaSearchParams queryParams)
     {
         var url = BuildSearchUrl(queryParams);
 
@@ -60,39 +55,57 @@ public sealed class UknaClient : IUknaClient
     // HTML parsing – search
     // ------------------------
 
-    private static IReadOnlyList<UknaSearchRecord> ParseSearchResults(string html)
+    private static List<UknaSearchRecord> ParseSearchResults(string html)
     {
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
 
         var results = new List<UknaSearchRecord>();
 
-        var nodes = doc.DocumentNode.SelectNodes("//li[contains(@class,'result')]")
-                    ?? Enumerable.Empty<HtmlNode>();
+        var resultsRoot = doc.DocumentNode
+            .SelectSingleNode("//ul[@id='search-results']");
+
+        if (resultsRoot == null)
+            return [];
+
+        var nodes = resultsRoot.SelectNodes("./li[contains(@class,'tna-result')]");
 
         foreach (var node in nodes)
         {
             var link = node.SelectSingleNode(".//a");
             var href = link?.GetAttributeValue("href", null);
-
             if (href == null)
                 continue;
 
-            var idMatch = Regex.Match(href, @"\/(C\d+)");
+            var idMatch = MyRegex().Match(href);
             if (!idMatch.Success)
                 continue;
 
-            var title = link.InnerText.Trim();
+            var title = node.SelectSingleNode(".//h3")?.InnerText.Trim();
+            var summary = node.SelectSingleNode(".//p")?.InnerText.Trim();
 
-            var level = DetectLevel(node);
-            if (level is null or > 3)
-                continue; // enforce L1–L3 search rule
+            var reference = GetRow(node, "Reference");
+            var date = GetRow(node, "Date");
+            var heldBy = GetRow(node, "Held by");
+
+            var subjectsRaw = GetRow(node, "Subjects");
+            var subjects = subjectsRaw?
+                .Split('|')
+                .Select(s => s.Trim())
+                .Where(s => s.Length > 0)
+                .ToList()
+                ?? [];
 
             results.Add(new UknaSearchRecord
             {
                 Id = idMatch.Groups[1].Value,
                 Title = title,
-                Level = level.Value
+                Summary = summary,
+                Reference = reference,
+                Date = date,
+                HeldBy = heldBy,
+                Subjects = subjects,
+                Level = 0 // or null
             });
         }
 
@@ -115,6 +128,14 @@ public sealed class UknaClient : IUknaClient
             return 5;
 
         return null;
+    }
+
+    private static string? GetRow(HtmlNode node, string label)
+    {
+        return node
+          .SelectSingleNode($".//tr[th[contains(normalize-space(), '{label}')]]/td")
+          ?.InnerText
+          .Trim();
     }
 
     // ------------------------
@@ -152,4 +173,7 @@ public sealed class UknaClient : IUknaClient
             ObjectUrl = imageUrl
         };
     }
+
+    [GeneratedRegex(@"\/details\/r\/(C\d+)")]
+    private static partial Regex MyRegex();
 }

@@ -62,11 +62,31 @@ export default function SearchDetails({ selectedNaId }: Props) {
   }, [selectedNaId]);
 
   async function onDownload() {
-    if (!record) return;
+    if (!record || record.digitalObjects.length === 0) return;
     setDownloading(true);
+    setError(null);
+
     try {
-      await downloadRecord(record.naId);
-    } catch (err) {
+      for (const obj of record.digitalObjects) {
+        const res = await fetch(obj.objectUrl);
+        const blob = await res.blob();
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+
+        a.href = url;
+        a.download = obj.objectUrl.split("/").pop() || "download";
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        URL.revokeObjectURL(url);
+
+        // small delay to avoid browser throttling
+        await new Promise((r) => setTimeout(r, 250));
+      }
+    } catch {
       setError("Download failed");
     } finally {
       setDownloading(false);

@@ -6,18 +6,16 @@ interface BreadcrumbSegment {
 }
 
 interface Props {
-  path: BreadcrumbSegment[];
+  path?: BreadcrumbSegment[];
   onSelect: (key: string | number) => void;
 }
 
-export default function PathBreadcrumbShell({ path, onSelect }: Props) {
-  if (path.length === 0) {
-    return null;
-  }
+export default function PathBreadcrumbShell({ path = [], onSelect }: Props) {
+  if (!path || path.length === 0) return null;
 
   return (
     <div className={styles.path}>
-      {path.map((p, index) => (
+      {path?.map((p, index) => (
         <span key={p.key}>
           <a
             href="#"

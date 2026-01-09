@@ -10,7 +10,7 @@ public sealed class UknaQueryController(
     private readonly DownloadService _downloadService = downloadService;
 
     [HttpPost("search")]
-    public async Task<ActionResult<IReadOnlyList<UknaSearchRecord>>> Search(
+    public async Task<ActionResult<List<UknaSearchRecord>>> Search(
         [FromBody] UknaSearchParams parameters)
     {
         var results = await _service.SearchAsync(parameters);

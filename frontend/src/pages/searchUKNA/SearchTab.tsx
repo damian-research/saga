@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { SearchLayout, type SearchFormState } from ".";
+import { searchUkna } from "../../api/services/uknaSearch.service";
+import type { UknaSearchParams } from "../../api/dto/uknaSearch.dto";
 
 /**
  * UK National Archives search tab.
@@ -11,9 +13,17 @@ export default function SearchTab() {
   const [selectedCId, setSelectedCId] = useState<string | null>(null);
 
   async function onSearch(form: SearchFormState) {
-    // TODO: replace with Discovery search implementation
-    // For now, stub / placeholder
-    setResults([]);
+    const params: UknaSearchParams = {
+      q: form.q,
+      onlyOnline: form.onlyOnline,
+      levels: form.levels,
+      dateFrom: form.dateFrom,
+      dateTo: form.dateTo,
+      department: form.department,
+    };
+
+    const data = await searchUkna(params);
+    setResults(data);
     setSelectedCId(null);
   }
 
