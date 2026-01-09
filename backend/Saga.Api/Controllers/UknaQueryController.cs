@@ -17,8 +17,8 @@ public sealed class UknaQueryController(
         return Ok(results);
     }
 
-    [HttpGet("item/{cid}")]
-    public async Task<ActionResult<UknaItemPreview>> GetItem(string cid)
+    [HttpGet("details/{cid}")]
+    public async Task<ActionResult<UknaItemDetails>> GetItem(string cid)
     {
         var item = await _service.GetItemAsync(cid);
 

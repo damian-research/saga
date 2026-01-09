@@ -13,7 +13,7 @@ public sealed partial class UknaClient(HttpClient http) : IUknaClient
         return ParseSearchResults(html);
     }
 
-    public async Task<UknaItemPreview?> GetItemAsync(string cid)
+    public async Task<UknaItemDetails?> GetItemAsync(string cid)
     {
         var url = $"https://discovery.nationalarchives.gov.uk/details/r/{cid}";
         var html = await _http.GetStringAsync(url);
@@ -30,7 +30,7 @@ public sealed partial class UknaClient(HttpClient http) : IUknaClient
         var qs = new List<string>
         {
             "_ep=" + Uri.EscapeDataString(string.IsNullOrWhiteSpace(p.Q) ? "crossbow" : p.Q),
-            "_col=200",
+            "_col=15",
             "_dss=range",
             "_hb=tna",
             "_st=adv"
@@ -142,7 +142,7 @@ public sealed partial class UknaClient(HttpClient http) : IUknaClient
     // HTML parsing – item
     // ------------------------
 
-    private static UknaItemPreview? ParseItemPreview(string html, string cid)
+    private static UknaItemDetails? ParseItemPreview(string html, string cid)
     {
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
@@ -164,7 +164,7 @@ public sealed partial class UknaClient(HttpClient http) : IUknaClient
         if (string.IsNullOrWhiteSpace(imageUrl))
             return null;
 
-        return new UknaItemPreview
+        return new UknaItemDetails
         {
             Id = cid,
             Source = "UKNA",

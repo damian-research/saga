@@ -7,6 +7,6 @@ public class UknaQueryService(IUknaClient source)
     public Task<List<UknaSearchRecord>> SearchAsync(UknaSearchParams queryParams)
         => _client.SearchAsync(queryParams);
 
-    public Task<UknaItemPreview?> GetItemAsync(string cid)
+    public Task<UknaItemDetails?> GetItemAsync(string cid)
         => _client.GetItemAsync(cid);
 }

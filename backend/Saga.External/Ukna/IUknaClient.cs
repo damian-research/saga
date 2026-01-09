@@ -4,5 +4,5 @@ public interface IUknaClient
 {
     Task<List<UknaSearchRecord>> SearchAsync(UknaSearchParams parameters);
 
-    Task<UknaItemPreview?> GetItemAsync(string cid);
+    Task<UknaItemDetails?> GetItemAsync(string cid);
 }
