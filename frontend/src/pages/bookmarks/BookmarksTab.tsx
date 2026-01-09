@@ -5,9 +5,14 @@ import styles from "./BookmarksTab.module.css";
 interface Props {
   bookmarks: Bookmark[];
   setBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
+  onEditBookmark: (b: Bookmark) => void;
 }
 
-export default function BookmarksTab({ bookmarks, setBookmarks }: Props) {
+export default function BookmarksTab({
+  bookmarks,
+  setBookmarks,
+  onEditBookmark,
+}: Props) {
   function openBookmark(b: Bookmark) {
     //console.log("Open bookmark", b);
   }
@@ -34,9 +39,7 @@ export default function BookmarksTab({ bookmarks, setBookmarks }: Props) {
       <BookmarksLayout
         bookmarks={bookmarks}
         onOpen={openBookmark}
-        onEdit={(b) => {
-          // Editing handled outside now
-        }}
+        onEdit={(b) => onEditBookmark(b)}
         onRemove={(id) => removeBookmark(id)}
         onExport={(list) => exportBookmarks(list)}
       />

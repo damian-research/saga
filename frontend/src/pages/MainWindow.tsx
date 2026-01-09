@@ -83,7 +83,13 @@ export default function MainWindow() {
 
         <div className="app-content">
           {activeTab === "bookmarks" && (
-            <BookmarksTab bookmarks={bookmarks} setBookmarks={setBookmarks} />
+            <BookmarksTab
+              bookmarks={bookmarks}
+              setBookmarks={setBookmarks}
+              onEditBookmark={(b) =>
+                setAddBookmarkState({ mode: "edit", bookmark: b })
+              }
+            />
           )}
           {activeTab === "nara" && <SearchNARATab />}
           {activeTab === "uk" && <SearchNAUKTab />}
