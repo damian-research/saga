@@ -2,7 +2,7 @@ import SearchListItemShell from "../../../components/common/search/SearchListIte
 import PathBreadcrumbShell from "../../../components/common/search/PathBreadcrumbShell";
 import type { RawRecord } from "../../../api/models/record.types";
 import type { Bookmark } from "../../../api/models/bookmarks.types";
-import styles from "./SearchListItem.module.css";
+import styles from "../../../styles/commonSearchListItem.module.css";
 
 interface Props {
   record: RawRecord;

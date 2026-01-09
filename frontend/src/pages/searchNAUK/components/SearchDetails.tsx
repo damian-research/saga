@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import DetailsPanelShell from "../../../components/common/search/DetailsPanelShell";
 import { PreviewViewer } from "../../../components/common/search";
+import BookmarkStar from "../../../components/common/bookmarks/BookmarkStar";
+import type { Bookmark } from "../../../api/models/bookmarks.types";
+import styles from "../../../styles/commonSearchDetails.module.css";
 
 interface Props {
   selectedId: string | null;
@@ -34,7 +37,7 @@ export default function SearchDetails({ selectedId }: Props) {
     // if (!record) return;
     // setDownloading(true);
     // try {
-    //   await downloadRecord(record.naId);
+    //   await downloadRecord(record.id);
     // } catch (err) {
     //   setError("Download failed");
     // } finally {
@@ -50,24 +53,26 @@ export default function SearchDetails({ selectedId }: Props) {
     <DetailsPanelShell
       isLoading={loading}
       error={error}
-      // isEmpty={!record}
-      // footer={
-      //   record && (
-      //     <button
-      //       onClick={onDownload}
-      //       disabled={downloading}
-      //       className="btn btn-primary"
-      //     >
-      //       {downloading ? "Downloading…" : "📥 Download Record"}
-      //     </button>
-      //   )
-      // }
+      isEmpty={true}
+      headerAction={
+        false && (
+          <button
+            onClick={onDownload}
+            disabled={downloading}
+            className={styles.downloadButton}
+            title="Download record"
+          >
+            ↓
+          </button>
+        )
+      }
     >
+      {/* Uncomment when data is ready */}
       {/* {record && (
         <>
-          <h2 className="preview-title">{record.title}</h2>
+          <h2 className={styles.title}>{record.title}</h2>
 
-          <div className="preview-breadcrumbs">
+          <div className={styles.breadcrumbs}>
             {record.ancestors
               .slice()
               .sort((a, b) => b.distance - a.distance)
@@ -75,27 +80,32 @@ export default function SearchDetails({ selectedId }: Props) {
               .join(" → ")}
           </div>
 
-          <div className="preview-section">
-            <h4 className="preview-section-title">Digital Objects</h4>
+          <div className={styles.section}>
+            <h4 className={styles.sectionTitle}>Digital Objects</h4>
 
             {record.digitalObjects.length > 0 ? (
-              <ul className="preview-objects-list">
+              <ul className={styles.objectsList}>
                 {record.digitalObjects.map((o, i) => (
-                  <li key={i} className="preview-object-item">
-                    <span className="object-type">{o.objectType}</span>
-                    <button
-                      onClick={() => setViewingObject(o)}
-                      className="object-link-btn"
-                    >
-                      View
-                    </button>
+                  <li key={i} className={styles.objectItem}>
+                    <span className={styles.objectType}>{o.objectType}</span>
+
+                    <div className={styles.objectActions}>
+                      <BookmarkStar
+                        bookmark={buildObjectBookmark(record, o, i)}
+                      />
+
+                      <button
+                        onClick={() => setViewingObject(o)}
+                        className={styles.button}
+                      >
+                        View
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="preview-empty-state">
-                No digital objects available
-              </p>
+              <p className={styles.emptyState}>No digital objects available</p>
             )}
           </div>
         </>

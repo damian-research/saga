@@ -189,6 +189,21 @@ export default function BookmarksLayout({
                 <td>{b.onlineAvailable ? "✓" : "—"}</td>
               </tr>
             ))}
+
+            {/* Add placeholder rows */}
+            {Array.from({
+              length: Math.max(0, 5 - filteredBookmarks.length),
+            }).map((_, i) => (
+              <tr key={`empty-${i}`} style={{ pointerEvents: "none" }}>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

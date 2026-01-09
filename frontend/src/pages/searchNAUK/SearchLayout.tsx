@@ -2,12 +2,14 @@ import SearchListShell from "../../components/common/search/SearchListShell";
 import { SearchPanel, type SearchFormState } from ".";
 import SearchListItem from "./components/SearchListItem";
 import SearchDetails from "./components/SearchDetails";
+import styles from "../../styles/commonSearchLayout.module.css";
 
 interface UkSearchRecord {
   id: string; // Cxxxx
   title: string;
   path: { id: string; title: string }[];
   level?: string;
+  hasDigitalObjects?: boolean;
 }
 
 interface Props {
@@ -24,7 +26,7 @@ export default function SearchLayout({
   onSelect,
 }: Props) {
   return (
-    <div className="search-grid">
+    <div className={styles.grid}>
       <SearchPanel onSearch={onSearch} />
       <SearchListShell
         items={results}
@@ -38,7 +40,6 @@ export default function SearchLayout({
           />
         )}
       />
-
       <SearchDetails selectedId={selectedId} />
     </div>
   );

@@ -2,7 +2,7 @@ import type { RawRecord } from "../../api/models/record.types";
 import SearchListShell from "../../components/common/search/SearchListShell";
 import { SearchPanel, SearchPreview, type SearchFormState } from ".";
 import SearchListItem from "./components/SearchListItem";
-import styles from "./SearchLayout.module.css";
+import styles from "../../styles/commonSearchLayout.module.css";
 
 interface Props {
   results: RawRecord[];

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from "../../styles/commonSearchPanel.module.css";
 
 interface Props {
   onSearch: (form: SearchFormState) => void;
@@ -56,10 +57,9 @@ export default function SearchPanel({ onSearch }: Props) {
   }
 
   return (
-    <div className="panel search">
-      <div className="panel-title">Search in UK National Archives</div>
+    <div className={styles.panel}>
+      <div className={styles.title}>Search in UK National Archives</div>
 
-      {/* CORE */}
       <label>
         Query
         <input
@@ -69,7 +69,7 @@ export default function SearchPanel({ onSearch }: Props) {
         />
       </label>
 
-      <div className="checkbox-row">
+      <div className={styles.checkboxRow}>
         <label>
           <span>Only online</span>
           <input
@@ -80,24 +80,24 @@ export default function SearchPanel({ onSearch }: Props) {
         </label>
       </div>
 
-      <div className="divider" />
-      <div className="panel-subtitle">Catalogue level</div>
+      <div className={styles.divider} />
+      <div className={styles.subtitle}>Catalogue level</div>
 
-      <div className="checkbox-grid">
-        {[1, 2, 3, 6, 7].map((l) => (
-          <label key={l}>
+      {[1, 2, 3, 6, 7].map((l) => (
+        <div key={l} className={styles.checkboxRow}>
+          <label>
+            <span>Level {l}</span>
             <input
               type="checkbox"
               checked={form.levels.includes(l as any)}
               onChange={() => toggleLevel(l as any)}
             />
-            Level {l}
           </label>
-        ))}
-      </div>
+        </div>
+      ))}
 
-      <div className="divider" />
-      <div className="panel-subtitle">Date range</div>
+      <div className={styles.divider} />
+      <div className={styles.subtitle}>Date range</div>
 
       <label>
         From year
@@ -129,8 +129,8 @@ export default function SearchPanel({ onSearch }: Props) {
         />
       </label>
 
-      <div className="divider" />
-      <div className="panel-subtitle">Department</div>
+      <div className={styles.divider} />
+      <div className={styles.subtitle}>Department</div>
 
       <label>
         Department code
@@ -142,7 +142,11 @@ export default function SearchPanel({ onSearch }: Props) {
         />
       </label>
 
-      <button onClick={submit} disabled={!hasAnySearchValue(form)}>
+      <button
+        className={styles.button}
+        onClick={submit}
+        disabled={!hasAnySearchValue(form)}
+      >
         Search
       </button>
     </div>

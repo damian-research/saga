@@ -10,7 +10,7 @@ import {
 } from "../../../components/common/search";
 import BookmarkStar from "../../../components/common/bookmarks/BookmarkStar";
 import type { Bookmark } from "../../../api/models/bookmarks.types";
-import styles from "./SearchDetails.module.css";
+import styles from "../../../styles/commonSearchDetails.module.css";
 
 interface Props {
   selectedNaId: number | null;
