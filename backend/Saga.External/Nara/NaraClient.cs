@@ -3,10 +3,13 @@ namespace Saga.External.Nara;
 public sealed class NaraClient : INaraClient
 {
     private readonly HttpClient _http;
+    private readonly bool _useMock;
 
     public NaraClient(IOptions<NaraSettings> options)
     {
         var cfg = options.Value;
+
+        _useMock = cfg.UseMock;
 
         _http = new HttpClient
         {
@@ -20,7 +23,7 @@ public sealed class NaraClient : INaraClient
 
     public async Task<IEnumerable<RawRecord>> SearchBriefAsync(string rawQuery)
     {
-        var useMock = true;
+        var useMock = _useMock;
         string json;
         Console.WriteLine($"[NARA] Request: {rawQuery}");
 

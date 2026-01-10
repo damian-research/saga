@@ -10,8 +10,8 @@ import { BookmarkContext } from "../context/BookmarkContext";
 type TabId = "bookmarks" | "nara" | "uk";
 
 export default function MainWindow() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>("nara");
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabId>("bookmarks");
   const [addBookmarkState, setAddBookmarkState] = useState<{
     mode: "add" | "edit";
     bookmark: Bookmark;
