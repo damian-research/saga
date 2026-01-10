@@ -1,30 +1,65 @@
 import type { DigitalObject } from "../../../api/models/nara.types";
 import styles from "./PreviewViewer.module.css";
 
-interface Props {
+type NaraPreviewProps = {
+  archive: "NARA";
   object: DigitalObject;
   objects: DigitalObject[];
   onClose: () => void;
-  onNext?: () => void;
-  onPrev?: () => void;
-  archive?: "NARA" | "UKNA";
-  uknaRecordId?: string;
-}
+};
 
-export default function PreviewViewer({
-  object,
-  objects,
-  onClose,
-  onNext,
-  onPrev,
-  archive,
-  uknaRecordId,
-}: Props) {
+type UknaPreviewProps = {
+  archive: "UKNA";
+  uknaRecordId: string;
+  onClose: () => void;
+};
+
+type Props = NaraPreviewProps | UknaPreviewProps;
+
+export default function PreviewViewer(props: Props) {
+  if (props.archive === "UKNA") {
+    return (
+      <div className={styles.previewRoot}>
+        <iframe
+          src={`https://discovery.nationalarchives.gov.uk/details/r/${props.uknaRecordId}#imageViewerLink`}
+          title="UK National Archives Image Viewer"
+          className={styles.previewIframe}
+        />
+        <button onClick={props.onClose} className={styles.closeButton}>
+          Close
+        </button>
+      </div>
+    );
+  }
+
+  // NARA path (unchanged)
+  const { object, objects, onClose } = props;
+
   const currentIndex = objects.findIndex(
     (o) => o.objectUrl === object.objectUrl
   );
   const hasNext = currentIndex < objects.length - 1;
   const hasPrev = currentIndex > 0;
+
+  const onPrev = () => {
+    if (currentIndex > 0) {
+      window.dispatchEvent(
+        new CustomEvent("preview:navigate", {
+          detail: { index: currentIndex - 1 },
+        })
+      );
+    }
+  };
+
+  const onNext = () => {
+    if (currentIndex < objects.length - 1) {
+      window.dispatchEvent(
+        new CustomEvent("preview:navigate", {
+          detail: { index: currentIndex + 1 },
+        })
+      );
+    }
+  };
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -42,16 +77,6 @@ export default function PreviewViewer({
               className={styles.downloadBtn}
               title="Download this object"
               onClick={async () => {
-                // UKNA: open Discovery record page
-                if (archive === "UKNA" && uknaRecordId) {
-                  window.open(
-                    `https://discovery.nationalarchives.gov.uk/details/r/${uknaRecordId}`,
-                    "_blank",
-                    "noopener,noreferrer"
-                  );
-                  return;
-                }
-
                 // NARA (existing behavior)
                 try {
                   const res = await fetch(object.objectUrl);

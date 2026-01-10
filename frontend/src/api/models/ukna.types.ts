@@ -24,8 +24,14 @@ export interface UknaDetailsRecord {
   dates?: string[]; // normalized, backend decides format
   department?: string;
   subjects: string[];
-  hierarchy: UknaHierarchyNode[];
+  path: UknaHierarchyNode[];
   detailsUrl: string;
   previewUrl?: string;
   hasPreview: boolean;
+}
+
+export interface UknaHierarchyNode {
+  level: UkCatalogueLevel;
+  title: string;
+  reference?: string;
 }

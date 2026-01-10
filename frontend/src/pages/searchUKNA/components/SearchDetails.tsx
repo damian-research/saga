@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import DetailsPanelShell from "../../../components/common/search/DetailsPanelShell";
+import {
+  PreviewViewer,
+  DetailsPanelShell,
+} from "../../../components/common/search";
 import styles from "../../../styles/commonSearchDetails.module.css";
 import { getUknaDetails } from "../../../api/services/uknaSearch.service";
 import type { UknaDetailsRecord } from "../../../api/models/ukna.types";
@@ -10,9 +13,9 @@ interface Props {
 
 export default function SearchDetails({ selectedId }: Props) {
   const [loading, setLoading] = useState(false);
-  const [downloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [record, setRecord] = useState<UknaDetailsRecord | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     if (!selectedId) {
@@ -43,8 +46,8 @@ export default function SearchDetails({ selectedId }: Props) {
   }
 
   function onPreview() {
-    if (!record) return;
-    window.open(record.detailsUrl, "_blank");
+    if (!record || !record.hasPreview) return;
+    setShowPreview(true);
   }
 
   if (!selectedId) {
@@ -59,14 +62,14 @@ export default function SearchDetails({ selectedId }: Props) {
       headerAction={
         record && (
           <>
-            <button
+            {/* <button
               onClick={onPreview}
               disabled={!record.hasPreview}
               className={styles.downloadButton}
               title="View images"
             >
               👁
-            </button>
+            </button> */}
 
             <button
               onClick={onDownload}
@@ -79,6 +82,51 @@ export default function SearchDetails({ selectedId }: Props) {
         )
       }
     >
+      {record && (
+        <>
+          <h2 className={styles.title}>{record.title}</h2>
+
+          <div className={styles.breadcrumbs}>
+            {record.path.map((p, i) => (
+              <span key={i}>
+                {p.reference ? (
+                  <a
+                    href={`https://discovery.nationalarchives.gov.uk/browse/r/r/${encodeURIComponent(
+                      p.reference
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.breadcrumbLink}
+                  >
+                    {p.reference} – {p.title}
+                  </a>
+                ) : (
+                  <span>{p.title}</span>
+                )}
+
+                {i < record.path.length - 1 && <span> → </span>}
+              </span>
+            ))}
+          </div>
+        </>
+      )}
+
+      {record && (
+        <div className={styles.section}>
+          <h4 className={styles.sectionTitle}>Record access</h4>
+
+          {record.hasPreview ? (
+            <button onClick={onPreview} className={styles.button}>
+              View images
+            </button>
+          ) : (
+            <p className={styles.emptyState}>
+              No images available for this record
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Uncomment when data is ready */}
       {/* {record && (
         <>
@@ -122,30 +170,15 @@ export default function SearchDetails({ selectedId }: Props) {
           </div>
         </>
       )}
-
-      {viewingObject && record && (
-        <PreviewViewer
-          object={viewingObject}
-          objects={record.digitalObjects}
-          onClose={() => setViewingObject(null)}
-          onNext={() => {
-            const currentIndex = record.digitalObjects.findIndex(
-              (o) => o.objectUrl === viewingObject.objectUrl
-            );
-            if (currentIndex < record.digitalObjects.length - 1) {
-              setViewingObject(record.digitalObjects[currentIndex + 1]);
-            }
-          }}
-          onPrev={() => {
-            const currentIndex = record.digitalObjects.findIndex(
-              (o) => o.objectUrl === viewingObject.objectUrl
-            );
-            if (currentIndex > 0) {
-              setViewingObject(record.digitalObjects[currentIndex - 1]);
-            }
-          }}
-        />
       )} */}
+
+      {record && showPreview && (
+        <PreviewViewer
+          archive="UKNA"
+          uknaRecordId={record.id}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
     </DetailsPanelShell>
   );
 }

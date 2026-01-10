@@ -8,7 +8,23 @@ public sealed partial class UknaClient(HttpClient http) : IUknaClient
     {
         var url = BuildSearchUrl(queryParams);
 
-        var html = await _http.GetStringAsync(url);
+        using var response = await _http.GetAsync(url);
+
+        var status = response.StatusCode;
+        var headers = response.Headers;
+        var contentHeaders = response.Content.Headers;
+
+        var html = await response.Content.ReadAsStringAsync();
+
+        if (html == "")
+        {
+            Console.WriteLine($"[UKNA] URL: {url}");
+            Console.WriteLine($"[UKNA] Status: {(int)status} {status}");
+            Console.WriteLine($"[UKNA] Content-Type: {contentHeaders.ContentType}");
+            Console.WriteLine($"[UKNA] Content-Length: {html.Length}");
+            Console.WriteLine($"[UKNA] Headers: {string.Join(", ", headers.Select(h => h.Key))}");
+            Console.WriteLine($"[UKNA] Body preview:\n{html[..Math.Min(800, html.Length)]}");
+        }
 
         return ParseSearchResults(html);
     }
