@@ -45,7 +45,7 @@ public sealed class NaraClient : INaraClient
         }
         else
         {
-            var url = $"https://catalog.archives.gov/proxy/records/search{rawQuery}" +
+            var url = $"records/search{rawQuery}" +
                 (rawQuery.Contains("abbreviated=") ? string.Empty : "&abbreviated=true");
 
             var sw = Stopwatch.StartNew();
