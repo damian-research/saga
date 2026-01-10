@@ -99,3 +99,31 @@
   opacity: 0.5;
   cursor: default;
 }
+
+/* Search animation */
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled::after {
+  content: " ⏳";
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+@keyframes buttonPulse {
+  0% {
+    background-color: var(--bg-secondary);
+  }
+  50% {
+    background-color: var(--bg-hover);
+  }
+  100% {
+    background-color: var(--bg-secondary);
+  }
+}
+
+.button:disabled {
+  animation: buttonPulse 1.6s ease-in-out infinite;
+}

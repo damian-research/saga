@@ -5,3 +5,33 @@
   padding: 12px 12px 12px 12px;
   background-color: var(--bg-secondary);
 }
+
+.loading {
+  padding: 12px;
+  background: var(--bg-secondary);
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.loading::after {
+  content: "";
+  display: inline-block;
+  width: 1.5em;
+  text-align: left;
+  animation: loadingDots 1.4s steps(4, end) infinite;
+}
+
+@keyframes loadingDots {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+}

@@ -9,6 +9,7 @@ interface Props {
   onSearch: (form: SearchFormState) => void;
   selectedNaId: number | null;
   onSelect: (id: number) => void;
+  loading: boolean;
 }
 
 export default function SearchLayout({
@@ -16,22 +17,27 @@ export default function SearchLayout({
   onSearch,
   selectedNaId,
   onSelect,
+  loading,
 }: Props) {
   return (
     <div className={styles.grid}>
-      <SearchPanel onSearch={onSearch} />
-      <SearchListShell
-        items={results}
-        selectedKey={selectedNaId}
-        getKey={(r) => r.naId}
-        renderItem={(record, isSelected) => (
-          <SearchListItem
-            record={record}
-            isSelected={isSelected}
-            onSelect={onSelect}
-          />
-        )}
-      />
+      <SearchPanel onSearch={onSearch} loading={loading} />
+      {loading ? (
+        <div className={styles.loading}>Searching</div>
+      ) : (
+        <SearchListShell
+          items={results}
+          selectedKey={selectedNaId}
+          getKey={(r) => r.naId}
+          renderItem={(record, isSelected) => (
+            <SearchListItem
+              record={record}
+              isSelected={isSelected}
+              onSelect={onSelect}
+            />
+          )}
+        />
+      )}
       <SearchPreview selectedNaId={selectedNaId} />
     </div>
   );

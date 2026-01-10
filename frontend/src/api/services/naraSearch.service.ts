@@ -1,4 +1,4 @@
-import { buildNaraQuery } from "../utils/queryBuilder";
+import { buildNaraQ, buildNaraParams } from "../utils/queryBuilder";
 import type { NaraSearchParams } from "../dto/naraSearch.dto";
 import type { RawRecord, FullRecord } from "../models/nara.types";
 import { API_BASE_URL } from "../config";
@@ -28,11 +28,13 @@ export async function searchRecords(
       params.set("naid_is", raw);
     }
   } else {
-    const q = buildNaraQuery({
-      ...paramsInputSafe,
-      q: paramsInputSafe.q ?? "",
-    });
+    const q = buildNaraQ(paramsInputSafe);
     params.set("q", q);
+
+    const filterParams = buildNaraParams(paramsInputSafe);
+    filterParams.forEach((value, key) => {
+      params.set(key, value);
+    });
   }
 
   if (paramsInputSafe.limit) params.set("limit", String(paramsInputSafe.limit));

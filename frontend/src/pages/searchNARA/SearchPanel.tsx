@@ -3,6 +3,7 @@ import styles from "../../styles/commonSearchPanel.module.css";
 
 interface Props {
   onSearch: (form: SearchFormState) => void;
+  loading: boolean;
 }
 
 export interface SearchFormState {
@@ -24,7 +25,7 @@ export interface SearchFormState {
   localId?: string;
 }
 
-export default function SearchPanel({ onSearch }: Props) {
+export default function SearchPanel({ onSearch, loading }: Props) {
   const [form, setForm] = useState<SearchFormState>({
     q: "",
     limit: 50,
@@ -53,6 +54,7 @@ export default function SearchPanel({ onSearch }: Props) {
   }
 
   function submit() {
+    if (loading) return;
     if (!hasAnySearchValue(form)) return;
     onSearch(form);
   }
@@ -189,9 +191,9 @@ export default function SearchPanel({ onSearch }: Props) {
       <button
         className={styles.button}
         onClick={submit}
-        disabled={!hasAnySearchValue(form)}
+        disabled={loading || !hasAnySearchValue(form)}
       >
-        Search
+        {loading ? "Searching…" : "Search"}
       </button>
     </div>
   );
