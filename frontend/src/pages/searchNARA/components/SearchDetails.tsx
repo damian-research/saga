@@ -119,13 +119,13 @@ export default function SearchDetails({ selectedNaId }: Props) {
         <>
           <h2 className={styles.title}>{record.title}</h2>
 
-          <div className={styles.breadcrumbs}>
+          {/* <div className={styles.breadcrumbs}>
             {record.ancestors
               .slice()
               .sort((a, b) => b.distance - a.distance)
               .map((a) => a.title)
               .join(" → ")}
-          </div>
+          </div> */}
 
           <div className={styles.section}>
             <h4 className={styles.sectionTitle}>Digital Objects</h4>
@@ -160,6 +160,7 @@ export default function SearchDetails({ selectedNaId }: Props) {
 
       {viewingObject && record && (
         <PreviewViewer
+          archive="NARA"
           object={viewingObject}
           objects={record.digitalObjects}
           onClose={() => setViewingObject(null)}

@@ -6,6 +6,8 @@ type NaraPreviewProps = {
   object: DigitalObject;
   objects: DigitalObject[];
   onClose: () => void;
+  onNext?: () => void;
+  onPrev?: () => void;
 };
 
 type UknaPreviewProps = {
@@ -42,6 +44,10 @@ export default function PreviewViewer(props: Props) {
   const hasPrev = currentIndex > 0;
 
   const onPrev = () => {
+    if ("onPrev" in props && props.onPrev) {
+      props.onPrev();
+      return;
+    }
     if (currentIndex > 0) {
       window.dispatchEvent(
         new CustomEvent("preview:navigate", {
@@ -52,6 +58,10 @@ export default function PreviewViewer(props: Props) {
   };
 
   const onNext = () => {
+    if ("onNext" in props && props.onNext) {
+      props.onNext();
+      return;
+    }
     if (currentIndex < objects.length - 1) {
       window.dispatchEvent(
         new CustomEvent("preview:navigate", {
