@@ -1,6 +1,8 @@
 import type { Ead3Response } from ".";
 import styles from "./SearchListItem.module.css";
 import PathShell from "./PathShell";
+import BookmarkStar from "../bookmarks/BookmarkStar";
+import type { Bookmark } from "../../api/models/bookmarks.types";
 
 interface SearchListItemProps {
   record: Ead3Response;
@@ -41,13 +43,44 @@ export default function SearchListItem({
     mediaType = record.archDesc.dsc?.head || "";
   }
 
+  const bookmark: Bookmark = {
+    id: `ead3-${unitId}`,
+    originalTitle: unitTitle,
+    archiveName: "NARA",
+    level,
+    recordType: materialType || "",
+    onlineAvailable: digitalObjectCount > 0,
+    openRef: {
+      archive: "NARA",
+      id: unitId,
+    },
+    category: "",
+    customName: "",
+  };
+
   return (
     <div className={styles.item}>
       <div className={styles.path}>
         <PathShell path={record.path} onSelect={(id) => onSelect(id)} />
       </div>
 
-      <div className={styles.detailsTitle}>{unitTitle}</div>
+      <div className={styles.titleRow}>
+        <div className={styles.detailsTitle}>{unitTitle}</div>
+
+        <div className={styles.actions}>
+          <BookmarkStar bookmark={bookmark} />
+          <button
+            className={styles.arrow}
+            title="Open details"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(unitId);
+            }}
+          >
+            ›
+          </button>
+        </div>
+      </div>
 
       <div className={styles.meta}>
         | ID: {unitId} | {level}

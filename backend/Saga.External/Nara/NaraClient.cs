@@ -25,7 +25,13 @@ public sealed class NaraClientWithMapper : INaraClient
     // OLD SearchBriefAsync
     public async Task<IEnumerable<Ead>> SearchAndMapToEad3Async(string rawQuery)
     {
-        var json = await GetJsonResponseAsync(rawQuery);
+        string? json = default;
+
+        if (_useMock)
+            json = await GetMockJsonAsync(rawQuery);
+
+        else
+            json = await GetJsonResponseAsync(rawQuery);
 
         // Deserialize to NARA model
         var naraResponse = JsonSerializer.Deserialize<NaraResponse>(json, new JsonSerializerOptions
@@ -50,6 +56,7 @@ public sealed class NaraClientWithMapper : INaraClient
     public async Task<Ead> GetFullAndMapToEad3Async(long naId)
     {
         var url = $"records/search?q=record.naId:{naId}&limit=1";
+
         var json = await GetJsonResponseAsync(url);
 
         var naraResponse = JsonSerializer.Deserialize<NaraResponse>(json, new JsonSerializerOptions
@@ -64,18 +71,11 @@ public sealed class NaraClientWithMapper : INaraClient
 
         var ead = _mapper.MapToEad3(naraResponse);
 
-        // Ensure Path is populated - done inside mapper per instructions
-
         return ead;
     }
 
     private async Task<string> GetJsonResponseAsync(string queryOrUrl)
     {
-        if (_useMock)
-        {
-            return await GetMockJsonAsync(queryOrUrl);
-        }
-
         var url = queryOrUrl.StartsWith("records/")
             ? queryOrUrl
             : $"records/search{queryOrUrl}";

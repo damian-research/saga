@@ -44,7 +44,10 @@ export default function PreviewViewer(props: Props) {
     }
   };
 
-  const title = object.daoType ?? "Digital Object";
+  const title =
+    [object.localType, object.daoType !== "derived" ? object.daoType : null]
+      .filter(Boolean)
+      .join(" – ") || "Digital Object";
 
   return (
     <div className={styles.overlay} onClick={onClose}>

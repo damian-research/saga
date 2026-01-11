@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { type Ead3Response, type Dao } from ".";
+import styles from "./SearchDetails.module.css";
 import PreviewViewer from "./PreviewViewer";
 import { getRecord } from "../../api/services/searchRecords.service";
 
@@ -12,6 +13,7 @@ export default function SearchDetails({ selectedKey }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!selectedKey) {
@@ -44,7 +46,7 @@ export default function SearchDetails({ selectedKey }: Props) {
   }, [selectedKey]);
 
   if (!selectedKey) {
-    return <div>Select a record to view details</div>;
+    return <div className={styles.empty}>Select a record to view details</div>;
   }
 
   if (isLoading) {
@@ -81,22 +83,56 @@ export default function SearchDetails({ selectedKey }: Props) {
     });
   }
 
-  // For PreviewViewer, pass first digital object as object prop,
-  // all digitalObjects as objects prop, and no bookmarks prop
-  const firstObject = digitalObjects.length > 0 ? digitalObjects[0] : null;
-
-  if (firstObject && !previewOpen) {
-    setPreviewOpen(true);
-  }
-
   return (
-    <div>
-      <h2>{title}</h2>
-      {firstObject && previewOpen && (
+    <div className={styles.panel}>
+      <h2 className={styles.title}>{title}</h2>
+      {digitalObjects.length > 0 && (
+        <div className={styles.header}>
+          <button
+            className={styles.downloadAll}
+            onClick={() => {
+              digitalObjects.forEach((o) => {
+                if (o.href) {
+                  window.open(o.href, "_blank");
+                }
+              });
+            }}
+          >
+            Download all
+          </button>
+
+          <ul className={styles.objectList}>
+            {digitalObjects.map((obj, idx) => (
+              <li key={idx} className={styles.objectItem}>
+                <span className={styles.objectLabel}>
+                  {obj.localType || obj.daoType || "Digital object"}
+                </span>
+                <button
+                  className={styles.viewButton}
+                  onClick={() => setActiveIndex(idx)}
+                >
+                  View
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {activeIndex !== null && digitalObjects[activeIndex] && (
         <PreviewViewer
-          object={firstObject}
+          object={digitalObjects[activeIndex]}
           objects={digitalObjects}
-          onClose={() => setPreviewOpen(false)}
+          onClose={() => setActiveIndex(null)}
+          onNext={() => {
+            if (activeIndex < digitalObjects.length - 1) {
+              setActiveIndex(activeIndex + 1);
+            }
+          }}
+          onPrev={() => {
+            if (activeIndex > 0) {
+              setActiveIndex(activeIndex - 1);
+            }
+          }}
         />
       )}
     </div>
