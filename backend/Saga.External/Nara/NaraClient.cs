@@ -32,14 +32,18 @@ public sealed class NaraClientWithMapper : INaraClient
         {
             PropertyNameCaseInsensitive = true,
             Converters =
-    {
-        new StringToIntConverter(),
-        new StringToLongConverter()
-    }
+                {
+                    new StringToIntConverter(),
+                    new StringToLongConverter()
+                }
         });
 
         // Map to EAD3 using AutoMapper
-        return _mapper.MapMultipleToEad3(naraResponse);
+        var eads = _mapper.MapMultipleToEad3(naraResponse);
+
+        // Ensure Path is populated in each Ead - done inside mapper per instructions
+
+        return eads;
     }
 
     // OLD GetFullAsync
@@ -50,10 +54,19 @@ public sealed class NaraClientWithMapper : INaraClient
 
         var naraResponse = JsonSerializer.Deserialize<NaraResponse>(json, new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            Converters =
+                {
+                    new StringToIntConverter(),
+                    new StringToLongConverter()
+                }
         });
 
-        return _mapper.MapToEad3(naraResponse);
+        var ead = _mapper.MapToEad3(naraResponse);
+
+        // Ensure Path is populated - done inside mapper per instructions
+
+        return ead;
     }
 
     private async Task<string> GetJsonResponseAsync(string queryOrUrl)
@@ -77,7 +90,7 @@ public sealed class NaraClientWithMapper : INaraClient
         return await res.Content.ReadAsStringAsync();
     }
 
-    private async Task<string> GetMockJsonAsync(string rawQuery)
+    private static async Task<string> GetMockJsonAsync(string rawQuery)
     {
         string mockFilePath = rawQuery.Contains("=1") ? "nara_response_1_rg.json"
             : rawQuery.Contains("=2") ? "nara_response_2_s.json"

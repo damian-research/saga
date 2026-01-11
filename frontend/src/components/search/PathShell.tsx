@@ -1,13 +1,9 @@
 import styles from "./PathShell.module.css";
-
-interface PathSegment {
-  key: string | number;
-  label: string;
-}
+import type { PathSegment } from "../../api/models/ead3.types";
 
 interface Props {
   path?: PathSegment[];
-  onSelect: (key: string | number) => void;
+  onSelect: (id: string) => void;
 }
 
 export default function PathShell({ path = [], onSelect }: Props) {
@@ -16,13 +12,13 @@ export default function PathShell({ path = [], onSelect }: Props) {
   return (
     <div className={styles.path}>
       {path?.map((p, index) => (
-        <span key={p.key}>
+        <span key={p.id}>
           <a
             href="#"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onSelect(p.key);
+              onSelect(p.id);
             }}
             className={styles.link}
           >

@@ -1,40 +1,3 @@
-//   naId: number;
-//   title: string;
-//   level: string;
-//   distance: number;
-// }
-
-// export interface RawRecord {
-//   naId: number;
-//   title: string;
-//   levelDescription: string;
-//   materialType?: string;
-//   sourceReference?: string;
-//   description?: string;
-//   ancestors: Ancestor[];
-//   path: PathSegment[];
-//   totalDigitalObjects?: number;
-// }
-
-// export interface FullRecord {
-//   naId: number;
-//   title: string;
-//   ancestors: Ancestor[];
-//   digitalObjects: DigitalObject[];
-// }
-
-// export interface DigitalObject {
-//   objectType: string;
-//   objectUrl: string;
-//   objectFileSize: number;
-// }
-
-// export interface PathSegment {
-//   type: "recordGroup" | "series" | "fileUnit" | "item";
-//   label: string; // render
-//   naId: number; // link, navigation
-// }
-
 // ============================================================================
 // EAD3 TYPESCRIPT MODELS
 // ============================================================================
@@ -42,6 +5,13 @@
 export interface Ead3Response {
   control: Control;
   archDesc: ArchDesc;
+  path?: PathSegment[];
+}
+
+export interface PathSegment {
+  level: string; // e.g. "recordgrp", "series"
+  id: string; // archive-specific identifier
+  label: string; // human-readable
 }
 
 export interface Control {

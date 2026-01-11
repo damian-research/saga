@@ -22,6 +22,6 @@ public class NaraToEad3Mapper(IMapper mapper) : INaraToEad3Mapper
         if (hits == null || hits.Count == 0)
             return [];
 
-        return hits.Select(hit => _mapper.Map<Ead>(hit)).ToList();
+        return [.. hits.Select(hit => _mapper.Map<Ead>(hit))];
     }
 }

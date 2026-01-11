@@ -8,6 +8,8 @@ public class Ead
 
     [XmlElement("archdesc")]
     public ArchDesc ArchDesc { get; set; }
+
+    public List<PathSegment> Path { get; set; } = new();
 }
 
 public class Control

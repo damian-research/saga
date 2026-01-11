@@ -7,7 +7,28 @@ public class NaraToEad3Profile : Profile
         // Main mapping: NARA Response Hit → EAD3 Document
         CreateMap<Hit, Ead>()
             .ForMember(dest => dest.Control, opt => opt.MapFrom(src => src))
-            .ForMember(dest => dest.ArchDesc, opt => opt.MapFrom(src => src.Source.Record));
+            .ForMember(dest => dest.ArchDesc, opt => opt.MapFrom(src => src.Source.Record))
+            .ForMember(
+                dest => dest.Path,
+                opt => opt.MapFrom(src =>
+                    src.Source.Record.Ancestors == null
+                        ? new List<Ancestor>()
+                        : src.Source.Record.Ancestors
+                            .Where(a =>
+                                a.NaId != src.Source.Record.NaId &&
+                                !string.Equals(a.LevelOfDescription, src.Source.Record.LevelOfDescription, StringComparison.OrdinalIgnoreCase)
+                            )
+                            .OrderBy(a =>
+                                a.LevelOfDescription.Equals("recordGroup", StringComparison.OrdinalIgnoreCase) ? 0 :
+                                a.LevelOfDescription.Equals("recordgrp", StringComparison.OrdinalIgnoreCase) ? 0 :
+                                a.LevelOfDescription.Equals("fonds", StringComparison.OrdinalIgnoreCase) ? 1 :
+                                a.LevelOfDescription.Equals("series", StringComparison.OrdinalIgnoreCase) ? 2 :
+                                a.LevelOfDescription.Equals("fileUnit", StringComparison.OrdinalIgnoreCase) ? 3 :
+                                99
+                            )
+                            .ToList()
+                )
+            );
 
         // Control section mapping
         CreateMap<Hit, Control>()
@@ -40,8 +61,7 @@ public class NaraToEad3Profile : Profile
         CreateMap<Metadata, MaintenanceHistory>()
             .ForMember(dest => dest.MaintenanceEvents, opt => opt.MapFrom(src => new List<MaintenanceEvent>
             {
-                    new MaintenanceEvent
-                    {
+                    new() {
                         EventType = new EventType { Value = "created" },
                         EventDateTime = new EventDateTime
                         {
@@ -56,7 +76,11 @@ public class NaraToEad3Profile : Profile
         // ArchDesc mapping
         CreateMap<Record, ArchDesc>()
             .ForMember(dest => dest.Level, opt => opt.MapFrom(src => src.LevelOfDescription))
-            .ForMember(dest => dest.LocalType, opt => opt.MapFrom(src => src.RecordType))
+            .ForMember(dest => dest.LocalType, opt => opt.MapFrom(src =>
+                        src.GeneralRecordsTypes != null && src.GeneralRecordsTypes.Any()
+                            ? string.Join(" / ", src.GeneralRecordsTypes)
+                            : null
+            ))
             .ForMember(dest => dest.Did, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.Dsc, opt => opt.MapFrom(src => src));
 
@@ -79,7 +103,17 @@ public class NaraToEad3Profile : Profile
         // Dsc (Description of Subordinate Components) mapping
         CreateMap<Record, Dsc>()
             .ForMember(dest => dest.DscType, opt => opt.MapFrom(src => "combined"))
-            .ForMember(dest => dest.Head, opt => opt.MapFrom(src => "Digital Objects and Components"))
+            .ForMember(dest => dest.Head, opt => opt.MapFrom(src =>
+                src.PhysicalOccurrences != null
+                    ? string.Join(
+                        " / ",
+                        src.PhysicalOccurrences
+                            .SelectMany(p => p.MediaOccurrences ?? new List<MediaOccurrence>())
+                            .SelectMany(m => m.GeneralMediaTypes ?? new List<string>())
+                            .Distinct()
+                    )
+                    : null
+            ))
             .ForMember(dest => dest.Components, opt => opt.MapFrom(src => MapComponents(src)));
 
         // Component mapping for digital objects
@@ -105,6 +139,28 @@ public class NaraToEad3Profile : Profile
                     }
                 }
             }));
+
+        // Ancestor → PathSegment mapping (for Path property)
+        CreateMap<Ancestor, PathSegment>()
+            .ForMember(dest => dest.Level, opt => opt.MapFrom(src =>
+                src.LevelOfDescription.Equals("recordGroup", StringComparison.OrdinalIgnoreCase) ||
+                src.LevelOfDescription.Equals("recordgrp", StringComparison.OrdinalIgnoreCase)
+                    ? "recordgrp"
+                : src.LevelOfDescription.Equals("fileUnit", StringComparison.OrdinalIgnoreCase)
+                    ? "file"
+                : src.LevelOfDescription.ToLowerInvariant()
+            ))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.NaId.ToString()))
+            .ForMember(dest => dest.Label, opt => opt.MapFrom(src =>
+                src.LevelOfDescription.Equals("recordGroup", StringComparison.OrdinalIgnoreCase) ||
+                src.LevelOfDescription.Equals("recordgrp", StringComparison.OrdinalIgnoreCase)
+                    ? $"RG# {src.RecordGroupNumber} – {src.Title}"
+                : src.LevelOfDescription.Equals("series", StringComparison.OrdinalIgnoreCase)
+                    ? $"Series {src.Title}"
+                : src.LevelOfDescription.Equals("fileUnit", StringComparison.OrdinalIgnoreCase)
+                    ? $"File {src.Title}"
+                : src.Title
+            ));
     }
 
     // ============================================================================

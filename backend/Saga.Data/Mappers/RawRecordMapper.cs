@@ -77,20 +77,20 @@ public static class RawRecordMapper
             {
                 path.Add(new PathSegment
                 {
-                    SegmentType = LevelOfDescription.RecordGroup,
-                    NaId = a.NaId,
-                    Label = a.RecordGroupNumber.HasValue
-                        ? $"RG# {a.RecordGroupNumber.Value}({a.NaId})"
-                        : $"RG({a.NaId})"
+                    // SegmentType = LevelOfDescription.RecordGroup,
+                    // NaId = a.NaId,
+                    // Label = a.RecordGroupNumber.HasValue
+                    //     ? $"RG# {a.RecordGroupNumber.Value}({a.NaId})"
+                    //     : $"RG({a.NaId})"
                 });
             }
             else
             {
                 path.Add(new PathSegment
                 {
-                    SegmentType = a.Level,
-                    NaId = a.NaId,
-                    Label = $"{LevelShort(a.Level)} {a.NaId}"
+                    // SegmentType = a.Level,
+                    // NaId = a.NaId,
+                    // Label = $"{LevelShort(a.Level)} {a.NaId}"
                 });
             }
         }

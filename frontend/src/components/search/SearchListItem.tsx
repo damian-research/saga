@@ -1,98 +1,75 @@
-import type { Ead3Response, Bookmark } from ".";
+import type { Ead3Response } from ".";
 import styles from "./SearchListItem.module.css";
 import PathShell from "./PathShell";
 
-interface PathSegment {
-  key: string | number;
-  label: string;
-}
-
 interface SearchListItemProps {
   record: Ead3Response;
-  isSelected: boolean;
-  onSelect: (key: string | number) => void;
+  onSelect: (id: string) => void;
 }
 
 export default function SearchListItem({
   record,
-  isSelected,
   onSelect,
 }: SearchListItemProps) {
-  const key =
-    record.archDesc?.did?.unitId?.text ||
-    (record.control?.recordId ? record.control.recordId : "");
+  const unitTitle = record.archDesc.did.unitTitle;
+  const unitId = record.archDesc.did.unitId?.text || "";
+  const levelRaw = record.archDesc.level || "";
+  // LEVEL mapping
+  let level = "";
+  if (levelRaw === "fileUnit") level = "Item";
+  else if (levelRaw === "series") level = "Series";
+  else if (levelRaw === "recordgrp") level = "Record Group";
 
-  const archive: "NARA" | "UK" = "NARA";
+  // First DAO in first component
+  const firstDao =
+    record.archDesc.dsc?.components?.[0]?.did.daoSet?.daos?.[0] || null;
 
-  const onlineAvailable = !!record.archDesc?.dsc?.components?.some(
-    (component) =>
-      component.did?.daoSet?.daos && component.did.daoSet.daos.length > 0
-  );
+  // Count ALL DAOs in ALL components
+  const digitalObjectCount =
+    record.archDesc.dsc?.components?.reduce(
+      (sum, c) => sum + (c.did.daoSet?.daos?.length ?? 0),
+      0
+    ) ?? 0;
 
-  const bookmark: Bookmark = {
-    id: `ead3-${key}`,
-    originalTitle: record.archDesc.did.unitTitle,
-    archiveName: archive,
-    level: record.archDesc?.level || "",
-    recordType: "",
-    onlineAvailable,
-    openRef: {
-      archive,
-      id: key,
-    },
-    category: "",
-    customName: "",
-  };
-
-  const isBookmarked = false; // TODO: wire to store
-
-  const path: PathSegment[] = [];
+  // Fallback "material type chain" if no DAO
+  let materialType = "";
+  let mediaType = "";
+  if (!firstDao) {
+    materialType = Array.isArray(record.archDesc.localType)
+      ? record.archDesc.localType.join(" / ")
+      : record.archDesc.localType || "";
+    mediaType = record.archDesc.dsc?.head || "";
+  }
 
   return (
-    <div className={`${styles.item} ${isSelected ? styles.active : ""}`}>
-      <div className={styles.content}>
-        <PathShell path={path} onSelect={onSelect} />
-        <div className={styles.title}>{record.archDesc.did.unitTitle}</div>
-
-        <div className={styles.meta}>
-          {record.archDesc.did.unitDate?.text && (
-            <span>{record.archDesc.did.unitDate.text}</span>
-          )}
-          {record.archDesc.level && (
-            <>
-              <span className={styles.separator}>|</span>
-              <span className={styles.level}>{record.archDesc.level}</span>
-            </>
-          )}
-          {onlineAvailable && (
-            <>
-              <span className={styles.separator}>|</span>
-              <span>Online</span>
-            </>
-          )}
-        </div>
+    <div className={styles.item}>
+      <div className={styles.path}>
+        <PathShell path={record.path} onSelect={(id) => onSelect(id)} />
       </div>
 
-      <div className={styles.actions}>
-        <div
-          className={styles.star}
-          onClick={(e) => {
-            e.stopPropagation();
-            // TODO: toggle bookmark placeholder (no-op for now)
-          }}
-        >
-          ☆
-        </div>
-        <div
-          className={styles.clickZone}
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelect(key);
-          }}
-        >
-          <div className={styles.arrow}>›</div>
-        </div>
+      <div className={styles.detailsTitle}>{unitTitle}</div>
+
+      <div className={styles.meta}>
+        | ID: {unitId} | {level}
+        {firstDao && (
+          <>
+            {" "}
+            | [ {firstDao.daoType} -&gt; {firstDao.localType} ]
+          </>
+        )}
+        {!firstDao && materialType && mediaType && (
+          <>
+            {" "}
+            | [ {materialType} -&gt; {mediaType} ]
+          </>
+        )}
       </div>
+
+      {digitalObjectCount > 0 && (
+        <div className={styles.digitalObjects}>
+          Digital objects: {digitalObjectCount}
+        </div>
+      )}
     </div>
   );
 }
