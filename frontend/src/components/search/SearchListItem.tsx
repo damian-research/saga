@@ -1,5 +1,11 @@
 import type { Ead3Response, Bookmark } from ".";
 import styles from "./SearchListItem.module.css";
+import PathShell from "./PathShell";
+
+interface PathSegment {
+  key: string | number;
+  label: string;
+}
 
 interface SearchListItemProps {
   record: Ead3Response;
@@ -40,10 +46,12 @@ export default function SearchListItem({
 
   const isBookmarked = false; // TODO: wire to store
 
+  const path: PathSegment[] = [];
+
   return (
     <div className={`${styles.item} ${isSelected ? styles.active : ""}`}>
       <div className={styles.content}>
-        <div className={styles.path}>{record.archDesc.level}</div>
+        <PathShell path={path} onSelect={onSelect} />
         <div className={styles.title}>{record.archDesc.did.unitTitle}</div>
 
         <div className={styles.meta}>

@@ -2,7 +2,7 @@
 export { default as SearchPanel } from "./SearchPanel";
 export { default as SearchList } from "./SearchList";
 export { default as SearchListItem } from "./SearchListItem";
-export { default as PathBreadcrumbShell } from "./PathBreadcrumbShell";
+export { default as PathBreadcrumbShell } from "./PathShell";
 export { default as SearchDetails } from "./SearchDetails";
 export { default as PreviewViewer } from "./PreviewViewer";
 

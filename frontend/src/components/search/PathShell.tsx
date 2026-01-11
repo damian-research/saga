@@ -1,16 +1,16 @@
-import styles from "./PathBreadcrumbShell.module.css";
+import styles from "./PathShell.module.css";
 
-interface BreadcrumbSegment {
+interface PathSegment {
   key: string | number;
   label: string;
 }
 
 interface Props {
-  path?: BreadcrumbSegment[];
+  path?: PathSegment[];
   onSelect: (key: string | number) => void;
 }
 
-export default function PathBreadcrumbShell({ path = [], onSelect }: Props) {
+export default function PathShell({ path = [], onSelect }: Props) {
   if (!path || path.length === 0) return null;
 
   return (
