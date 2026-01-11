@@ -9,10 +9,13 @@ builder.Services.Configure<NaraSettings>(
     builder.Configuration.GetSection("Nara")
 );
 
-builder.Services.AddSingleton<INaraClient, NaraClient>();
-builder.Services.AddScoped<NaraQueryService>();
-builder.Services.AddSingleton<IUknaClient, UknaClient>();
-builder.Services.AddScoped<UknaQueryService>();
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<NaraToEad3Profile>();
+});
+builder.Services.AddScoped<INaraToEad3Mapper, NaraToEad3Mapper>();
+builder.Services.AddScoped<INaraClient, NaraClientWithMapper>();
+//builder.Services.AddSingleton<IUknaClient, UknaClient>();
 builder.Services.AddHttpClient<DownloadService>();
 
 builder.Services.AddCors(options =>

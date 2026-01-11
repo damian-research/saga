@@ -1,15 +1,16 @@
 namespace Saga.External.Nara;
 
-public sealed class NaraClient : INaraClient
+public sealed class NaraClientWithMapper : INaraClient
 {
     private readonly HttpClient _http;
     private readonly bool _useMock;
+    private readonly INaraToEad3Mapper _mapper;
 
-    public NaraClient(IOptions<NaraSettings> options)
+    public NaraClientWithMapper(IOptions<NaraSettings> options, INaraToEad3Mapper mapper)
     {
         var cfg = options.Value;
-
         _useMock = cfg.UseMock;
+        _mapper = mapper;
 
         _http = new HttpClient
         {
@@ -21,69 +22,71 @@ public sealed class NaraClient : INaraClient
         _http.DefaultRequestHeaders.Add("Accept", "application/json");
     }
 
-    public async Task<IEnumerable<RawRecord>> SearchBriefAsync(string rawQuery)
+    // OLD SearchBriefAsync
+    public async Task<IEnumerable<Ead>> SearchAndMapToEad3Async(string rawQuery)
     {
-        var useMock = _useMock;
-        string json;
-        Console.WriteLine($"[NARA] Request: {rawQuery}");
+        var json = await GetJsonResponseAsync(rawQuery);
 
-        if (useMock)
+        // Deserialize to NARA model
+        var naraResponse = JsonSerializer.Deserialize<NaraResponse>(json, new JsonSerializerOptions
         {
-            string mockFilePath = string.Empty;
+            PropertyNameCaseInsensitive = true,
+            Converters =
+    {
+        new StringToIntConverter(),
+        new StringToLongConverter()
+    }
+        });
 
-            if (rawQuery.Contains("=1"))
-                mockFilePath = Path.Combine("Mocks", "nara_response_1_rg.json");
-            else if (rawQuery.Contains("=2"))
-                mockFilePath = Path.Combine("Mocks", "nara_response_2_s.json");
-            else if (rawQuery.Contains("=3"))
-                mockFilePath = Path.Combine("Mocks", "nara_response_3_fu.json");
-            else //if (rawQuery.Contains("=4"))
-                mockFilePath = Path.Combine("Mocks", "nara_response_4_item.json");
-
-            json = await File.ReadAllTextAsync(mockFilePath);
-            Console.WriteLine($"[NARA] Using MOCK data from {mockFilePath}");
-        }
-        else
-        {
-            var url = $"records/search{rawQuery}" +
-                (rawQuery.Contains("abbreviated=") ? string.Empty : "&abbreviated=true");
-
-            var sw = Stopwatch.StartNew();
-            var res = await _http.GetAsync(url);
-            sw.Stop();
-            Console.WriteLine($"[NARA] SearchBriefAsync took {sw.ElapsedMilliseconds} ms | URL: {url}");
-
-            res.EnsureSuccessStatusCode();
-            json = await res.Content.ReadAsStringAsync();
-        }
-
-        using var doc = JsonDocument.Parse(json);
-
-        var hits = doc.RootElement
-            .GetProperty("body")
-            .GetProperty("hits")
-            .GetProperty("hits");
-
-        var results = new List<RawRecord>();
-        foreach (var hit in hits.EnumerateArray())
-        {
-            results.Add(RawRecordMapper.FromProxyHit(hit));
-        }
-
-        return results;
+        // Map to EAD3 using AutoMapper
+        return _mapper.MapMultipleToEad3(naraResponse);
     }
 
-    public async Task<RawFullRecord> GetFullAsync(long naId)
+    // OLD GetFullAsync
+    public async Task<Ead> GetFullAndMapToEad3Async(long naId)
     {
-        var url =
-            $"records/search" +
-            $"?q=record.naId:{naId}" +
-            $"&limit=1";
+        var url = $"records/search?q=record.naId:{naId}&limit=1";
+        var json = await GetJsonResponseAsync(url);
 
+        var naraResponse = JsonSerializer.Deserialize<NaraResponse>(json, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        return _mapper.MapToEad3(naraResponse);
+    }
+
+    private async Task<string> GetJsonResponseAsync(string queryOrUrl)
+    {
+        if (_useMock)
+        {
+            return await GetMockJsonAsync(queryOrUrl);
+        }
+
+        var url = queryOrUrl.StartsWith("records/")
+            ? queryOrUrl
+            : $"records/search{queryOrUrl}";
+
+        var sw = Stopwatch.StartNew();
         var res = await _http.GetAsync(url);
+        sw.Stop();
+
+        Console.WriteLine($"[NARA] Request took {sw.ElapsedMilliseconds} ms | URL: {url}");
         res.EnsureSuccessStatusCode();
 
-        var json = await res.Content.ReadAsStringAsync();
-        return RawFullRecordMapper.FromJson(json);
+        return await res.Content.ReadAsStringAsync();
+    }
+
+    private async Task<string> GetMockJsonAsync(string rawQuery)
+    {
+        string mockFilePath = rawQuery.Contains("=1") ? "nara_response_1_rg.json"
+            : rawQuery.Contains("=2") ? "nara_response_2_s.json"
+            : rawQuery.Contains("=3") ? "nara_response_3_fu.json"
+            : "nara_response_4_item.json";
+
+        mockFilePath = Path.Combine("Mocks", mockFilePath);
+        Console.WriteLine($"[NARA] Using MOCK data from {mockFilePath}");
+
+        return await File.ReadAllTextAsync(mockFilePath);
     }
 }

@@ -32,9 +32,9 @@ public static class RawRecordMapper
         return model;
     }
 
-    private static List<Ancestor> ParseAncestors(JsonElement record)
+    private static List<AncestorOld> ParseAncestors(JsonElement record)
     {
-        var list = new List<Ancestor>();
+        var list = new List<AncestorOld>();
 
         if (!record.TryGetProperty("ancestors", out var ancestors) || ancestors.ValueKind != JsonValueKind.Array)
             return list;
@@ -43,7 +43,7 @@ public static class RawRecordMapper
         {
             var level = ParseLevel(a.GetProperty("levelOfDescription").GetString());
 
-            var ancestor = new Ancestor
+            var ancestor = new AncestorOld
             {
                 NaId = a.GetProperty("naId").GetInt64(),
                 Title = a.GetProperty("title").GetString() ?? string.Empty,
@@ -64,7 +64,7 @@ public static class RawRecordMapper
     }
 
     private static List<PathSegment> BuildPath(
-        List<Ancestor> ancestors,
+        List<AncestorOld> ancestors,
         LevelOfDescription currentLevel,
         JsonElement record)
     {
@@ -135,7 +135,7 @@ public static class RawRecordMapper
         return 0;
     }
 
-    private static DigitalObject? ParseFirstDigitalObject(JsonElement hit)
+    private static DigitalObjectOld? ParseFirstDigitalObject(JsonElement hit)
     {
         if (!hit.TryGetProperty("fields", out var fields))
             return null;
@@ -154,7 +154,7 @@ public static class RawRecordMapper
         if (!o.TryGetProperty("objectUrl", out var urlProp))
             return null;
 
-        return new DigitalObject
+        return new DigitalObjectOld
         {
             ObjectUrl = urlProp.GetString() ?? string.Empty,
             ObjectType = o.TryGetProperty("objectType", out var typeProp)

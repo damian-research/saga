@@ -2,30 +2,30 @@ namespace Saga.Api.Controllers;
 
 [ApiController]
 [Route("api/nara")]
-public class NaraQueryController(NaraQueryService service, DownloadService downloadService) : ControllerBase
+public class NaraQueryController(INaraClient naraClient, DownloadService downloadService) : ControllerBase
 {
-    private readonly NaraQueryService _service = service;
+    private readonly INaraClient _naraClient = naraClient;
     private readonly DownloadService _downloadService = downloadService;
 
     [HttpGet("search")]
     public async Task<IActionResult> Search()
     {
         var rawQuery = HttpContext.Request.QueryString.Value ?? string.Empty;
-        var results = await _service.SearchBriefAsync(rawQuery);
+        var results = await _naraClient.SearchAndMapToEad3Async(rawQuery);
         return Ok(results);
     }
 
     [HttpGet("full/{naId:long}")]
     public async Task<IActionResult> GetFull(long naId)
     {
-        var result = await _service.GetFullAsync(naId);
+        var result = await _naraClient.GetFullAndMapToEad3Async(naId);
         return Ok(result);
     }
 
     [HttpPost("download/{naId:long}")]
     public async Task<IActionResult> Download(long naId, [FromQuery] string? dir = null, CancellationToken ct = default)
     {
-        var full = await _service.GetFullAsync(naId);
+        var full = await _naraClient.GetFullAndMapToEad3Async(naId);
 
         var urls = DownloadService.BuildPlan(full);
 

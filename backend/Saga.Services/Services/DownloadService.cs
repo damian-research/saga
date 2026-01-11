@@ -4,13 +4,30 @@ public class DownloadService(HttpClient http)
 {
     private readonly HttpClient _http = http;
 
-    // PLAN: build list of URLs from FULL record (pure)
-    public static IReadOnlyList<string> BuildPlan(RawFullRecord full)
+    // PLAN: build list of URLs from EAD3 record (pure)
+    public static IReadOnlyList<string> BuildPlan(Ead ead3Record)
     {
-        return [.. full.DigitalObjects
-            .Select(o => o.ObjectUrl)
-            .Where(u => !string.IsNullOrWhiteSpace(u))
-            .Distinct()];
+        var urls = new List<string>();
+
+        // Extract URLs from DaoSet in components
+        if (ead3Record?.ArchDesc?.Dsc?.Components != null)
+        {
+            foreach (var component in ead3Record.ArchDesc.Dsc.Components)
+            {
+                if (component?.Did?.DaoSet?.Daos != null)
+                {
+                    foreach (var dao in component.Did.DaoSet.Daos)
+                    {
+                        if (!string.IsNullOrWhiteSpace(dao.Href))
+                        {
+                            urls.Add(dao.Href);
+                        }
+                    }
+                }
+            }
+        }
+
+        return [.. urls.Distinct()];
     }
 
     // EXECUTE: download files idempotently

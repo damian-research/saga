@@ -36,16 +36,16 @@ public static class RawFullRecordMapper
         return model;
     }
 
-    private static List<Ancestor> ParseAncestors(JsonElement record)
+    private static List<AncestorOld> ParseAncestors(JsonElement record)
     {
-        var list = new List<Ancestor>();
+        var list = new List<AncestorOld>();
 
         if (!record.TryGetProperty("ancestors", out var ancestors) || ancestors.ValueKind != JsonValueKind.Array)
             return list;
 
         foreach (var a in ancestors.EnumerateArray())
         {
-            list.Add(new Ancestor
+            list.Add(new AncestorOld
             {
                 NaId = a.GetProperty("naId").GetInt64(),
                 Title = a.GetProperty("title").GetString() ?? string.Empty,
@@ -57,9 +57,9 @@ public static class RawFullRecordMapper
         return list;
     }
 
-    private static List<DigitalObject> ParseDigitalObjects(JsonElement record)
+    private static List<DigitalObjectOld> ParseDigitalObjects(JsonElement record)
     {
-        var list = new List<DigitalObject>();
+        var list = new List<DigitalObjectOld>();
 
         if (!record.TryGetProperty("digitalObjects", out var objects) || objects.ValueKind != JsonValueKind.Array)
             return list;
@@ -70,7 +70,7 @@ public static class RawFullRecordMapper
             if (string.IsNullOrWhiteSpace(url))
                 continue;
 
-            list.Add(new DigitalObject
+            list.Add(new DigitalObjectOld
             {
                 ObjectUrl = url,
                 ObjectType = o.TryGetProperty("objectType", out var t)

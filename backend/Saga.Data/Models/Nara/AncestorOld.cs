@@ -1,6 +1,6 @@
 namespace Saga.Data.Models.Nara;
 
-public class Ancestor
+public class AncestorOld
 {
     public long NaId { get; set; }
     public int? RecordGroupNumber { get; set; }
