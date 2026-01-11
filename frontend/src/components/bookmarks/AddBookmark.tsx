@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Bookmark } from "../../../api/models/bookmarks.types";
+import type { Bookmark } from "../../api/models/bookmarks.types";
 import styles from "./AddBookmark.module.css";
 
 interface Props {

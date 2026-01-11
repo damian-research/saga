@@ -1,50 +1,23 @@
-import type { DigitalObject } from "../../../api/models/nara.types";
+import type { Dao } from ".";
 import styles from "./PreviewViewer.module.css";
 
-type NaraPreviewProps = {
-  archive: "NARA";
-  object: DigitalObject;
-  objects: DigitalObject[];
+type Props = {
+  object: Dao;
+  objects: Dao[];
   onClose: () => void;
   onNext?: () => void;
   onPrev?: () => void;
 };
 
-type UknaPreviewProps = {
-  archive: "UKNA";
-  uknaRecordId: string;
-  onClose: () => void;
-};
-
-type Props = NaraPreviewProps | UknaPreviewProps;
-
 export default function PreviewViewer(props: Props) {
-  if (props.archive === "UKNA") {
-    return (
-      <div className={styles.previewRoot}>
-        <iframe
-          src={`https://discovery.nationalarchives.gov.uk/details/r/${props.uknaRecordId}#imageViewerLink`}
-          title="UK National Archives Image Viewer"
-          className={styles.previewIframe}
-        />
-        <button onClick={props.onClose} className={styles.closeButton}>
-          Close
-        </button>
-      </div>
-    );
-  }
-
-  // NARA path (unchanged)
   const { object, objects, onClose } = props;
 
-  const currentIndex = objects.findIndex(
-    (o) => o.objectUrl === object.objectUrl
-  );
+  const currentIndex = objects.findIndex((o) => o.href === object.href);
   const hasNext = currentIndex < objects.length - 1;
   const hasPrev = currentIndex > 0;
 
   const onPrev = () => {
-    if ("onPrev" in props && props.onPrev) {
+    if (props.onPrev) {
       props.onPrev();
       return;
     }
@@ -58,7 +31,7 @@ export default function PreviewViewer(props: Props) {
   };
 
   const onNext = () => {
-    if ("onNext" in props && props.onNext) {
+    if (props.onNext) {
       props.onNext();
       return;
     }
@@ -71,13 +44,15 @@ export default function PreviewViewer(props: Props) {
     }
   };
 
+  const title = object.daoType ?? "Digital Object";
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.viewer} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <div style={{ width: "95px" }}></div>
           <div className={styles.titleSection}>
-            <h3 className={styles.title}>{object.objectType}</h3>
+            <h3 className={styles.title}>{title}</h3>
             <span className={styles.counter}>
               {currentIndex + 1} / {objects.length}
             </span>
@@ -87,16 +62,15 @@ export default function PreviewViewer(props: Props) {
               className={styles.downloadBtn}
               title="Download this object"
               onClick={async () => {
-                // NARA (existing behavior)
                 try {
-                  const res = await fetch(object.objectUrl);
+                  const res = await fetch(object.href);
                   const blob = await res.blob();
 
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement("a");
 
                   a.href = url;
-                  a.download = object.objectUrl.split("/").pop() ?? "download";
+                  a.download = object.href.split("/").pop() ?? "download";
 
                   document.body.appendChild(a);
                   a.click();
@@ -105,7 +79,7 @@ export default function PreviewViewer(props: Props) {
                   URL.revokeObjectURL(url);
                 } catch (e) {
                   console.error("Download failed", e);
-                  window.open(object.objectUrl, "_blank");
+                  window.open(object.href, "_blank");
                 }
               }}
             >
@@ -129,25 +103,19 @@ export default function PreviewViewer(props: Props) {
           )}
 
           <div className={styles.body}>
-            {object.objectUrl.toLowerCase().endsWith(".pdf") ? (
+            {object.href.toLowerCase().endsWith(".pdf") ? (
               <iframe
-                src={object.objectUrl}
-                title={object.objectType}
+                src={object.href}
+                title={title}
                 className={styles.iframe}
               />
-            ) : object.objectUrl
-                .toLowerCase()
-                .match(/\.(jpg|jpeg|png|gif)$/i) ? (
-              <img
-                src={object.objectUrl}
-                alt={object.objectType}
-                className={styles.image}
-              />
+            ) : object.href.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/i) ? (
+              <img src={object.href} alt={title} className={styles.image} />
             ) : (
               <div className={styles.message}>
                 <p>Unable to preview this object type.</p>
                 <a
-                  href={object.objectUrl}
+                  href={object.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.link}

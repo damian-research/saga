@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import type { Bookmark } from "../../../api/models/bookmarks.types";
-import { BookmarkContext } from "../../../context/BookmarkContext";
+import type { Bookmark } from "../../api/models/bookmarks.types";
+import { BookmarkContext } from "../../context/BookmarkContext";
 import styles from "./BookmarkStar.module.css";
 
 interface Props {

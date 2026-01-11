@@ -1,10 +1,9 @@
 import { useState } from "react";
 import Header from "../components/layout/Header/Header";
-import { SearchTab as SearchNARATab } from "./searchNARA";
-import { SearchTab as SearchNAUKTab } from "./searchUKNA";
+import { SearchTab as SearchTab } from "./search";
 import { BookmarksTab } from "./bookmarks";
 import type { Bookmark } from "../api/models/bookmarks.types";
-import AddBookmark from "../components/common/bookmarks/AddBookmark";
+import AddBookmark from "../components/bookmarks/AddBookmark";
 import { BookmarkContext } from "../context/BookmarkContext";
 
 type TabId = "bookmarks" | "nara" | "uk";
@@ -91,8 +90,7 @@ export default function MainWindow() {
               }
             />
           )}
-          {activeTab === "nara" && <SearchNARATab />}
-          {activeTab === "uk" && <SearchNAUKTab />}
+          {activeTab === "nara" && <SearchTab />}
         </div>
       </div>
     </BookmarkContext.Provider>

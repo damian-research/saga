@@ -1,11 +1,15 @@
 import { buildNaraQ, buildNaraParams } from "../utils/queryBuilder";
 import type { NaraSearchParams } from "../dto/naraSearch.dto";
-import type { RawRecord, FullRecord } from "../models/nara.types";
+import type { Ead3Response } from "../models/ead3.types";
 import { API_BASE_URL } from "../config";
+
+// ============================================================================
+// EAD3 ONLY – SEARCH
+// ============================================================================
 
 export async function searchRecords(
   paramsInput: NaraSearchParams
-): Promise<RawRecord[]> {
+): Promise<Ead3Response[]> {
   const params = new URLSearchParams();
   const paramsInputSafe = paramsInput;
 
@@ -37,7 +41,10 @@ export async function searchRecords(
     });
   }
 
-  if (paramsInputSafe.limit) params.set("limit", String(paramsInputSafe.limit));
+  if (paramsInputSafe.limit) {
+    params.set("limit", String(paramsInputSafe.limit));
+  }
+
   if (paramsInputSafe.onlineAvailable !== undefined) {
     params.set("availableOnline", String(paramsInputSafe.onlineAvailable));
   }
@@ -47,16 +54,26 @@ export async function searchRecords(
     throw new Error("Search failed");
   }
 
+  // API returns EAD3 – passthrough
   return res.json();
 }
 
-export async function getRecord(naId: number): Promise<FullRecord> {
+// ============================================================================
+// EAD3 ONLY – FULL RECORD
+// ============================================================================
+
+export async function getRecord(naId: number): Promise<Ead3Response> {
   const res = await fetch(`${API_BASE_URL}/nara/full/${naId}`);
   if (!res.ok) {
     throw new Error("Failed to load record");
   }
+
   return res.json();
 }
+
+// ============================================================================
+// DOWNLOAD (NARA-SPECIFIC, OK)
+// ============================================================================
 
 export async function downloadRecord(
   naId: number,

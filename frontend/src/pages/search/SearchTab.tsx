@@ -3,12 +3,12 @@ import {
   SearchLayout,
   searchRecords,
   type SearchFormState,
-  type RawRecord,
 } from ".";
+import type { Ead3Response } from "../../api/models/ead3.types";
 
 export default function SearchTab() {
-  const [results, setResults] = useState<RawRecord[]>([]);
-  const [selectedNaId, setSelectedNaId] = useState<number | null>(null);
+  const [results, setResults] = useState<Ead3Response[]>([]);
+  const [selectedKey, setSelectedKey] = useState<string | number | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSearch(form: SearchFormState) {
@@ -16,7 +16,7 @@ export default function SearchTab() {
     try {
       const data = await searchRecords(form);
       setResults(data);
-      setSelectedNaId(null);
+      setSelectedKey(null);
     } finally {
       setLoading(false);
     }
@@ -26,8 +26,8 @@ export default function SearchTab() {
     <SearchLayout
       results={results}
       onSearch={onSearch}
-      selectedNaId={selectedNaId}
-      onSelect={setSelectedNaId}
+      selectedKey={selectedKey}
+      onSelect={setSelectedKey}
       loading={loading}
     />
   );
