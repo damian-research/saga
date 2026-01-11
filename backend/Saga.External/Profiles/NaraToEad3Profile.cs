@@ -27,7 +27,10 @@ public class NaraToEad3Profile : Profile
                                 99
                             )
                             .ToList()
-                )
+                ))
+            .ForMember(
+                dest => dest.DigitalObjectCount,
+                opt => opt.MapFrom(src => GetDigitalObjectCount(src))
             );
 
         // Control section mapping
@@ -309,5 +312,16 @@ public class NaraToEad3Profile : Profile
         }
 
         return components;
+    }
+
+    private static int GetDigitalObjectCount(Hit src)
+    {
+        if (src.Fields == null)
+            return 0;
+
+        if (src.Fields.TotalDigitalObjects == null)
+            return 0;
+
+        return src.Fields.TotalDigitalObjects.FirstOrDefault();
     }
 }

@@ -9,7 +9,9 @@ public class Ead
     [XmlElement("archdesc")]
     public ArchDesc ArchDesc { get; set; }
 
-    public List<PathSegment> Path { get; set; } = new();
+    public List<PathSegment> Path { get; set; } = [];
+
+    public int DigitalObjectCount { get; set; }
 }
 
 public class Control

@@ -6,6 +6,7 @@ export interface Ead3Response {
   control: Control;
   archDesc: ArchDesc;
   path?: PathSegment[];
+  digitalObjectCount?: number;
 }
 
 export interface PathSegment {

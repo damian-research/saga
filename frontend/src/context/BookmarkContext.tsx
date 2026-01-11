@@ -1,9 +1,8 @@
 import { createContext } from "react";
-import type { Bookmark } from "../api/models/bookmarks.types";
+import type { Bookmark, WindowMode } from "../api/models/bookmarks.types";
 
 export interface BookmarkActions {
-  openAddBookmark: (bookmark: Bookmark) => void;
+  openAddBookmark: (bookmark: Bookmark, mode: WindowMode) => void;
 }
 
-export const BookmarkContext =
-  createContext<BookmarkActions | null>(null);
+export const BookmarkContext = createContext<BookmarkActions | null>(null);

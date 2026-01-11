@@ -2,7 +2,11 @@ import { useState } from "react";
 import Header from "../components/layout/Header/Header";
 import { SearchTab as SearchTab } from "./search";
 import { BookmarksTab } from "./bookmarks";
-import type { Bookmark } from "../api/models/bookmarks.types";
+import type {
+  Bookmark,
+  WindowMode,
+  Category,
+} from "../api/models/bookmarks.types";
 import AddBookmark from "../components/bookmarks/AddBookmark";
 import { BookmarkContext } from "../context/BookmarkContext";
 
@@ -12,36 +16,25 @@ export default function MainWindow() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [activeTab, setActiveTab] = useState<TabId>("bookmarks");
   const [addBookmarkState, setAddBookmarkState] = useState<{
-    mode: "add" | "edit";
-    bookmark: Bookmark;
+    mode: WindowMode;
+    bookmark: Bookmark | null;
   } | null>(null);
 
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
-  const TEMP_CATEGORIES = [
-    "General",
-    "Research",
-    "WWII",
-    "Intelligence",
-    "Operations",
-    "Technology",
-  ];
-
-  function openAddBookmark(bookmark: Bookmark) {
-    setAddBookmarkState({
-      mode: "add",
-      bookmark,
-    });
+  function openAddBookmark(bookmark: Bookmark | null, mode: WindowMode) {
+    setAddBookmarkState({ mode, bookmark });
   }
 
   function submitBookmarkFromMain(
     base: Bookmark,
-    data: { category: string; customName: string }
+    data: { category: Category; customName: string }
   ) {
     const record: Bookmark = {
       ...base,
       category: data.category,
       customName: data.customName,
+      createdAt: base.createdAt || new Date().toISOString(),
     };
 
     setBookmarks((prev) => {
@@ -70,11 +63,16 @@ export default function MainWindow() {
           <AddBookmark
             mode={addBookmarkState.mode}
             bookmark={addBookmarkState.bookmark}
-            // categories={[...new Set(bookmarks.map((b) => b.category))]}
-            categories={TEMP_CATEGORIES}
             onCancel={() => setAddBookmarkState(null)}
             onSubmit={(data) => {
-              submitBookmarkFromMain(addBookmarkState.bookmark, data);
+              if (addBookmarkState.mode === "add-manual") {
+                // nowy bookmark z URL (resolver zrobi resztę)
+                // submit dostanie bazowy bookmark z AddBookmark
+                submitBookmarkFromMain(addBookmarkState.bookmark!, data);
+              } else if (addBookmarkState.bookmark) {
+                // add-from-search albo edit
+                submitBookmarkFromMain(addBookmarkState.bookmark, data);
+              }
               setAddBookmarkState(null);
             }}
           />

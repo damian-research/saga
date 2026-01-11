@@ -18,7 +18,7 @@ export default function BookmarkStar({ bookmark, isSaved = false }: Props) {
       title={isSaved ? "Saved" : "Save to Bookmarks"}
       onClick={(e) => {
         e.stopPropagation();
-        ctx.openAddBookmark(bookmark);
+        ctx.openAddBookmark(bookmark, "add-from-search");
       }}
     >
       {isSaved ? "★" : "☆"}

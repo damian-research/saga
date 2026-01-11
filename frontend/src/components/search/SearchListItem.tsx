@@ -3,6 +3,7 @@ import styles from "./SearchListItem.module.css";
 import PathShell from "./PathShell";
 import BookmarkStar from "../bookmarks/BookmarkStar";
 import type { Bookmark } from "../../api/models/bookmarks.types";
+import { TEMP_CATEGORIES } from "../../api/models/bookmarks.types";
 
 interface SearchListItemProps {
   record: Ead3Response;
@@ -27,11 +28,11 @@ export default function SearchListItem({
     record.archDesc.dsc?.components?.[0]?.did.daoSet?.daos?.[0] || null;
 
   // Count ALL DAOs in ALL components
-  const digitalObjectCount =
-    record.archDesc.dsc?.components?.reduce(
-      (sum, c) => sum + (c.did.daoSet?.daos?.length ?? 0),
-      0
-    ) ?? 0;
+  // const digitalObjectCount =
+  //   record.archDesc.dsc?.components?.reduce(
+  //     (sum, c) => sum + (c.did.daoSet?.daos?.length ?? 0),
+  //     0
+  //   ) ?? 0;
 
   // Fallback "material type chain" if no DAO
   let materialType = "";
@@ -44,17 +45,20 @@ export default function SearchListItem({
   }
 
   const bookmark: Bookmark = {
+    mode: "add-from-search",
     id: `ead3-${unitId}`,
-    originalTitle: unitTitle,
-    archiveName: "NARA",
-    level,
-    recordType: materialType || "",
-    onlineAvailable: digitalObjectCount > 0,
-    openRef: {
-      archive: "NARA",
-      id: unitId,
+    archive: "NARA",
+    eadId: unitId,
+    level: record.archDesc.level,
+    title: unitTitle,
+    path: record.path ?? [],
+    material: {
+      type: materialType || undefined,
+      media: mediaType || undefined,
     },
-    category: "",
+    onlineAvailable: (record.digitalObjectCount ?? 0) > 0,
+    createdAt: new Date().toISOString(),
+    category: TEMP_CATEGORIES[0],
     customName: "",
   };
 
@@ -98,11 +102,9 @@ export default function SearchListItem({
         )}
       </div>
 
-      {digitalObjectCount > 0 && (
-        <div className={styles.digitalObjects}>
-          Digital objects: {digitalObjectCount}
-        </div>
-      )}
+      <div className={styles.digitalObjects}>
+        Online objects: {record.digitalObjectCount}
+      </div>
     </div>
   );
 }

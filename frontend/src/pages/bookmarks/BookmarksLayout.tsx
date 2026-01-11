@@ -8,6 +8,7 @@ interface Props {
   onEdit: (b: Bookmark) => void;
   onRemove: (id: string) => void;
   onExport: (list: Bookmark[]) => void;
+  onAdd: () => void;
 }
 
 export default function BookmarksLayout({
@@ -16,6 +17,7 @@ export default function BookmarksLayout({
   onEdit,
   onRemove,
   onExport,
+  onAdd,
 }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -39,9 +41,7 @@ export default function BookmarksLayout({
       items
         .slice()
         .sort((a, b) =>
-          (a.customName ?? a.originalTitle).localeCompare(
-            b.customName ?? b.originalTitle
-          )
+          (a.customName ?? a.title).localeCompare(b.customName ?? b.title)
         )
     );
 
@@ -49,18 +49,20 @@ export default function BookmarksLayout({
     return orderedBookmarks.filter((b) => {
       if (filters.category && b.category !== filters.category) return false;
       if (filters.level && b.level !== filters.level) return false;
-      if (filters.archive && b.archiveName !== filters.archive) return false;
+      if (filters.archive && b.archive !== filters.archive) return false;
       if (
         filters.name &&
         !(
           b.customName?.toLowerCase().includes(filters.name.toLowerCase()) ||
-          b.originalTitle.toLowerCase().includes(filters.name.toLowerCase())
+          b.title.toLowerCase().includes(filters.name.toLowerCase())
         )
       )
         return false;
       if (
         filters.recordType &&
-        !b.recordType.toLowerCase().includes(filters.recordType.toLowerCase())
+        !b.material?.type
+          ?.toLowerCase()
+          .includes(filters.recordType.toLowerCase())
       )
         return false;
       return true;
@@ -73,6 +75,7 @@ export default function BookmarksLayout({
         <div className={styles.panelTitle}>Saved Records</div>
 
         <div className={styles.actions}>
+          <button onClick={onAdd}>Add</button>
           <button
             disabled={!selectedId}
             onClick={() => {
@@ -126,13 +129,11 @@ export default function BookmarksLayout({
             }
           >
             <option value="">Archive</option>
-            {[...new Set(bookmarks.map((b) => b.archiveName))]
-              .sort()
-              .map((a) => (
-                <option key={a} value={a}>
-                  {a}
-                </option>
-              ))}
+            {[...new Set(bookmarks.map((b) => b.archive))].sort().map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
           </select>
 
           <input
@@ -148,7 +149,7 @@ export default function BookmarksLayout({
             }
           >
             <option value="">Record type</option>
-            {[...new Set(bookmarks.map((b) => b.recordType))]
+            {[...new Set(bookmarks.map((b) => b.material?.type))]
               .sort()
               .map((r) => (
                 <option key={r} value={r}>
@@ -181,11 +182,11 @@ export default function BookmarksLayout({
                 className={b.id === selectedId ? styles.selected : ""}
               >
                 <td>{b.category}</td>
-                <td>{b.customName ?? "—"}</td>
-                <td>{b.originalTitle}</td>
+                <td>{b.customName || "—"}</td>
+                <td>{b.title}</td>
                 <td>{b.level}</td>
-                <td>{b.recordType}</td>
-                <td>{b.archiveName}</td>
+                <td>{b.material?.type}</td>
+                <td>{b.archive}</td>
                 <td>{b.onlineAvailable ? "✓" : "—"}</td>
               </tr>
             ))}
