@@ -1,4 +1,4 @@
-namespace Saga.Data.Models.Nara;
+namespace Saga.Data.Models.RecordModel;
 
 public sealed class PathSegment
 {

@@ -5,7 +5,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<NaraSettings>(
+builder.Services.Configure<SagaSettings>(
     builder.Configuration.GetSection("Nara")
 );
 

@@ -6,7 +6,7 @@ public sealed class NaraClientWithMapper : INaraClient
     private readonly bool _useMock;
     private readonly INaraToEad3Mapper _mapper;
 
-    public NaraClientWithMapper(IOptions<NaraSettings> options, INaraToEad3Mapper mapper)
+    public NaraClientWithMapper(IOptions<SagaSettings> options, INaraToEad3Mapper mapper)
     {
         var cfg = options.Value;
         _useMock = cfg.UseMock;
@@ -22,52 +22,24 @@ public sealed class NaraClientWithMapper : INaraClient
         _http.DefaultRequestHeaders.Add("Accept", "application/json");
     }
 
-    // OLD SearchBriefAsync
     public async Task<IEnumerable<Ead>> SearchAndMapToEad3Async(string rawQuery)
     {
-        string? json = default;
+        string? json = _useMock ? await GetMockJsonAsync(rawQuery) : await GetJsonResponseAsync(rawQuery);
 
-        if (_useMock)
-            json = await GetMockJsonAsync(rawQuery);
+        var naraResponse = JsonConverter.ConvertToNara(json);
 
-        else
-            json = await GetJsonResponseAsync(rawQuery);
-
-        // Deserialize to NARA model
-        var naraResponse = JsonSerializer.Deserialize<NaraResponse>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            Converters =
-                {
-                    new StringToIntConverter(),
-                    new StringToLongConverter()
-                }
-        });
-
-        // Map to EAD3 using AutoMapper
         var eads = _mapper.MapMultipleToEad3(naraResponse);
-
-        // Ensure Path is populated in each Ead - done inside mapper per instructions
 
         return eads;
     }
 
-    // OLD GetFullAsync
     public async Task<Ead> GetFullAndMapToEad3Async(long naId)
     {
         var url = $"records/search?q=record.naId:{naId}&limit=1";
 
         var json = await GetJsonResponseAsync(url);
 
-        var naraResponse = JsonSerializer.Deserialize<NaraResponse>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            Converters =
-                {
-                    new StringToIntConverter(),
-                    new StringToLongConverter()
-                }
-        });
+        var naraResponse = JsonConverter.ConvertToNara(json);
 
         var ead = _mapper.MapToEad3(naraResponse);
 

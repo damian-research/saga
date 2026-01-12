@@ -1,6 +1,6 @@
 namespace Saga.Data.Models.Nara;
 
-public sealed class NaraSettings
+public sealed class SagaSettings
 {
     public string BaseUrl { get; init; } = "";
     public string ApiKey { get; init; } = "";

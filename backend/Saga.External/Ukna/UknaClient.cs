@@ -89,7 +89,7 @@ public sealed partial class UknaClient(HttpClient http) : IUknaClient
         foreach (var node in nodes)
         {
             var link = node.SelectSingleNode(".//a");
-            var href = link?.GetAttributeValue("href", null);
+            var href = link?.GetAttributeValue("href", "");
             if (href == null)
                 continue;
 
@@ -115,7 +115,7 @@ public sealed partial class UknaClient(HttpClient http) : IUknaClient
             results.Add(new UknaSearchRecord
             {
                 Id = idMatch.Groups[1].Value,
-                Title = title,
+                Title = title ?? "no title",
                 Summary = summary,
                 Reference = reference,
                 Date = date,
@@ -228,11 +228,12 @@ public sealed partial class UknaClient(HttpClient http) : IUknaClient
         return 7;     // Item (fallback)
     }
 
-    private static string? ExtractReference(string text)
+    private static string ExtractReference(string text)
     {
         // Matches things like "CAB 79", "CAB 79/76"
         var match = MyRegex1().Match(text);
-        return match.Success ? match.Value.Trim() : null;
+
+        return (match is not null && match.Success) ? match.Value.Trim() : "";
     }
 
     [GeneratedRegex(@"\/details\/r\/(C\d+)")]

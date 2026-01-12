@@ -250,10 +250,10 @@ public class NaraToEad3Profile : Profile
                     Level = "item",
                     Did = new ComponentDid
                     {
-                        UnitId = digitalObj.ObjectId.ToString(),
+                        UnitId = digitalObj.ObjectId?.ToString(),
                         UnitTitle = new UnitTitle
                         {
-                            Text = digitalObj.ObjectDescription ?? digitalObj.FileName ?? "name not found",
+                            Text = digitalObj.ObjectDescription ?? digitalObj.ObjectFilename ?? "name not found",
                             GenreForm = new GenreForm
                             {
                                 Parts =
@@ -298,7 +298,7 @@ public class NaraToEad3Profile : Profile
                                                 new() {
                                                     Parts =
                                                     [
-                                                        new Part { LocalType = "object", Text = digitalObj.FileName ?? "name not found", }
+                                                        new Part { LocalType = "object", Text = digitalObj.ObjectFilename ?? "name not found", }
                                                     ]
                                                 }
                                             ]

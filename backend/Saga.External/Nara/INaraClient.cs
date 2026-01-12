@@ -7,7 +7,4 @@ public interface INaraClient
 
     // FULL
     Task<Ead> GetFullAndMapToEad3Async(long naId);
-
-    // Task<IEnumerable<RawRecord>> SearchBriefAsync(string query);
-    // Task<RawFullRecord> GetFullAsync(long naId);
 }
