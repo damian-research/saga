@@ -37,4 +37,6 @@ export interface Bookmark {
 
   createdAt: string; // ISO
   note?: string; // user note (optional)
+
+  url: string;
 }

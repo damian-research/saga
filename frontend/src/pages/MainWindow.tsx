@@ -1,14 +1,16 @@
+// MainWindow - REFACTORED
+//
 import { useState } from "react";
 import Header from "../components/layout/Header/Header";
-import { SearchTab as SearchTab } from "./search";
+import { SearchTab } from "./search";
 import { BookmarksTab } from "./bookmarks";
-import type {
-  Bookmark,
-  WindowMode,
-  Category,
-} from "../api/models/bookmarks.types";
+import type { Bookmark, WindowMode } from "../api/models/bookmarks.types";
 import AddBookmark from "../components/bookmarks/AddBookmark";
 import { BookmarkContext } from "../context/BookmarkContext";
+import {
+  saveBookmark,
+  removeBookmark,
+} from "../api/services/bookmarks.service";
 
 type TabId = "bookmarks" | "nara" | "uk";
 
@@ -26,23 +28,24 @@ export default function MainWindow() {
     setAddBookmarkState({ mode, bookmark });
   }
 
-  function submitBookmarkFromMain(
-    base: Bookmark,
-    data: { category: Category; customName: string }
-  ) {
-    const record: Bookmark = {
-      ...base,
-      category: data.category,
-      customName: data.customName,
-      createdAt: base.createdAt || new Date().toISOString(),
-    };
-
+  function submitBookmark(bookmark: Bookmark) {
     setBookmarks((prev) => {
-      const exists = prev.some((b) => b.id === record.id);
-      return exists
-        ? prev.map((b) => (b.id === record.id ? record : b))
-        : [...prev, record];
+      const exists = prev.some((b) => b.id === bookmark.id);
+
+      const next = exists
+        ? prev.map((b) => (b.id === bookmark.id ? bookmark : b))
+        : [...prev, bookmark];
+
+      // persistence (side-effect)
+      saveBookmark(bookmark);
+
+      return next;
     });
+  }
+
+  function handleRemoveBookmark(id: string) {
+    setBookmarks((prev) => prev.filter((b) => b.id !== id));
+    removeBookmark(id); // persistence only
   }
 
   const toggleDarkMode = () => {
@@ -64,15 +67,8 @@ export default function MainWindow() {
             mode={addBookmarkState.mode}
             bookmark={addBookmarkState.bookmark}
             onCancel={() => setAddBookmarkState(null)}
-            onSubmit={(data) => {
-              if (addBookmarkState.mode === "add-manual") {
-                // nowy bookmark z URL (resolver zrobi resztę)
-                // submit dostanie bazowy bookmark z AddBookmark
-                submitBookmarkFromMain(addBookmarkState.bookmark!, data);
-              } else if (addBookmarkState.bookmark) {
-                // add-from-search albo edit
-                submitBookmarkFromMain(addBookmarkState.bookmark, data);
-              }
+            onSubmit={(bookmark) => {
+              submitBookmark(bookmark);
               setAddBookmarkState(null);
             }}
           />
@@ -86,6 +82,10 @@ export default function MainWindow() {
               onEditBookmark={(b) =>
                 setAddBookmarkState({ mode: "edit", bookmark: b })
               }
+              onAddBookmark={() =>
+                setAddBookmarkState({ mode: "add-manual", bookmark: null })
+              }
+              onRemoveBookmark={handleRemoveBookmark}
             />
           )}
           {activeTab === "nara" && <SearchTab />}

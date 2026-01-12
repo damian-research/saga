@@ -1,3 +1,5 @@
+// SearchListItem - POPRAWIONY
+//
 import type { Ead3Response } from ".";
 import styles from "./SearchListItem.module.css";
 import PathShell from "./PathShell";
@@ -8,33 +10,26 @@ import { TEMP_CATEGORIES } from "../../api/models/bookmarks.types";
 interface SearchListItemProps {
   record: Ead3Response;
   onSelect: (id: string) => void;
+  isSelected: boolean; // ← DODANE
 }
 
 export default function SearchListItem({
   record,
   onSelect,
+  isSelected, // ← DODANE
 }: SearchListItemProps) {
   const unitTitle = record.archDesc.did.unitTitle;
   const unitId = record.archDesc.did.unitId?.text || "";
   const levelRaw = record.archDesc.level || "";
-  // LEVEL mapping
+
   let level = "";
   if (levelRaw === "fileUnit") level = "Item";
   else if (levelRaw === "series") level = "Series";
   else if (levelRaw === "recordgrp") level = "Record Group";
 
-  // First DAO in first component
   const firstDao =
     record.archDesc.dsc?.components?.[0]?.did.daoSet?.daos?.[0] || null;
 
-  // Count ALL DAOs in ALL components
-  // const digitalObjectCount =
-  //   record.archDesc.dsc?.components?.reduce(
-  //     (sum, c) => sum + (c.did.daoSet?.daos?.length ?? 0),
-  //     0
-  //   ) ?? 0;
-
-  // Fallback "material type chain" if no DAO
   let materialType = "";
   let mediaType = "";
   if (!firstDao) {
@@ -60,12 +55,16 @@ export default function SearchListItem({
     createdAt: new Date().toISOString(),
     category: TEMP_CATEGORIES[0],
     customName: "",
+    url: `https://catalog.archives.gov/id/${unitId}`,
   };
 
   return (
-    <div className={styles.item}>
+    <div className={`${styles.item} ${isSelected ? styles.selected : ""}`}>
       <div className={styles.path}>
-        <PathShell path={record.path} onSelect={(id) => onSelect(id)} />
+        <PathShell
+          path={record.path}
+          onSelect={(id) => onSelect(String(id))} // ← FIX: konwersja do string
+        />
       </div>
 
       <div className={styles.titleRow}>

@@ -12,7 +12,6 @@ export default function SearchDetails({ selectedKey }: Props) {
   const [record, setRecord] = useState<Ead3Response | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -22,8 +21,10 @@ export default function SearchDetails({ selectedKey }: Props) {
       return;
     }
 
+    // ← FIX: poprawna konwersja
     const recordId =
-      typeof selectedKey === "number" ? selectedKey : Number(selectedKey);
+      typeof selectedKey === "number" ? selectedKey : parseInt(selectedKey, 10);
+
     if (isNaN(recordId)) {
       setRecord(null);
       setError("Invalid record id.");
@@ -37,7 +38,6 @@ export default function SearchDetails({ selectedKey }: Props) {
       .then((data) => {
         setRecord(data);
         setIsLoading(false);
-        setPreviewOpen(false);
       })
       .catch(() => {
         setError("Failed to load record.");
@@ -63,13 +63,11 @@ export default function SearchDetails({ selectedKey }: Props) {
 
   const archDesc = record.archDesc;
 
-  // Derive title from archDesc.did.unitTitle (string)
   let title = "Untitled";
   if (archDesc?.did?.unitTitle) {
     title = archDesc.did.unitTitle;
   }
 
-  // Extract digital objects from archDesc.dsc.components[].did.daoSet.daos[]
   let digitalObjects: Dao[] = [];
   if (archDesc?.dsc?.components && Array.isArray(archDesc.dsc.components)) {
     archDesc.dsc.components.forEach((component) => {

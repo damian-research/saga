@@ -1,81 +1,42 @@
-import { useState } from "react";
+// BookmarksTab - REFACTORED
+//
+import { useEffect, useState } from "react";
 import { BookmarksLayout } from ".";
-import type {
-  Bookmark,
-  WindowMode,
-  Category,
-  ArchiveName,
-} from "../../api/models/bookmarks.types";
-import AddBookmark from "../../components/bookmarks/AddBookmark";
+import type { Bookmark } from "../../api/models/bookmarks.types";
 import styles from "./BookmarksTab.module.css";
-import { getRecord } from "../../api/services/searchRecords.service";
-import { buildBookmark } from "../../api/utils/buildBookmarks";
+import { loadBookmarks } from "../../api/services/bookmarks.service";
 
 interface Props {
   bookmarks: Bookmark[];
   setBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
   onEditBookmark: (b: Bookmark) => void;
+  onAddBookmark: () => void;
+  onRemoveBookmark: (id: string) => void;
 }
 
 export default function BookmarksTab({
   bookmarks,
   setBookmarks,
   onEditBookmark,
+  onAddBookmark,
+  onRemoveBookmark,
 }: Props) {
-  const [adding, setAdding] = useState(false);
-  const [mode, setMode] = useState<WindowMode>("add-manual");
-  const [activeBookmark, setActiveBookmark] = useState<Bookmark | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  async function handleAdd(data: {
-    category: Category;
-    customName: string;
-    url?: string;
-    archive?: ArchiveName;
-  }) {
-    if (!data.url) return;
-
-    const match = data.url.match(/\/id\/(\d+)/);
-    if (!match) {
-      alert("Invalid NARA link");
-      return;
-    }
-
-    const record = await getRecord(Number(match[1]));
-    const bookmark = buildBookmark(record);
-    bookmark.mode = "add-manual";
-    bookmark.category = data.category;
-    bookmark.customName = data.customName;
-
-    setBookmarks((prev) => [...prev, bookmark]);
-  }
-
-  function handleEdit(
-    bookmark: Bookmark,
-    data: {
-      category: Category;
-      customName: string;
-    }
-  ) {
-    setBookmarks((prev) =>
-      prev.map((b) =>
-        b.id === bookmark.id
-          ? {
-              ...b,
-              category: data.category,
-              customName: data.customName,
-            }
-          : b
-      )
-    );
-  }
+  useEffect(() => {
+    // Initial load only
+    (async () => {
+      setLoading(true);
+      const list = loadBookmarks();
+      setBookmarks(list);
+      setLoading(false);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function openBookmark(b: Bookmark) {
     // TODO: getRecord(b.eadId) -> Details
-  }
-
-  function removeBookmark(id: string) {
-    if (!confirm("Remove selected bookmark?")) return;
-    setBookmarks((prev) => prev.filter((b) => b.id !== id));
+    console.log("Open bookmark:", b);
   }
 
   function exportBookmarks(list: Bookmark[]) {
@@ -95,31 +56,12 @@ export default function BookmarksTab({
       <BookmarksLayout
         bookmarks={bookmarks}
         onOpen={openBookmark}
-        onEdit={(b) => onEditBookmark(b)}
-        onRemove={(id) => removeBookmark(id)}
-        onExport={(list) => exportBookmarks(list)}
-        onAdd={() => {
-          setMode("add-manual");
-          setActiveBookmark(null);
-          setAdding(true);
-        }}
+        onEdit={onEditBookmark}
+        onRemove={onRemoveBookmark}
+        onExport={exportBookmarks}
+        onAdd={onAddBookmark}
+        loading={loading}
       />
-
-      {adding && (
-        <AddBookmark
-          mode={mode}
-          bookmark={activeBookmark}
-          onCancel={() => setAdding(false)}
-          onSubmit={(data) => {
-            if (mode === "add-manual") {
-              handleAdd(data);
-            } else if (activeBookmark) {
-              handleEdit(activeBookmark, data);
-            }
-            setAdding(false);
-          }}
-        />
-      )}
     </div>
   );
 }

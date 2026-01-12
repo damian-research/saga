@@ -1,3 +1,5 @@
+// BookmarksLayout
+//
 import { useMemo, useState } from "react";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import styles from "./BookmarksLayout.module.css";
@@ -9,6 +11,7 @@ interface Props {
   onRemove: (id: string) => void;
   onExport: (list: Bookmark[]) => void;
   onAdd: () => void;
+  loading: boolean;
 }
 
 export default function BookmarksLayout({
@@ -18,6 +21,7 @@ export default function BookmarksLayout({
   onRemove,
   onExport,
   onAdd,
+  loading,
 }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -75,9 +79,11 @@ export default function BookmarksLayout({
         <div className={styles.panelTitle}>Saved Records</div>
 
         <div className={styles.actions}>
-          <button onClick={onAdd}>Add</button>
+          <button onClick={onAdd} disabled={loading}>
+            Add
+          </button>
           <button
-            disabled={!selectedId}
+            disabled={loading || !selectedId}
             onClick={() => {
               const b = bookmarks.find((x) => x.id === selectedId);
               if (b) onEdit(b);
@@ -87,7 +93,7 @@ export default function BookmarksLayout({
           </button>
 
           <button
-            disabled={!selectedId}
+            disabled={loading || !selectedId}
             onClick={() => selectedId && onRemove(selectedId)}
           >
             Remove
@@ -161,6 +167,11 @@ export default function BookmarksLayout({
       </div>
 
       <div className={`${styles.panel} ${styles.listPanel}`}>
+        {loading && (
+          <div className={styles.loader}>
+            Loading…
+          </div>
+        )}
         <table className={styles.table}>
           <thead>
             <tr>
