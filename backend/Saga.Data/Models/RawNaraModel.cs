@@ -495,132 +495,164 @@ public class LocalIdentifierCount
 FIELD MAPPING FROM NARA TO EAD3:
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ CONTROL SECTION (Metadata about the document)                          │
+│ CONTROL SECTION (Metadata about the document)                           │
 └─────────────────────────────────────────────────────────────────────────┘
 
 NARA → EAD3
 ─────────────────────────────────────────────────────────────────────────
 metadata.uuid                    → Control.RecordId
 metadata.fileName                → Control.FileDesc.TitleStmt.TitleProper
-metadata.ingestTime              → Control.MaintenanceHistory.MaintenanceEvent.EventDateTime
-metadata.controlGroup.naId       → Did.UnitId.Identifier
-"NARA"                          → Control.MaintenanceAgency.AgencyName
-"National Archives"             → Control.FileDesc.PublicationStmt.Publisher
+"NARA Digital Conversion"        → Control.FileDesc.TitleStmt.Author
+metadata.ingestTime              → Control.FileDesc.PublicationStmt.Date.Text
+metadata.ingestTime              → Control.FileDesc.PublicationStmt.Date.Normal
+"National Archives and Records Administration" → Control.FileDesc.PublicationStmt.Publisher
+"derived"                        → Control.MaintenanceStatus.Value
+"US-DNA"                        → Control.MaintenanceAgency.AgencyCode
+"National Archives and Records Administration" → Control.MaintenanceAgency.AgencyName
+metadata.ingestTime              → Control.MaintenanceHistory.MaintenanceEvents[0].EventDateTime.Text
+metadata.ingestTime              → Control.MaintenanceHistory.MaintenanceEvents[0].EventDateTime.StandardDateTime
+"created"                        → Control.MaintenanceHistory.MaintenanceEvents[0].EventType.Value
+"machine"                        → Control.MaintenanceHistory.MaintenanceEvents[0].AgentType.Value
+"NARA Digital Archive System"   → Control.MaintenanceHistory.MaintenanceEvents[0].Agent
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ DESCRIPTION SECTION (Archive content description)                       │
+│ ARCHDESC & DID SECTION (Archive content description)                    │
 └─────────────────────────────────────────────────────────────────────────┘
 
 NARA → EAD3
 ─────────────────────────────────────────────────────────────────────────
-record.title                     → Did.UnitTitle
-record.naId                      → Did.UnitId.Text
 record.levelOfDescription        → ArchDesc.Level
-record.coverageStartDate         → Did.UnitDate.Normal (start)
-record.coverageEndDate           → Did.UnitDate.Normal (end)
-record.scopeAndContentNote       → Did.Abstract.Text
-record.generalNotes              → ScopeContent notes
-record.otherTitles               → UnitTitle variants
+record.generalRecordsTypes       → ArchDesc.LocalType (joined with " / ")
+record.title                     → ArchDesc.Did.UnitTitle
+record.naId                      → ArchDesc.Did.UnitId.Text
+record.naId                      → ArchDesc.Did.UnitId.Identifier (with "nara:" prefix)
+record.coverageStartDate.logicalDate → ArchDesc.Did.UnitDate.Normal (start part)
+record.coverageEndDate.logicalDate   → ArchDesc.Did.UnitDate.Normal (end part)
+record.coverageStartDate + coverageEndDate → ArchDesc.Did.UnitDate.Text (formatted range)
+"gregorian"                      → ArchDesc.Did.UnitDate.Calendar
+"ce"                            → ArchDesc.Did.UnitDate.Era
+record.scopeAndContentNote       → ArchDesc.Did.Abstract.Text
+record.generalNotes              → ArchDesc.Did.Abstract.Text (if scopeAndContentNote is null)
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ CREATORS & SUBJECTS                                                     │
+│ REPOSITORY                                                              │
 └─────────────────────────────────────────────────────────────────────────┘
 
 NARA → EAD3
 ─────────────────────────────────────────────────────────────────────────
-ancestors[].creators             → Did.Origination.PersName or CorpName
-ancestors[].creators.heading     → PersName.Parts (with localtype="persname")
-ancestors[].creators.creatorType → PersName.Parts (with localtype="role")
-subjects[].heading               → Subject.Parts (with localtype="topic")
-subjects[].authorityType         → Subject.Parts (with localtype="type")
+physicalOccurrences[0].referenceUnits[0].name → Did.Repository.CorpName.Parts[0].Text
+"corpname"                       → Did.Repository.CorpName.Parts[0].LocalType
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ PHYSICAL OCCURRENCES & LOCATIONS                                        │
+│ ORIGINATION (CREATORS)                                                  │
 └─────────────────────────────────────────────────────────────────────────┘
 
 NARA → EAD3
 ─────────────────────────────────────────────────────────────────────────
-physicalOccurrences[].referenceUnits[].name  → Repository.CorpName.Parts
-physicalOccurrences[].referenceUnits[].address1 → Address.AddressLines[0]
-physicalOccurrences[].referenceUnits[].address2 → Address.AddressLines[1]
-physicalOccurrences[].referenceUnits[].city  → Address.AddressLines[2]
-physicalOccurrences[].mediaOccurrences       → GenreForm.Parts (media type)
-physicalOccurrences[].copyStatus             → GenreForm.Parts (status)
+ancestors[].creators (where creatorType = "Most Recent") → Did.Origination.PersName
+ancestors[].creators.naId        → Did.Origination.PersName.Identifier
+"creator"                        → Did.Origination.PersName.Relator
+ancestors[].creators.heading     → Did.Origination.PersName.Parts[0].Text
+"persname"                       → Did.Origination.PersName.Parts[0].LocalType
+ancestors[].creators.creatorType → Did.Origination.PersName.Parts[1].Text
+"role"                          → Did.Origination.PersName.Parts[1].LocalType
+ancestors[].creators.establishDate + abolishDate → Did.Origination.PersName.Parts[2].Text
+"dates"                         → Did.Origination.PersName.Parts[2].LocalType
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ DIGITAL OBJECTS & LINKS                                                 │
+│ DSC & COMPONENTS (Digital Objects)                                      │
 └─────────────────────────────────────────────────────────────────────────┘
 
 NARA → EAD3
 ─────────────────────────────────────────────────────────────────────────
-digitalObjects[].objectUrl       → ComponentDid.DaoSet.Dao.Href
-digitalObjects[].objectType      → ComponentDid.DaoSet.Dao.LocalType
-digitalObjects[].objectDescription → ComponentDid.DaoSet.Dao.LinkTitle
-digitalObjects[].objectFileSize  → (not mapped in EAD3)
-digitalObjects[].objectId        → (metadata, not displayed)
+"combined"                       → ArchDesc.Dsc.DscType
+physicalOccurrences[].mediaOccurrences[].generalMediaTypes → Dsc.Head (joined with " / ")
+record.digitalObjects[]          → Dsc.Components[]
 
-OR from fields:
-fields.firstDigitalObject[].objectUrl → Dao.Href
+Per Digital Object:
+"item"                          → Component.Level
+digitalObjects[].objectId        → Component.Did.UnitId
+digitalObjects[].objectDescription → Component.Did.UnitTitle.Text
+digitalObjects[].objectFilename  → Component.Did.UnitTitle.Text (fallback if description is null)
+digitalObjects[].objectType      → Component.Did.UnitTitle.GenreForm.Parts[0].Text
+"type_record"                    → Component.Did.UnitTitle.GenreForm.Parts[0].LocalType
+"whole"                         → Component.Did.DaoSet.Coverage
+digitalObjects[].objectUrl       → Component.Did.DaoSet.Daos[0].Href
+digitalObjects[].objectDescription → Component.Did.DaoSet.Daos[0].LinkTitle
+digitalObjects[].objectType      → Component.Did.DaoSet.Daos[0].LocalType
+"derived"                        → Component.Did.DaoSet.Daos[0].DaoType
+"new"                           → Component.Did.DaoSet.Daos[0].Show
+"onrequest"                     → Component.Did.DaoSet.Daos[0].Actuate
+
+ScopeContent:
+DateTime.UtcNow                  → Component.ScopeContent.ChronList.ChronItems[0].DateSingle.StandardDate
+"Digital object available"       → Component.ScopeContent.ChronList.ChronItems[0].DateSingle.Text
+"digital_object"                 → Component.ScopeContent.ChronList.ChronItems[0].Event.LocalType
+digitalObjects[].objectFilename  → Component.ScopeContent.ChronList.ChronItems[0].Event.Subjects[0].Parts[0].Text
+"object"                        → Component.ScopeContent.ChronList.ChronItems[0].Event.Subjects[0].Parts[0].LocalType
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ HIERARCHY & ANCESTORS                                                   │
+│ PATH (Hierarchy from Ancestors)                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
 NARA → EAD3
 ─────────────────────────────────────────────────────────────────────────
-ancestors[]                      → Component hierarchy (nested)
-ancestors[].levelOfDescription   → Component.Level
-ancestors[].title                → Component.Did.UnitTitle
-ancestors[].naId                 → Component.Did.UnitId
-ancestors[].recordGroupNumber    → (display in title or separate field)
-ancestors[].distance             → (hierarchy depth, not explicitly mapped)
+ancestors[] (filtered & ordered) → Path[]
+ancestors[].naId                 → PathSegment.Id
+ancestors[].levelOfDescription   → PathSegment.Level (normalized)
+  "recordGroup" or "recordgrp"   → "recordgrp"
+  "fileUnit"                     → "file"
+  other                          → lowercase
+
+Label formatting:
+  recordGroup/recordgrp:         → "RG# {recordGroupNumber} – {title}"
+  series:                        → "Series {title}"
+  fileUnit:                      → "File {title}"
+  other:                         → "{title}"
+
+Filtering rules:
+- Exclude ancestors with same naId as record.naId
+- Exclude ancestors with same levelOfDescription as record.levelOfDescription
+- Order by hierarchy: recordGroup(0), fonds(1), series(2), fileUnit(3), item(4)
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ ADDITIONAL IDENTIFIERS                                                  │
+│ DIGITAL OBJECT COUNT                                                    │
 └─────────────────────────────────────────────────────────────────────────┘
 
 NARA → EAD3
 ─────────────────────────────────────────────────────────────────────────
-variantControlNumbers[].number   → UnitId (additional identifiers)
-variantControlNumbers[].type     → UnitId attribute or note
-microformPublications[].identifier → Reference note
-microformPublications[].title    → Reference note
+fields.totalDigitalObjects[0]    → Ead.DigitalObjectCount (if available)
+record.digitalObjects.length     → Ead.DigitalObjectCount (fallback)
+0                               → Ead.DigitalObjectCount (default)
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ ACCESS & RESTRICTIONS                                                   │
+│ UNMAPPED NARA FIELDS (Available but not currently mapped to EAD3)       │
 └─────────────────────────────────────────────────────────────────────────┘
 
-NARA → EAD3
-─────────────────────────────────────────────────────────────────────────
-useRestriction.status            → AccessRestriction notes
-accessRestriction.status         → AccessRestriction notes
-audiovisual                      → GenreForm.Parts (media indicator)
+- record.subjects[]
+- record.useRestriction
+- record.accessRestriction
+- record.audiovisual
+- record.pinnedTerms[]
+- record.dataControlGroup
+- record.microformPublications[] (partially - available but not fully mapped)
+- record.variantControlNumbers[]
+- record.otherTitles[]
+- digitalObjects[].objectFileSize
+- digitalObjects[].objectDesignator
+- physicalOccurrences[].copyStatus
+- physicalOccurrences[].mediaOccurrences[].specificMediaType
+- physicalOccurrences[].mediaOccurrences[].containerId
+- physicalOccurrences[].referenceUnits[] (address fields available but not mapped)
+- aggregations (entire section not mapped to EAD3)
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ EXAMPLE MAPPING FOR Record Group #11 (Example 1)                       │
+│ NOTES                                                                   │
 └─────────────────────────────────────────────────────────────────────────┘
 
-NARA Field                                    → EAD3 Location
-────────────────────────────────────────────────────────────────────────
-record.naId: 596314                           → Did.UnitId: "596314"
-record.title: "Nineteenth Amendment..."      → Did.UnitTitle
-record.levelOfDescription: "item"            → ArchDesc.Level: "item"
-record.coverageStartDate.logicalDate         → UnitDate.Normal: "1919-06-04/1919-06-04"
-ancestors[0].title: "General Records..."     → Parent Component.Did.UnitTitle
-ancestors[0].recordGroupNumber: 11           → Display: "RG 11"
-digitalObjects[0].objectUrl                  → Dao.Href
-physicalOccurrences[0].referenceUnits[0].name → Repository.CorpName
-
-┌─────────────────────────────────────────────────────────────────────────┐
-│ EXAMPLE MAPPING FOR File Unit (Example 2)                              │
-└─────────────────────────────────────────────────────────────────────────┘
-
-NARA Field                                    → EAD3 Location
-────────────────────────────────────────────────────────────────────────
-record.naId: 73088101                        → Did.UnitId: "73088101"
-record.title: "Brandt, Karl"                 → Did.UnitTitle
-record.levelOfDescription: "fileUnit"        → ArchDesc.Level: "fileUnit"
-ancestors[0].recordGroupNumber: 59           → Display: "RG 59"
-fields.firstDigitalObject[0].objectUrl       → Dao.Href
-microformPublications[0].identifier: "M679"  → Reference note
+- All null fields in NARA are preserved as null in EAD3
+- Date formatting: ISO 8601 for standardDateTime, human-readable for text
+- Multiple creators: only "Most Recent" creator is mapped to Origination
+- Digital objects: each becomes a separate Component at "item" level
+- Path segments: automatically filtered and ordered by hierarchical level
 */

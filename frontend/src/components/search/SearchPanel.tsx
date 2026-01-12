@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "../../styles/commonSearchPanel.module.css";
+import styles from "./SearchPanel.module.css";
 
 interface Props {
   onSearch: (form: SearchFormState) => void;
