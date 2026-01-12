@@ -1,5 +1,5 @@
 // SearchLayout
-// 
+//
 import type { Ead3Response } from "../../api/models/ead3.types";
 import {
   SearchPanel,
@@ -7,7 +7,7 @@ import {
   SearchDetails,
   type SearchFormState,
 } from "../../components/search";
-import styles from "../../styles/commonSearchLayout.module.css";
+import styles from "./SearchLayout.module.css";
 
 interface Props {
   results: Ead3Response[];

@@ -64,7 +64,7 @@ export default function BookmarksLayout({
         return false;
       if (
         filters.recordType &&
-        !b.material?.type
+        !b.ead3.localType
           ?.toLowerCase()
           .includes(filters.recordType.toLowerCase())
       )
@@ -157,7 +157,7 @@ export default function BookmarksLayout({
             }
           >
             <option value="">Record type</option>
-            {[...new Set(bookmarks.map((b) => b.material?.type))]
+            {[...new Set(bookmarks.map((b) => b.ead3.localType))]
               .sort()
               .map((r) => (
                 <option key={r} value={r}>
