@@ -30,6 +30,9 @@ public sealed class NaraClientWithMapper : INaraClient
 
         var eads = _mapper.MapMultipleToEad3(naraResponse);
 
+        var naraResponseJson = JsonSerializer.Serialize(naraResponse, new JsonSerializerOptions { WriteIndented = true });
+        var eadJson = JsonSerializer.Serialize(eads, new JsonSerializerOptions { WriteIndented = true });
+
         return eads;
     }
 
@@ -42,6 +45,9 @@ public sealed class NaraClientWithMapper : INaraClient
         var naraResponse = JsonConverter.ConvertToNara(json);
 
         var ead = _mapper.MapToEad3(naraResponse);
+
+        var naraResponseJson = JsonSerializer.Serialize(naraResponse, new JsonSerializerOptions { WriteIndented = true });
+        var eadJson = JsonSerializer.Serialize(ead, new JsonSerializerOptions { WriteIndented = true });
 
         return ead;
     }

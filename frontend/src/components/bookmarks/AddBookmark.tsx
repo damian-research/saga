@@ -1,25 +1,26 @@
-// AddBookmark - REFACTORED
-//
 import { useState } from "react";
 import styles from "./AddBookmark.module.css";
 import { TEMP_CATEGORIES, ARCHIVES } from "../../api/models/bookmarks.types";
 import type {
   Bookmark,
-  WindowMode,
   Category,
   ArchiveName,
 } from "../../api/models/bookmarks.types";
+import type { Ead3Response } from "../../api/models/ead3.types";
 import { getRecord } from "../../api/services/searchRecords.service";
+import { mapEad3ToBookmark } from "../../api/utils/ead3.mapper";
 
 interface Props {
-  mode: WindowMode;
-  bookmark?: Bookmark | null;
+  mode: "add-manual" | "add-from-search";
+  record?: Ead3Response;
+  bookmark?: Bookmark | null; // only for edit-from-bookmarks
   onCancel: () => void;
-  onSubmit: (bookmark: Bookmark) => void; // ← zwraca pełny Bookmark
+  onSubmit: (bookmark: Bookmark) => void;
 }
 
 export default function AddBookmark({
   mode,
+  record,
   bookmark,
   onCancel,
   onSubmit,
@@ -32,17 +33,16 @@ export default function AddBookmark({
   const [archive, setArchive] = useState<ArchiveName>(
     bookmark?.archive ?? "NARA"
   );
+
   const [resolving, setResolving] = useState(false);
   const [resolveError, setResolveError] = useState<string | null>(null);
-  const [resolved, setResolved] = useState<Bookmark | null>(bookmark ?? null);
+  const [base, setBase] = useState<Bookmark | null>(bookmark ?? null);
 
   return (
     <div className={styles.backdrop} onClick={onCancel}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.title}>
-          {mode === "add-manual" || mode === "add-from-search"
-            ? "Add bookmark"
-            : "Edit bookmark"}
+          {bookmark ? "Change bookmark" : "Add bookmark"}
         </div>
 
         {mode === "add-manual" && (
@@ -53,7 +53,7 @@ export default function AddBookmark({
                 value={url}
                 onChange={(e) => {
                   setUrl(e.target.value);
-                  setResolved(null);
+                  setBase(null);
                   setResolveError(null);
                 }}
                 placeholder="https://catalog.archives.gov/id/73088101"
@@ -100,18 +100,14 @@ export default function AddBookmark({
           />
         </label>
 
-        {(bookmark || resolved) && (
+        {base && (
           <div className={styles.preview}>
-            <div className={styles.previewTitle}>
-              {(resolved ?? bookmark)?.title}
-            </div>
+            <div className={styles.previewTitle}>{base.title}</div>
             <div className={styles.previewMeta}>
-              {(resolved ?? bookmark)?.archive} ·{" "}
-              {(resolved ?? bookmark)?.level}
-              {(() => {
-                const materialType = (resolved ?? bookmark)?.material?.type;
-                return materialType ? ` · ${materialType}` : "";
-              })()}
+              {base.ead3.localType ? ` · ${base.ead3.localType}` : ""}
+              {base.ead3.digitalObjectCount > 0
+                ? ` · Online: ${base.ead3.digitalObjectCount}`
+                : ""}
             </div>
           </div>
         )}
@@ -125,13 +121,18 @@ export default function AddBookmark({
               resolving ||
               !category ||
               !customName.trim() ||
-              (mode === "add-manual" && !url.trim())
+              (mode === "add-manual" && !bookmark && !url.trim())
             }
             onClick={async () => {
-              let base = resolved ?? bookmark;
+              let resolved: Bookmark | null = base;
 
-              // Resolve ONLY in add-manual without base
-              if (mode === "add-manual" && !base) {
+              // EDIT
+              if (bookmark) {
+                resolved = bookmark;
+              }
+
+              // ADD-MANUAL
+              else if (mode === "add-manual" && !resolved) {
                 const match = url.match(/\/id\/(\d+)/);
                 if (!match) {
                   setResolveError("Invalid NARA link");
@@ -149,23 +150,14 @@ export default function AddBookmark({
                     return;
                   }
 
-                  // Build base bookmark from resolved record
-                  base = {
-                    mode: "add-manual",
-                    id: crypto.randomUUID(),
-                    archive,
-                    eadId: String(record.control.recordId),
-                    title: record.archDesc.did.unitTitle,
-                    level: record.archDesc.level,
-                    path: record.path ?? [],
-                    onlineAvailable: Boolean(record.digitalObjectCount),
+                  resolved = mapEad3ToBookmark(record, {
+                    mode,
                     category: category as Category,
-                    customName: customName.trim(),
-                    createdAt: new Date().toISOString(),
-                    url: url.trim(),
-                  };
+                    customName,
+                    url,
+                  });
 
-                  setResolved(base);
+                  setBase(resolved);
                   setResolving(false);
                 } catch {
                   setResolveError("Record not found");
@@ -174,16 +166,25 @@ export default function AddBookmark({
                 }
               }
 
-              if (!base) return;
+              // ADD-FROM-SEARCH
+              else if (mode === "add-from-search" && record && !resolved) {
+                resolved = mapEad3ToBookmark(record, {
+                  mode,
+                  category: category as Category,
+                  customName,
+                  url,
+                });
+              }
 
-              // Final bookmark with user input
+              if (!resolved) return;
+
               const final: Bookmark = {
-                ...base,
+                ...resolved,
+                eadId: resolved.eadId ?? record?.control?.recordId ?? null,
+                url: resolved.url || url,
                 category: category as Category,
                 customName: customName.trim(),
-                // Preserve original id and createdAt for edit mode
-                id: mode === "edit" ? base.id : base.id || crypto.randomUUID(),
-                createdAt: base.createdAt || new Date().toISOString(),
+                createdAt: resolved.createdAt ?? new Date().toISOString(),
               };
 
               onSubmit(final);

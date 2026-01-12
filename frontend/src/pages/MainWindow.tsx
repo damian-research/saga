@@ -4,9 +4,10 @@ import { useState } from "react";
 import Header from "../components/layout/Header/Header";
 import { SearchTab } from "./search";
 import { BookmarksTab } from "./bookmarks";
-import type { Bookmark, WindowMode } from "../api/models/bookmarks.types";
+import type { Bookmark } from "../api/models/bookmarks.types";
 import AddBookmark from "../components/bookmarks/AddBookmark";
 import { BookmarkContext } from "../context/BookmarkContext";
+import type { OpenAddBookmarkPayload } from "../context/BookmarkContext";
 import {
   saveBookmark,
   removeBookmark,
@@ -17,15 +18,13 @@ type TabId = "bookmarks" | "nara" | "uk";
 export default function MainWindow() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [activeTab, setActiveTab] = useState<TabId>("bookmarks");
-  const [addBookmarkState, setAddBookmarkState] = useState<{
-    mode: WindowMode;
-    bookmark: Bookmark | null;
-  } | null>(null);
+  const [addBookmarkState, setAddBookmarkState] =
+    useState<OpenAddBookmarkPayload | null>(null);
 
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
-  function openAddBookmark(bookmark: Bookmark | null, mode: WindowMode) {
-    setAddBookmarkState({ mode, bookmark });
+  function openAddBookmark(payload: OpenAddBookmarkPayload) {
+    setAddBookmarkState(payload);
   }
 
   function submitBookmark(bookmark: Bookmark) {
@@ -65,6 +64,7 @@ export default function MainWindow() {
         {addBookmarkState && (
           <AddBookmark
             mode={addBookmarkState.mode}
+            record={addBookmarkState.record}
             bookmark={addBookmarkState.bookmark}
             onCancel={() => setAddBookmarkState(null)}
             onSubmit={(bookmark) => {
@@ -80,11 +80,9 @@ export default function MainWindow() {
               bookmarks={bookmarks}
               setBookmarks={setBookmarks}
               onEditBookmark={(b) =>
-                setAddBookmarkState({ mode: "edit", bookmark: b })
+                setAddBookmarkState({ mode: "add-manual", bookmark: b })
               }
-              onAddBookmark={() =>
-                setAddBookmarkState({ mode: "add-manual", bookmark: null })
-              }
+              onAddBookmark={() => setAddBookmarkState({ mode: "add-manual" })}
               onRemoveBookmark={handleRemoveBookmark}
             />
           )}

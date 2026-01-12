@@ -1,16 +1,14 @@
-// BookmarksStar
-//
 import { useContext } from "react";
-import type { Bookmark } from "../../api/models/bookmarks.types";
+import type { Ead3Response } from "../search";
 import { BookmarkContext } from "../../context/BookmarkContext";
 import styles from "./BookmarkStar.module.css";
 
 interface Props {
-  bookmark: Bookmark;
+  record: Ead3Response;
   isSaved?: boolean;
 }
 
-export default function BookmarkStar({ bookmark, isSaved = false }: Props) {
+export default function BookmarkStar({ record, isSaved = false }: Props) {
   const ctx = useContext(BookmarkContext);
   if (!ctx) return null;
 
@@ -20,7 +18,10 @@ export default function BookmarkStar({ bookmark, isSaved = false }: Props) {
       title={isSaved ? "Saved" : "Save to Bookmarks"}
       onClick={(e) => {
         e.stopPropagation();
-        ctx.openAddBookmark(bookmark, "add-from-search");
+        ctx.openAddBookmark({
+          mode: "add-from-search",
+          record,
+        });
       }}
     >
       {isSaved ? "★" : "☆"}

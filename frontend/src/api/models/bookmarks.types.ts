@@ -22,19 +22,16 @@ export interface Bookmark {
   id: string; // internal UUID
   archive: ArchiveName;
   eadId: string; // unitId / persistent id
-  level: string; // EAD level: recordgrp | series | file | item
   title: string; // archDesc.did.unitTitle
   path: PathSegment[]; // EAD3 Path (ancestors only)
-
-  material?: {
-    type?: string; // Textual Records
-    media?: string; // Loose Sheets
+  ead3: {
+    level: string; // record.archDesc.level (raw)
+    localType?: string; // record.archDesc.localType
+    dscHead?: string; // record.archDesc.dsc?.head
+    digitalObjectCount: number; // record.digitalObjectCount ?? 0
   };
-
   category: Category;
   customName: string;
-  onlineAvailable: boolean; // derived (dao count > 0)
-
   createdAt: string; // ISO
   note?: string; // user note (optional)
 

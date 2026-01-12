@@ -52,7 +52,7 @@ export default function BookmarksLayout({
   const filteredBookmarks = useMemo(() => {
     return orderedBookmarks.filter((b) => {
       if (filters.category && b.category !== filters.category) return false;
-      if (filters.level && b.level !== filters.level) return false;
+      if (filters.level && b.ead3.level !== filters.level) return false;
       if (filters.archive && b.archive !== filters.archive) return false;
       if (
         filters.name &&
@@ -121,11 +121,13 @@ export default function BookmarksLayout({
             onChange={(e) => setFilters({ ...filters, level: e.target.value })}
           >
             <option value="">Level</option>
-            {[...new Set(bookmarks.map((b) => b.level))].sort().map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
+            {[...new Set(bookmarks.map((b) => b.ead3.level))]
+              .sort()
+              .map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
           </select>
 
           <select
@@ -167,11 +169,7 @@ export default function BookmarksLayout({
       </div>
 
       <div className={`${styles.panel} ${styles.listPanel}`}>
-        {loading && (
-          <div className={styles.loader}>
-            Loading…
-          </div>
-        )}
+        {loading && <div className={styles.loader}>Loading…</div>}
         <table className={styles.table}>
           <thead>
             <tr>
@@ -195,10 +193,10 @@ export default function BookmarksLayout({
                 <td>{b.category}</td>
                 <td>{b.customName || "—"}</td>
                 <td>{b.title}</td>
-                <td>{b.level}</td>
-                <td>{b.material?.type}</td>
+                <td>{b.ead3.level}</td>
+                <td>{b.ead3.localType}</td>
                 <td>{b.archive}</td>
-                <td>{b.onlineAvailable ? "✓" : "—"}</td>
+                <td>{b.ead3.digitalObjectCount > 0 ? "✓" : "—"}</td>
               </tr>
             ))}
 

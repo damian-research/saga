@@ -24,6 +24,7 @@ public class NaraToEad3Profile : Profile
                                 a.LevelOfDescription.Equals("fonds", StringComparison.OrdinalIgnoreCase) ? 1 :
                                 a.LevelOfDescription.Equals("series", StringComparison.OrdinalIgnoreCase) ? 2 :
                                 a.LevelOfDescription.Equals("fileUnit", StringComparison.OrdinalIgnoreCase) ? 3 :
+                                a.LevelOfDescription.Equals("item", StringComparison.OrdinalIgnoreCase) ? 4 :
                                 99
                             )
                             .ToList()
@@ -316,12 +317,13 @@ public class NaraToEad3Profile : Profile
 
     private static int GetDigitalObjectCount(Hit src)
     {
-        if (src.Fields == null)
-            return 0;
+        if (src.Fields?.TotalDigitalObjects != null &&
+            src.Fields.TotalDigitalObjects.Count != 0)
+            return src.Fields.TotalDigitalObjects.First();
 
-        if (src.Fields.TotalDigitalObjects == null)
-            return 0;
+        if (src.Source?.Record?.DigitalObjects != null)
+            return src.Source.Record.DigitalObjects.Count;
 
-        return src.Fields.TotalDigitalObjects.FirstOrDefault();
+        return 0;
     }
 }
