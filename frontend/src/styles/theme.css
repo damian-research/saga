@@ -20,6 +20,12 @@
   /* Accents */
   --accent-primary: #007acc;
   --accent-hover: #4fa3ff;
+
+  --accent-primary-err: #d9534f;
+  --accent-hover-err: #d9534f;
+
+  --accent-primary-ok: #0b6a0b;
+  --accent-hover-ok: #0b6a0b;
 }
 
 .dark-mode {

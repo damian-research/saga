@@ -1,42 +1,35 @@
 // SearchLayout
 //
-import type { Ead3Response } from "../../api/models/ead3.types";
+// pages/search/SearchLayout.tsx
 import {
   SearchPanel,
   SearchList,
   SearchDetails,
-  type SearchFormState,
 } from "../../components/search";
+import { useSearch } from "../../context/SearchContext";
 import styles from "./SearchLayout.module.css";
 
-interface Props {
-  results: Ead3Response[];
-  onSearch: (form: SearchFormState) => void;
-  selectedKey: number | string | null;
-  onSelect: (id: number | string) => void;
-  loading: boolean;
-}
+export default function SearchLayout() {
+  const { results, selectedRecord, loading, error, clearError } = useSearch();
 
-export default function SearchLayout({
-  results,
-  onSearch,
-  selectedKey,
-  onSelect,
-  loading,
-}: Props) {
   return (
     <div className={styles.grid}>
-      <SearchPanel onSearch={onSearch} loading={loading} />
-      {loading ? (
-        <div className={styles.loading}>Searching</div>
-      ) : (
-        <SearchList
-          items={results}
-          selectedKey={selectedKey}
-          onSelect={onSelect}
-        />
+      <SearchPanel />
+
+      {error && (
+        <div className={styles.error}>
+          <span>{error}</span>
+          <button onClick={clearError}>×</button>
+        </div>
       )}
-      <SearchDetails selectedKey={selectedKey} />
+
+      {loading ? (
+        <div className={styles.loading}>Searching...</div>
+      ) : (
+        <SearchList />
+      )}
+
+      <SearchDetails />
     </div>
   );
 }

@@ -1,31 +1,12 @@
+// SearchPanel
+//
 import { useState } from "react";
 import styles from "./SearchPanel.module.css";
+import type { SearchFormState } from ".";
+import { useSearch } from "../../context/SearchContext";
 
-interface Props {
-  onSearch: (form: SearchFormState) => void;
-  loading: boolean;
-}
-
-export interface SearchFormState {
-  q: string;
-  limit: number;
-  title?: string;
-  naId?: string;
-  onlineAvailable: boolean;
-  personOrOrg?: string;
-  dataSource?: string;
-  levelOfDescription?:
-    | "recordGroup"
-    | "collection"
-    | "series"
-    | "fileUnit"
-    | "item";
-  recordGroupNumber?: string;
-  microfilmId?: string;
-  localId?: string;
-}
-
-export default function SearchPanel({ onSearch, loading }: Props) {
+export default function SearchPanel() {
+  const { search, loading } = useSearch();
   const [form, setForm] = useState<SearchFormState>({
     q: "",
     limit: 50,
@@ -56,7 +37,7 @@ export default function SearchPanel({ onSearch, loading }: Props) {
   function submit() {
     if (loading) return;
     if (!hasAnySearchValue(form)) return;
-    onSearch(form);
+    search(form);
   }
 
   return (

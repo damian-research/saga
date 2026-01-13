@@ -1,3 +1,5 @@
+// PathShell
+//
 import styles from "./PathShell.module.css";
 import type { PathSegment } from "../../api/models/ead3.types";
 

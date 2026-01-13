@@ -4,21 +4,18 @@ import type { Ead3Response } from ".";
 import styles from "./SearchListItem.module.css";
 import PathShell from "./PathShell";
 import BookmarkStar from "../bookmarks/BookmarkStar";
-// import type { Bookmark } from "../../api/models/bookmarks.types";
-// import { TEMP_CATEGORIES } from "../../api/models/bookmarks.types";
-// import { mapEad3ToBookmark } from "../../api/utils/ead3.mapper";
+import { useSearch } from "../../context/SearchContext";
 
 interface SearchListItemProps {
   record: Ead3Response;
-  onSelect: (id: string) => void;
   isSelected: boolean;
 }
 
 export default function SearchListItem({
   record,
-  onSelect,
   isSelected,
 }: SearchListItemProps) {
+  const { selectRecord, selectByPathSegment } = useSearch();
   const unitTitle = record.archDesc.did.unitTitle;
   const unitId = record.archDesc.did.unitId?.text || "";
   const levelRaw = record.archDesc.level || "";
@@ -28,9 +25,6 @@ export default function SearchListItem({
   else if (levelRaw === "fileUnit") level = "File Unit";
   else if (levelRaw === "series") level = "Series";
   else if (levelRaw === "recordgrp") level = "Record Group";
-
-  const firstDao =
-    record.archDesc.dsc?.components?.[0]?.did.daoSet?.daos?.[0] || null;
 
   let materialType = "";
   let mediaType = "";
@@ -44,7 +38,7 @@ export default function SearchListItem({
   return (
     <div className={`${styles.item} ${isSelected ? styles.selected : ""}`}>
       <div className={styles.path}>
-        <PathShell path={record.path} onSelect={(id) => onSelect(String(id))} />
+        <PathShell path={record.path} onSelect={selectByPathSegment} />
       </div>
 
       <div className={styles.titleRow}>
@@ -53,11 +47,12 @@ export default function SearchListItem({
         <div className={styles.actions}>
           <BookmarkStar record={record} />
           <button
+            type="button"
             className={styles.arrow}
             title="Open details"
             onClick={(e) => {
               e.stopPropagation();
-              onSelect(unitId);
+              selectRecord(record);
             }}
           >
             ›
@@ -66,9 +61,7 @@ export default function SearchListItem({
       </div>
 
       <div className={styles.meta}>
-        | ID: {unitId} | {level}
-            {" "}
-            | [ {materialType} -&gt; {mediaType} ]
+        | ID: {unitId} | {level} | [ {materialType} -&gt; {mediaType} ]
       </div>
 
       <div className={styles.digitalObjects}>

@@ -1,46 +1,52 @@
-import type { Dao } from ".";
+// Preview Viewer
+//
+import { useEffect } from "react";
+import type { Dao } from "../../api/models/ead3.types";
 import styles from "./PreviewViewer.module.css";
 
 type Props = {
   object: Dao;
   objects: Dao[];
   onClose: () => void;
-  onNext?: () => void;
-  onPrev?: () => void;
+  onNext: () => void;
+  onPrev: () => void;
 };
 
-export default function PreviewViewer(props: Props) {
-  const { object, objects, onClose } = props;
-
+export default function PreviewViewer({
+  object,
+  objects,
+  onClose,
+  onNext,
+  onPrev,
+}: Props) {
   const currentIndex = objects.findIndex((o) => o.href === object.href);
   const hasNext = currentIndex < objects.length - 1;
   const hasPrev = currentIndex > 0;
 
-  const onPrev = () => {
-    if (props.onPrev) {
-      props.onPrev();
-      return;
-    }
-    if (currentIndex > 0) {
-      window.dispatchEvent(
-        new CustomEvent("preview:navigate", {
-          detail: { index: currentIndex - 1 },
-        })
-      );
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" && hasPrev) {
+        onPrev();
+      } else if (e.key === "ArrowRight" && hasNext) {
+        onNext();
+      } else if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [hasPrev, hasNext, onPrev, onNext, onClose]);
+
+  const handlePrev = () => {
+    if (hasPrev) {
+      onPrev();
     }
   };
 
-  const onNext = () => {
-    if (props.onNext) {
-      props.onNext();
-      return;
-    }
-    if (currentIndex < objects.length - 1) {
-      window.dispatchEvent(
-        new CustomEvent("preview:navigate", {
-          detail: { index: currentIndex + 1 },
-        })
-      );
+  const handleNext = () => {
+    if (hasNext) {
+      onNext();
     }
   };
 
@@ -98,7 +104,7 @@ export default function PreviewViewer(props: Props) {
           {hasPrev && (
             <button
               className={`${styles.edgeNav} ${styles.edgePrev}`}
-              onClick={onPrev}
+              onClick={handlePrev}
               title="Previous object"
             >
               ←
@@ -132,7 +138,7 @@ export default function PreviewViewer(props: Props) {
           {hasNext && (
             <button
               className={`${styles.edgeNav} ${styles.edgeNext}`}
-              onClick={onNext}
+              onClick={handleNext}
               title="Next object"
             >
               →
