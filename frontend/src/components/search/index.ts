@@ -7,7 +7,8 @@ export { default as SearchDetails } from "./SearchDetails";
 export { default as PreviewViewer } from "./PreviewViewer";
 
 // Types
-export type { SearchFormState } from "./SearchPanel";
+// components/search/index.ts
+export type { SearchFormState } from "../../api/models/types";
 export type { Ead3Response, Dao } from "../../api/models/ead3.types";
 export type { Bookmark } from "../../api/models/bookmarks.types";
 

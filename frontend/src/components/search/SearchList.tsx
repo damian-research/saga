@@ -1,9 +1,10 @@
 // SearchList
 //
 import { useSearch } from "../../context/SearchContext";
+import { getRecordKey } from "../../api/utils/recordParser";
+import type { Ead3Response } from "../../api/models/ead3.types";
 import styles from "./SearchList.module.css";
 import SearchListItem from "./SearchListItem";
-import type { Ead3Response } from ".";
 
 export default function SearchList() {
   const { results, selectedRecord } = useSearch();
@@ -16,15 +17,7 @@ export default function SearchList() {
     );
   }
 
-  function getRecordKey(record: Ead3Response | null | undefined): string {
-    if (!record) return "__invalid__";
-
-    return (
-      record.archDesc?.did?.unitId?.text ??
-      record.control?.recordId ??
-      "__invalid__"
-    );
-  }
+  const selectedKey = selectedRecord ? getRecordKey(selectedRecord) : null;
 
   return (
     <div className={styles.panel}>
@@ -38,10 +31,7 @@ export default function SearchList() {
             <SearchListItem
               key={key}
               record={record}
-              isSelected={
-                selectedRecord !== null &&
-                getRecordKey(record) === getRecordKey(selectedRecord)
-              }
+              isSelected={selectedKey !== null && key === selectedKey}
             />
           );
         })}

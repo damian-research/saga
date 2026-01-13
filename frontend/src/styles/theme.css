@@ -26,6 +26,11 @@
 
   --accent-primary-ok: #0b6a0b;
   --accent-hover-ok: #0b6a0b;
+
+  /* Selected */
+  --item-selected-bg: rgba(52, 152, 219, 0.12);
+  --item-selected-border: #3498db;
+  --item-selected-text: #3498db;
 }
 
 .dark-mode {
@@ -46,4 +51,9 @@
 
   --accent-primary: #4fa3ff;
   --accent-hover: #4fa3ff;
+
+  /* Selected */
+  --item-selected-bg: rgba(52, 152, 219, 0.15);
+  --item-selected-border: #5dade2;
+  --item-selected-text: #5dade2;
 }

@@ -1,77 +1,91 @@
 // BookmarksLayout
 //
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import styles from "./BookmarksLayout.module.css";
 
 interface Props {
   bookmarks: Bookmark[];
   onOpen: (b: Bookmark) => void;
+  onAdd: () => void;
   onEdit: (b: Bookmark) => void;
   onRemove: (id: string) => void;
   onExport: (list: Bookmark[]) => void;
-  onAdd: () => void;
   loading: boolean;
+}
+
+interface BookmarkCategory {
+  id: string;
+  name: string;
+  order: number;
 }
 
 export default function BookmarksLayout({
   bookmarks,
   onOpen,
+  onAdd,
   onEdit,
   onRemove,
   onExport,
-  onAdd,
   loading,
 }: Props) {
+  const [categories, setCategories] = useState<BookmarkCategory[]>([]);
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  const activeCategory =
+    categories.find((c) => c.id === activeCategoryId) ?? null;
+
+  useEffect(() => {
+    const uniq = Array.from(new Set(bookmarks.map((b) => b.category)));
+    setCategories(
+      uniq.map((name, i) => ({
+        id: crypto.randomUUID(),
+        name,
+        order: i,
+      }))
+    );
+  }, [bookmarks]);
+
+  useEffect(() => {
+    if (!activeCategoryId && categories.length) {
+      setActiveCategoryId(categories[0].id);
+    }
+  }, [categories, activeCategoryId]);
+
   const [filters, setFilters] = useState({
-    category: "",
     level: "",
     archive: "",
     name: "",
     recordType: "",
   });
 
-  const grouped = bookmarks.reduce<Record<string, Bookmark[]>>((acc, b) => {
-    acc[b.category] ??= [];
-    acc[b.category].push(b);
-    return acc;
-  }, {});
-
-  const orderedBookmarks = Object.entries(grouped)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .flatMap(([_, items]) =>
-      items
-        .slice()
-        .sort((a, b) =>
-          (a.customName ?? a.title).localeCompare(b.customName ?? b.title)
-        )
-    );
-
   const filteredBookmarks = useMemo(() => {
-    return orderedBookmarks.filter((b) => {
-      if (filters.category && b.category !== filters.category) return false;
-      if (filters.level && b.ead3.level !== filters.level) return false;
-      if (filters.archive && b.archive !== filters.archive) return false;
-      if (
-        filters.name &&
-        !(
-          b.customName?.toLowerCase().includes(filters.name.toLowerCase()) ||
-          b.title.toLowerCase().includes(filters.name.toLowerCase())
+    if (!activeCategory) return [];
+
+    return bookmarks
+      .filter((b) => b.category === activeCategory.name)
+      .filter((b) => {
+        if (filters.level && b.ead3.level !== filters.level) return false;
+        if (filters.archive && b.archive !== filters.archive) return false;
+        if (
+          filters.name &&
+          !(
+            b.customName.toLowerCase().includes(filters.name.toLowerCase()) ||
+            b.title.toLowerCase().includes(filters.name.toLowerCase())
+          )
         )
-      )
-        return false;
-      if (
-        filters.recordType &&
-        !b.ead3.localType
-          ?.toLowerCase()
-          .includes(filters.recordType.toLowerCase())
-      )
-        return false;
-      return true;
-    });
-  }, [orderedBookmarks, filters]);
+          return false;
+        if (
+          filters.recordType &&
+          !b.ead3.localType
+            ?.toLowerCase()
+            .includes(filters.recordType.toLowerCase())
+        )
+          return false;
+        return true;
+      });
+  }, [bookmarks, activeCategory, filters]);
 
   return (
     <div className={styles.container}>
@@ -91,7 +105,6 @@ export default function BookmarksLayout({
           >
             Change
           </button>
-
           <button
             disabled={loading || !selectedId}
             onClick={() => selectedId && onRemove(selectedId)}
@@ -103,31 +116,15 @@ export default function BookmarksLayout({
 
         <div className={styles.filters}>
           <select
-            value={filters.category}
-            onChange={(e) =>
-              setFilters({ ...filters, category: e.target.value })
-            }
-          >
-            <option value="">Category</option>
-            {[...new Set(bookmarks.map((b) => b.category))].sort().map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-
-          <select
             value={filters.level}
             onChange={(e) => setFilters({ ...filters, level: e.target.value })}
           >
             <option value="">Level</option>
-            {[...new Set(bookmarks.map((b) => b.ead3.level))]
-              .sort()
-              .map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
+            {[...new Set(bookmarks.map((b) => b.ead3.level))].map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
           </select>
 
           <select
@@ -137,7 +134,7 @@ export default function BookmarksLayout({
             }
           >
             <option value="">Archive</option>
-            {[...new Set(bookmarks.map((b) => b.archive))].sort().map((a) => (
+            {[...new Set(bookmarks.map((b) => b.archive))].map((a) => (
               <option key={a} value={a}>
                 {a}
               </option>
@@ -157,31 +154,36 @@ export default function BookmarksLayout({
             }
           >
             <option value="">Record type</option>
-            {[...new Set(bookmarks.map((b) => b.ead3.localType))]
-              .sort()
-              .map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
+            {[...new Set(bookmarks.map((b) => b.ead3.localType))].map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
           </select>
         </div>
+      </div>
+
+      <div className={styles.tabs}>
+        {categories
+          .slice()
+          .sort((a, b) => a.order - b.order)
+          .map((c) => {
+            const count = bookmarks.filter((b) => b.category === c.name).length;
+            return (
+              <button
+                key={c.id}
+                className={c.id === activeCategoryId ? styles.activeTab : ""}
+                onClick={() => setActiveCategoryId(c.id)}
+              >
+                {c.name} ({count})
+              </button>
+            );
+          })}
       </div>
 
       <div className={`${styles.panel} ${styles.listPanel}`}>
         {loading && <div className={styles.loader}>Loading…</div>}
         <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Custom name</th>
-              <th>Original title</th>
-              <th>Level</th>
-              <th>Record type</th>
-              <th>Archive</th>
-              <th>Online</th>
-            </tr>
-          </thead>
           <tbody>
             {filteredBookmarks.map((b) => (
               <tr
@@ -190,28 +192,12 @@ export default function BookmarksLayout({
                 onDoubleClick={() => onOpen(b)}
                 className={b.id === selectedId ? styles.selected : ""}
               >
-                <td>{b.category}</td>
-                <td>{b.customName || "—"}</td>
+                <td>{b.customName}</td>
                 <td>{b.title}</td>
                 <td>{b.ead3.level}</td>
                 <td>{b.ead3.localType}</td>
                 <td>{b.archive}</td>
                 <td>{b.ead3.digitalObjectCount > 0 ? "✓" : "—"}</td>
-              </tr>
-            ))}
-
-            {/* Add placeholder rows */}
-            {Array.from({
-              length: Math.max(0, 5 - filteredBookmarks.length),
-            }).map((_, i) => (
-              <tr key={`empty-${i}`} style={{ pointerEvents: "none" }}>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
               </tr>
             ))}
           </tbody>

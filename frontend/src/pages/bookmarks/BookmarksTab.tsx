@@ -1,42 +1,52 @@
-// BookmarksTab - REFACTORED
+// BookmarksTab
 //
-import { useEffect, useState } from "react";
-import { BookmarksLayout } from ".";
+import { useEffect, useState, useContext } from "react";
+import BookmarksLayout from "./BookmarksLayout";
+import { BookmarkProvider } from "../../context/BookmarkProvider";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import styles from "./BookmarksTab.module.css";
 import { loadBookmarks } from "../../api/services/bookmarks.service";
+import { BookmarkContext } from "../../context/BookmarkContext";
 
 interface Props {
   bookmarks: Bookmark[];
   setBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
-  onEditBookmark: (b: Bookmark) => void;
-  onAddBookmark: () => void;
   onRemoveBookmark: (id: string) => void;
 }
 
 export default function BookmarksTab({
   bookmarks,
   setBookmarks,
-  onEditBookmark,
-  onAddBookmark,
   onRemoveBookmark,
 }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initial load only
     (async () => {
       setLoading(true);
-      const list = loadBookmarks();
+      const list = await loadBookmarks();
       setBookmarks(list);
       setLoading(false);
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setBookmarks]);
+
+  const bookmarkActions = useContext(BookmarkContext);
+  if (!bookmarkActions) throw new Error("BookmarkContext missing");
 
   function openBookmark(b: Bookmark) {
-    // TODO: getRecord(b.eadId) -> Details
     console.log("Open bookmark:", b);
+  }
+
+  function saveBookmark(bookmark: Bookmark) {
+    setBookmarks((prev) => {
+      const idx = prev.findIndex((b) => b.id === bookmark.id);
+      if (idx >= 0) {
+        const copy = [...prev];
+        copy[idx] = bookmark;
+        return copy;
+      }
+      return [...prev, bookmark];
+    });
   }
 
   function exportBookmarks(list: Bookmark[]) {
@@ -53,15 +63,21 @@ export default function BookmarksTab({
 
   return (
     <div className={styles.container}>
-      <BookmarksLayout
-        bookmarks={bookmarks}
-        onOpen={openBookmark}
-        onEdit={onEditBookmark}
-        onRemove={onRemoveBookmark}
-        onExport={exportBookmarks}
-        onAdd={onAddBookmark}
-        loading={loading}
-      />
+      <BookmarkProvider onSaveBookmark={saveBookmark}>
+        <BookmarksLayout
+          bookmarks={bookmarks}
+          loading={loading}
+          onOpen={openBookmark}
+          onRemove={onRemoveBookmark}
+          onExport={exportBookmarks}
+          onAdd={() =>
+            bookmarkActions.openBookmarkWindow({ mode: "add-manual" })
+          }
+          onEdit={(b) =>
+            bookmarkActions.openBookmarkWindow({ mode: "edit", bookmark: b })
+          }
+        />
+      </BookmarkProvider>
     </div>
   );
 }

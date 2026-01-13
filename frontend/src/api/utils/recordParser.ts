@@ -1,6 +1,5 @@
 // recordParser
 //
-// api/utils/recordParser.ts
 import type { Ead3Response, Dao } from "../models/ead3.types";
 
 export interface ParsedRecordDetails {
@@ -128,4 +127,56 @@ export function parseRecordDetails(record: Ead3Response): ParsedRecordDetails {
     ...restrictions,
     openWebUrl,
   };
+}
+
+export interface ParsedListItem {
+  title: string;
+  unitId: string;
+  level: string;
+  materialType: string;
+  mediaType: string;
+  digitalObjectCount: number;
+}
+
+const LEVEL_LABELS: Record<string, string> = {
+  item: "Item",
+  fileUnit: "File Unit",
+  series: "Series",
+  recordgrp: "Record Group",
+  collection: "Collection",
+};
+
+export function parseListItem(record: Ead3Response): ParsedListItem {
+  const archDesc = record.archDesc;
+
+  const title = archDesc.did.unitTitle;
+  const unitId = archDesc.did.unitId?.text || "";
+  const levelRaw = archDesc.level || "";
+  const level = LEVEL_LABELS[levelRaw] || levelRaw || "Unknown";
+
+  const materialType = Array.isArray(archDesc.localType)
+    ? archDesc.localType.join(" / ")
+    : archDesc.localType || "";
+
+  const mediaType = archDesc.dsc?.head || "";
+  const digitalObjectCount = record.digitalObjectCount || 0;
+
+  return {
+    title,
+    unitId,
+    level,
+    materialType,
+    mediaType,
+    digitalObjectCount,
+  };
+}
+
+export function getRecordKey(record: Ead3Response | null | undefined): string {
+  if (!record) return "__invalid__";
+
+  return (
+    record.archDesc?.did?.unitId?.text ??
+    record.control?.recordId ??
+    "__invalid__"
+  );
 }

@@ -6,12 +6,23 @@
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border-primary);
   position: relative;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.item:hover {
+  background-color: var(--bg-hover);
+}
+
+.item.selected {
+  background-color: var(--item-selected-bg);
+  border-left: 3px solid var(--item-selected-border);
+  padding-left: 9px;
 }
 
 .path {
   font-size: 11px;
   color: var(--text-tertiary);
-  /* white-space: nowrap; */
   padding-right: 30px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -24,6 +35,11 @@
   line-height: 1.45;
   margin: 2px 0;
   align-self: center;
+  transition: color 0.15s ease;
+}
+
+.item.selected .detailsTitle {
+  color: var(--item-selected-text);
 }
 
 .meta {

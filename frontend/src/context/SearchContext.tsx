@@ -7,12 +7,17 @@ import {
   getRecord,
 } from "../api/services/searchRecords.service";
 
+interface SearchError {
+  message: string;
+  type: "network" | "validation" | "server" | "unknown";
+}
+
 interface SearchContextValue {
   // State
   results: Ead3Response[];
   selectedRecord: Ead3Response | null;
   loading: boolean;
-  error: string | null;
+  error: SearchError | null;
 
   // Actions
   search: (form: SearchFormState) => Promise<void>;
@@ -34,7 +39,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
     null
   );
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<SearchError | null>(null);
 
   async function search(form: SearchFormState) {
     setLoading(true);
@@ -44,9 +49,10 @@ export function SearchProvider({ children }: SearchProviderProps) {
       setResults(data);
       setSelectedRecord(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Search failed";
-      setError(errorMessage);
-      console.error("Search error:", err);
+      setError({
+        message: err instanceof Error ? err.message : "Search failed",
+        type: err instanceof TypeError ? "network" : "unknown",
+      });
     } finally {
       setLoading(false);
     }
@@ -63,7 +69,6 @@ export function SearchProvider({ children }: SearchProviderProps) {
       const record = await getRecord(Number(segmentId));
       setSelectedRecord(record);
 
-      // Opcjonalnie: dodaj do results jeśli nie ma
       setResults((prev) => {
         const exists = prev.some(
           (r) => r.archDesc?.did?.unitId?.text === segmentId
@@ -71,10 +76,10 @@ export function SearchProvider({ children }: SearchProviderProps) {
         return exists ? prev : [record, ...prev];
       });
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to load record";
-      setError(errorMessage);
-      console.error("Load record error:", err);
+      setError({
+        message: err instanceof Error ? err.message : "Search failed",
+        type: err instanceof TypeError ? "network" : "unknown",
+      });
     } finally {
       setLoading(false);
     }

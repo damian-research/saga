@@ -1,6 +1,5 @@
 // SearchLayout
 //
-// pages/search/SearchLayout.tsx
 import {
   SearchPanel,
   SearchList,
@@ -8,23 +7,33 @@ import {
 } from "../../components/search";
 import { useSearch } from "../../context/SearchContext";
 import styles from "./SearchLayout.module.css";
+import { Loader } from "../../components/loaders/Loader";
 
 export default function SearchLayout() {
-  const { results, selectedRecord, loading, error, clearError } = useSearch();
+  const { loading, error, clearError } = useSearch();
 
   return (
     <div className={styles.grid}>
       <SearchPanel />
 
       {error && (
-        <div className={styles.error}>
-          <span>{error}</span>
-          <button onClick={clearError}>×</button>
+        <div className={`${styles.error} ${styles[`error-${error.type}`]}`}>
+          <span>{error.message}</span>
+          <button
+            onClick={clearError}
+            className={styles.errorClose}
+            title="Dismiss error"
+          >
+            ×
+          </button>
         </div>
       )}
 
       {loading ? (
-        <div className={styles.loading}>Searching...</div>
+        <div className={styles.loadingContainer}>
+          <Loader size="large" />
+          <span className={styles.loadingText}>Searching...</span>
+        </div>
       ) : (
         <SearchList />
       )}

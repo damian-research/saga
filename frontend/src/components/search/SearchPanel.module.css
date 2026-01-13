@@ -78,8 +78,15 @@
   margin-bottom: var(--spacing-md);
 }
 
-.button {
+.actions {
+  display: flex;
+  gap: 8px;
   margin-top: 12px;
+}
+
+.button,
+.clearButton {
+  flex: 1;
   padding: 6px 12px;
   font-size: var(--font-size-xs);
   border-radius: var(--radius-sm);
@@ -87,22 +94,22 @@
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   cursor: pointer;
-  width: 100%;
   transition: background-color var(--transition-normal);
 }
 
-.button:hover:not(:disabled) {
+.button:hover:not(:disabled),
+.clearButton:hover:not(:disabled) {
   background-color: var(--bg-hover);
 }
 
-.button:disabled {
+.button:disabled,
+.clearButton:disabled {
   opacity: 0.5;
   cursor: default;
 }
 
-/* Search animation */
-
-.button:active:not(:disabled) {
+.button:active:not(:disabled),
+.clearButton:active:not(:disabled) {
   transform: translateY(1px);
 }
 
@@ -126,4 +133,15 @@
 
 .button:disabled {
   animation: buttonPulse 1.6s ease-in-out infinite;
+}
+
+.clearButton {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border-color: var(--border-secondary);
+}
+
+.clearButton:hover:not(:disabled) {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }

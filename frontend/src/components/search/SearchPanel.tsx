@@ -20,7 +20,7 @@ export default function SearchPanel() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function hasAnySearchValue(form: SearchFormState) {
+  function hasAnySearchValue(form: SearchFormState): boolean {
     return Boolean(
       form.q?.trim() ||
         form.title?.trim() ||
@@ -40,8 +40,23 @@ export default function SearchPanel() {
     search(form);
   }
 
+  function clearForm() {
+    setForm({
+      q: "",
+      limit: 50,
+      onlineAvailable: true,
+    });
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" && !loading && hasAnySearchValue(form)) {
+      e.preventDefault();
+      submit();
+    }
+  }
+
   return (
-    <div className={styles.panel}>
+    <div className={styles.panel} onKeyDown={handleKeyDown}>
       <div className={styles.title}>Search in US National Archives</div>
 
       <label>
@@ -50,6 +65,7 @@ export default function SearchPanel() {
           type="text"
           value={form.q}
           onChange={(e) => update("q", e.target.value)}
+          autoFocus
         />
       </label>
 
@@ -59,6 +75,8 @@ export default function SearchPanel() {
           type="number"
           value={form.limit}
           onChange={(e) => update("limit", Number(e.target.value))}
+          min={1}
+          max={100}
         />
       </label>
 
@@ -133,8 +151,9 @@ export default function SearchPanel() {
       <label>
         RG #
         <input
-          type="number"
+          type="text"
           placeholder="e.g. 11, 59"
+          value={form.recordGroupNumber ?? ""}
           onChange={(e) => update("recordGroupNumber", e.target.value)}
         />
       </label>
@@ -147,6 +166,7 @@ export default function SearchPanel() {
         <input
           type="text"
           placeholder="single or CSV"
+          value={form.naId ?? ""}
           onChange={(e) => update("naId", e.target.value)}
         />
       </label>
@@ -154,8 +174,9 @@ export default function SearchPanel() {
       <label>
         Microfilm ID
         <input
-          type="number"
+          type="text"
           placeholder="M234, T455"
+          value={form.microfilmId ?? ""}
           onChange={(e) => update("microfilmId", e.target.value)}
         />
       </label>
@@ -165,17 +186,32 @@ export default function SearchPanel() {
         <input
           type="text"
           placeholder="M2-3-4, T-45-5"
+          value={form.localId ?? ""}
           onChange={(e) => update("localId", e.target.value)}
         />
       </label>
 
-      <button
-        className={styles.button}
-        onClick={submit}
-        disabled={loading || !hasAnySearchValue(form)}
-      >
-        {loading ? "Searching…" : "Search"}
-      </button>
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.button}
+          onClick={submit}
+          disabled={loading || !hasAnySearchValue(form)}
+        >
+          {loading ? "Searching…" : "Search"}
+        </button>
+
+        {hasAnySearchValue(form) && (
+          <button
+            type="button"
+            className={styles.clearButton}
+            onClick={clearForm}
+            disabled={loading}
+          >
+            Clear
+          </button>
+        )}
+      </div>
     </div>
   );
 }

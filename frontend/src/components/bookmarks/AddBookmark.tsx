@@ -1,29 +1,33 @@
+// AddBookmark
+//
 import { useState } from "react";
 import styles from "./AddBookmark.module.css";
-import { TEMP_CATEGORIES, ARCHIVES } from "../../api/models/bookmarks.types";
-import type {
-  Bookmark,
-  Category,
-  ArchiveName,
+import {
+  TEMP_CATEGORIES,
+  ARCHIVES,
+  type Category,
+  type ArchiveName,
+  type Bookmark,
+  type WindowMode,
 } from "../../api/models/bookmarks.types";
 import type { Ead3Response } from "../../api/models/ead3.types";
 import { getRecord } from "../../api/services/searchRecords.service";
 import { mapEad3ToBookmark } from "../../api/utils/ead3.mapper";
 
 interface Props {
-  mode: "add-manual" | "add-from-search";
+  mode: WindowMode;
   record?: Ead3Response;
-  bookmark?: Bookmark | null; // only for edit-from-bookmarks
-  onCancel: () => void;
-  onSubmit: (bookmark: Bookmark) => void;
+  bookmark?: Bookmark;
+  onClose: () => void;
+  onSave: (bookmark: Bookmark) => void;
 }
 
 export default function AddBookmark({
   mode,
   record,
   bookmark,
-  onCancel,
-  onSubmit,
+  onClose,
+  onSave,
 }: Props) {
   const [category, setCategory] = useState<Category | "">(
     bookmark?.category ?? ""
@@ -38,14 +42,18 @@ export default function AddBookmark({
   const [resolveError, setResolveError] = useState<string | null>(null);
   const [base, setBase] = useState<Bookmark | null>(bookmark ?? null);
 
+  const isManual = mode === "add-manual";
+  const isFromSearch = mode === "add-from-search";
+  const isEdit = mode === "edit";
+
   return (
-    <div className={styles.backdrop} onClick={onCancel}>
+    <div className={styles.backdrop} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.title}>
-          {bookmark ? "Change bookmark" : "Add bookmark"}
+          {isEdit ? "Change bookmark" : "Add bookmark"}
         </div>
 
-        {mode === "add-manual" && (
+        {isManual && (
           <>
             <label>
               Link
@@ -56,7 +64,6 @@ export default function AddBookmark({
                   setBase(null);
                   setResolveError(null);
                 }}
-                placeholder="https://catalog.archives.gov/id/73088101"
               />
             </label>
 
@@ -96,42 +103,30 @@ export default function AddBookmark({
           <input
             value={customName}
             onChange={(e) => setCustomName(e.target.value)}
-            placeholder="Required"
           />
         </label>
-
-        {base && (
-          <div className={styles.preview}>
-            <div className={styles.previewTitle}>{base.title}</div>
-            <div className={styles.previewMeta}>
-              {base.ead3.localType ? ` · ${base.ead3.localType}` : ""}
-              {base.ead3.digitalObjectCount > 0
-                ? ` · Online: ${base.ead3.digitalObjectCount}`
-                : ""}
-            </div>
-          </div>
-        )}
 
         {resolveError && <div className={styles.error}>{resolveError}</div>}
 
         <div className={styles.actions}>
-          <button onClick={onCancel}>Cancel</button>
           <button
-            disabled={
-              resolving ||
-              !category ||
-              !customName.trim() ||
-              (mode === "add-manual" && !bookmark && !url.trim())
-            }
+            disabled={resolving || !category || !customName.trim()}
             onClick={async () => {
+              if (!category) return;
+              const safeCategory = category as Category;
+
               let resolved: Bookmark | null = base;
 
               // EDIT
-              if (bookmark) {
-                resolved = bookmark;
+              if (mode === "edit" && bookmark) {
+                resolved = {
+                  ...bookmark,
+                  category: safeCategory,
+                  customName: customName.trim(),
+                };
               }
 
-              // ADD-MANUAL
+              // ADD-MANUAL → GET RECORD
               else if (mode === "add-manual" && !resolved) {
                 const match = url.match(/\/id\/(\d+)/);
                 if (!match) {
@@ -141,27 +136,20 @@ export default function AddBookmark({
 
                 try {
                   setResolving(true);
-                  setResolveError(null);
-
                   const record = await getRecord(Number(match[1]));
-                  if (!record) {
-                    setResolveError("Record not found");
-                    setResolving(false);
-                    return;
-                  }
+                  if (!record) throw new Error();
 
                   resolved = mapEad3ToBookmark(record, {
                     mode,
-                    category: category as Category,
+                    category: safeCategory,
                     customName,
                     url,
                   });
 
-                  setBase(resolved);
                   setResolving(false);
                 } catch {
-                  setResolveError("Record not found");
                   setResolving(false);
+                  setResolveError("Record not found");
                   return;
                 }
               }
@@ -170,7 +158,7 @@ export default function AddBookmark({
               else if (mode === "add-from-search" && record && !resolved) {
                 resolved = mapEad3ToBookmark(record, {
                   mode,
-                  category: category as Category,
+                  category: safeCategory,
                   customName,
                   url,
                 });
@@ -178,19 +166,15 @@ export default function AddBookmark({
 
               if (!resolved) return;
 
-              const final: Bookmark = {
+              onSave({
                 ...resolved,
-                eadId: resolved.eadId ?? record?.control?.recordId ?? null,
-                url: resolved.url || url,
-                category: category as Category,
+                category: safeCategory,
                 customName: customName.trim(),
                 createdAt: resolved.createdAt ?? new Date().toISOString(),
-              };
-
-              onSubmit(final);
+              });
             }}
           >
-            {resolving ? "Resolving..." : "Save"}
+            Save
           </button>
         </div>
       </div>
