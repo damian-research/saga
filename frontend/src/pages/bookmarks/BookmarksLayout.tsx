@@ -73,6 +73,22 @@ export default function BookmarksLayout({
               <button
                 className={styles.actionButton}
                 disabled={!selectedId}
+                onClick={() => {
+                  const b = bookmarks.find((x) => x.id === selectedId);
+                  if (!b) return;
+
+                  ctx.openBookmarkWindow({
+                    mode: "edit",
+                    bookmark: b,
+                  });
+                }}
+              >
+                Change
+              </button>
+
+              <button
+                className={styles.actionButton}
+                disabled={!selectedId}
                 onClick={() => selectedId && onRemove(selectedId)}
               >
                 Remove bookmark
