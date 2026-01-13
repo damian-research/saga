@@ -1,11 +1,11 @@
-import type { Bookmark, Category } from "../models/bookmarks.types";
+import type { Bookmark } from "../models/bookmarks.types";
 import type { Ead3Response } from "../models/ead3.types";
 
 export function mapEad3ToBookmark(
   record: Ead3Response,
   input: {
     mode: "add-manual" | "add-from-search";
-    category: Category;
+    categoryId: string;
     customName: string;
     url: string;
     id?: string;
@@ -29,7 +29,7 @@ export function mapEad3ToBookmark(
       digitalObjectCount: record.digitalObjectCount ?? 0,
     },
 
-    category: input.category,
+    categoryId: input.categoryId,
     customName: input.customName,
     createdAt: input.createdAt ?? new Date().toISOString(),
 

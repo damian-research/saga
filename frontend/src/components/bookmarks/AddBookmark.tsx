@@ -1,11 +1,11 @@
 // AddBookmark
 //
+// AddBookmark.tsx
 import { useState } from "react";
 import styles from "./AddBookmark.module.css";
 import {
-  TEMP_CATEGORIES,
   ARCHIVES,
-  type Category,
+  type BookmarkCategory,
   type ArchiveName,
   type Bookmark,
   type WindowMode,
@@ -18,6 +18,7 @@ interface Props {
   mode: WindowMode;
   record?: Ead3Response;
   bookmark?: Bookmark;
+  categories: BookmarkCategory[];
   onClose: () => void;
   onSave: (bookmark: Bookmark) => void;
 }
@@ -26,11 +27,12 @@ export default function AddBookmark({
   mode,
   record,
   bookmark,
+  categories,
   onClose,
   onSave,
 }: Props) {
-  const [category, setCategory] = useState<Category | "">(
-    bookmark?.category ?? ""
+  const [categoryId, setCategoryId] = useState<string>(
+    bookmark?.categoryId ?? ""
   );
   const [customName, setCustomName] = useState(bookmark?.customName ?? "");
   const [url, setUrl] = useState(bookmark?.url ?? "");
@@ -43,7 +45,6 @@ export default function AddBookmark({
   const [base, setBase] = useState<Bookmark | null>(bookmark ?? null);
 
   const isManual = mode === "add-manual";
-  const isFromSearch = mode === "add-from-search";
   const isEdit = mode === "edit";
 
   return (
@@ -86,13 +87,13 @@ export default function AddBookmark({
         <label>
           Category
           <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as Category)}
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
           >
             <option value="">Select category</option>
-            {TEMP_CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
               </option>
             ))}
           </select>
@@ -110,10 +111,9 @@ export default function AddBookmark({
 
         <div className={styles.actions}>
           <button
-            disabled={resolving || !category || !customName.trim()}
+            disabled={resolving || !categoryId || !customName.trim()}
             onClick={async () => {
-              if (!category) return;
-              const safeCategory = category as Category;
+              if (!categoryId) return;
 
               let resolved: Bookmark | null = base;
 
@@ -121,12 +121,12 @@ export default function AddBookmark({
               if (mode === "edit" && bookmark) {
                 resolved = {
                   ...bookmark,
-                  category: safeCategory,
+                  categoryId,
                   customName: customName.trim(),
                 };
               }
 
-              // ADD-MANUAL → GET RECORD
+              // ADD-MANUAL
               else if (mode === "add-manual" && !resolved) {
                 const match = url.match(/\/id\/(\d+)/);
                 if (!match) {
@@ -141,8 +141,8 @@ export default function AddBookmark({
 
                   resolved = mapEad3ToBookmark(record, {
                     mode,
-                    category: safeCategory,
-                    customName,
+                    categoryId,
+                    customName: customName.trim(),
                     url,
                   });
 
@@ -158,8 +158,8 @@ export default function AddBookmark({
               else if (mode === "add-from-search" && record && !resolved) {
                 resolved = mapEad3ToBookmark(record, {
                   mode,
-                  category: safeCategory,
-                  customName,
+                  categoryId,
+                  customName: customName.trim(),
                   url,
                 });
               }
@@ -168,7 +168,7 @@ export default function AddBookmark({
 
               onSave({
                 ...resolved,
-                category: safeCategory,
+                categoryId,
                 customName: customName.trim(),
                 createdAt: resolved.createdAt ?? new Date().toISOString(),
               });

@@ -1,15 +1,21 @@
 import type { PathSegment } from "./ead3.types";
 
-export const TEMP_CATEGORIES = [
-  "General",
-  "Research",
-  "WWII",
-  "Intelligence",
-  "Operations",
-  "Technology",
-] as const;
+// export const TEMP_CATEGORIES = [
+//   "General",
+//   "Research",
+//   "WWII",
+//   "Intelligence",
+//   "Operations",
+//   "Technology",
+// ] as const;
+// export type Category = (typeof TEMP_CATEGORIES)[number];
 
-export type Category = (typeof TEMP_CATEGORIES)[number];
+export interface BookmarkCategory {
+  id: string; //} UUID
+  name: string;
+  order: number;
+  color?: string;
+}
 
 export const WINDOW_MODES = ["add-manual", "add-from-search", "edit"] as const;
 export type WindowMode = (typeof WINDOW_MODES)[number];
@@ -30,9 +36,10 @@ export interface Bookmark {
     dscHead?: string; // record.archDesc.dsc?.head
     digitalObjectCount: number; // record.digitalObjectCount ?? 0
   };
-  category: Category;
+  categoryId: string;
+  tags?: string[];
+  createdAt: string;
   customName: string;
-  createdAt: string; // ISO
   note?: string; // user note (optional)
 
   url: string;
