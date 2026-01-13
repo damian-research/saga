@@ -1,10 +1,10 @@
 // BookmarksLayout
 //
-// BookmarksLayout.tsx
 import { useContext, useMemo, useState } from "react";
 import styles from "./BookmarksLayout.module.css";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import { BookmarkContext } from "../../context/BookmarkContext";
+import CategoryTabs from "./CategoryTabs";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -24,41 +24,35 @@ export default function BookmarksLayout({
   const ctx = useContext(BookmarkContext);
   if (!ctx) throw new Error("BookmarkContext missing");
 
-  const { categories, addCategory, renameCategory, removeCategory } = ctx;
+  const {
+    categories,
+    addCategory,
+    renameCategory,
+    removeCategory,
+    updateBookmarkCategory,
+  } = ctx;
 
   const [activeCategoryId, setActiveCategoryId] = useState(
     categories[0]?.id ?? ""
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
 
-  // ===== FILTER =====
+  function handleDropOnCategory(categoryId: string) {
+    if (!dragBookmarkId) return;
+
+    updateBookmarkCategory(dragBookmarkId, categoryId);
+    setActiveCategoryId(categoryId);
+    setDragBookmarkId(null);
+  }
+
+  // DRAG STATE
+  const [dragCategoryId, setDragCategoryId] = useState<string | null>(null);
+  const [dragBookmarkId, setDragBookmarkId] = useState<string | null>(null);
+
+  // FILTER
   const visible = useMemo(() => {
     return bookmarks.filter((b) => b.categoryId === activeCategoryId);
   }, [bookmarks, activeCategoryId]);
-
-  // ===== DRAG HELPERS =====
-  function reorderCategories(fromId: string, toId: string) {
-    if (fromId === toId) return;
-
-    const ordered = [...categories].sort((a, b) => a.order - b.order);
-
-    const fromIdx = ordered.findIndex((c) => c.id === fromId);
-    const toIdx = ordered.findIndex((c) => c.id === toId);
-
-    if (fromIdx < 0 || toIdx < 0) return;
-
-    const [moved] = ordered.splice(fromIdx, 1);
-    ordered.splice(toIdx, 0, moved);
-
-    // reassign order
-    ordered.forEach((c, i) => {
-      c.order = i;
-    });
-
-    // persist via context (renameCategory hack-free update)
-    ordered.forEach((c) => renameCategory(c.id, c.name));
-  }
 
   return (
     <div className={styles.container}>
@@ -84,33 +78,14 @@ export default function BookmarksLayout({
         </div>
       </div>
 
-      {/* ===== CATEGORY TABS (DRAGGABLE) ===== */}
-      <div className={styles.tabs}>
-        {[...categories]
-          .sort((a, b) => a.order - b.order)
-          .map((c) => {
-            const count = bookmarks.filter((b) => b.categoryId === c.id).length;
-
-            return (
-              <button
-                key={c.id}
-                draggable
-                onDragStart={() => setDraggingId(c.id)}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => {
-                  if (draggingId) reorderCategories(draggingId, c.id);
-                  setDraggingId(null);
-                }}
-                className={
-                  c.id === activeCategoryId ? styles.activeTab : styles.tab
-                }
-                onClick={() => setActiveCategoryId(c.id)}
-              >
-                {c.name} ({count})
-              </button>
-            );
-          })}
-      </div>
+      {/* ===== CATEGORY TABS (DROP TARGETS) ===== */}
+      <CategoryTabs
+        categories={categories}
+        bookmarks={bookmarks}
+        activeCategoryId={activeCategoryId}
+        onSelect={setActiveCategoryId}
+        onDropBookmark={handleDropOnCategory}
+      />
 
       {/* ===== CATEGORY ACTIONS ===== */}
       <div className={styles.categoryActions}>
@@ -140,6 +115,7 @@ export default function BookmarksLayout({
             </button>
 
             <button
+              className={styles.danger}
               onClick={() => {
                 if (
                   confirm(
@@ -157,22 +133,37 @@ export default function BookmarksLayout({
         )}
       </div>
 
-      {/* ===== LIST ===== */}
+      {/* ===== BOOKMARK LIST (DRAG SOURCE) ===== */}
       <div className={`${styles.panel} ${styles.listPanel}`}>
         {loading && <div>Loading…</div>}
 
         <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Title</th>
+              <th>Level</th>
+              <th>Type</th>
+              <th>Archive</th>
+              <th>Added</th>
+            </tr>
+          </thead>
           <tbody>
             {visible.map((b) => (
               <tr
                 key={b.id}
-                className={b.id === selectedId ? styles.selected : ""}
+                draggable
+                onDragStart={() => setDragBookmarkId(b.id)}
                 onClick={() => setSelectedId(b.id)}
                 onDoubleClick={() => onOpen(b)}
+                className={b.id === selectedId ? styles.selected : ""}
               >
                 <td>{b.customName}</td>
                 <td>{b.title}</td>
+                <td>{b.ead3.level}</td>
+                <td>{b.ead3.localType ?? "—"}</td>
                 <td>{b.archive}</td>
+                <td>{b.createdAt.slice(0, 10)}</td>
               </tr>
             ))}
           </tbody>

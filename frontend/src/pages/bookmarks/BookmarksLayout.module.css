@@ -93,10 +93,44 @@
 }
 
 .table tbody tr.selected td {
-  background-color: #dbeafe;
+  background-color: var(--bg-accent);
+  color: var(--text-primary);
 }
 
 :global(.dark-mode) .table tbody tr.selected td {
   background-color: #1e3a5f;
   color: #e5e7eb;
+}
+
+/* Category actions */
+
+.categoryActions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.categoryActions button {
+  padding: 4px 10px;
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.categoryActions button:hover {
+  background-color: var(--bg-hover);
+}
+
+.categoryActions button.danger {
+  border-color: #7f1d1d;
+  background-color: #3f1d1d;
+  color: #fecaca;
+}
+
+.categoryActions button.danger:hover {
+  background-color: #7f1d1d;
 }

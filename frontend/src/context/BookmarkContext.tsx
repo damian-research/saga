@@ -22,6 +22,7 @@ export interface BookmarkActions {
   addCategory(name: string): void;
   renameCategory(id: string, name: string): void;
   removeCategory(id: string): void;
+  updateBookmarkCategory(id: string, categoryId: string): void;
 }
 
 export const BookmarkContext = createContext<BookmarkActions | null>(null);

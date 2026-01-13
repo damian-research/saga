@@ -120,6 +120,15 @@ export default function MainWindow() {
     );
   }
 
+  function updateBookmarkCategory(id: string, categoryId: string) {
+    setBookmarks((prev) => {
+      const next = prev.map((b) => (b.id === id ? { ...b, categoryId } : b));
+      const updated = next.find((b) => b.id === id);
+      if (updated) saveBookmark(updated);
+      return next;
+    });
+  }
+
   return (
     <BookmarkContext.Provider
       value={{
@@ -128,6 +137,7 @@ export default function MainWindow() {
         addCategory,
         renameCategory,
         removeCategory,
+        updateBookmarkCategory,
       }}
     >
       <div className={`app-root ${isDarkMode ? "dark-mode" : ""}`}>

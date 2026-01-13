@@ -1,0 +1,71 @@
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 6px 8px;
+
+  border-bottom: 1px solid var(--border-primary);
+  background-color: var(--bg-secondary);
+
+  overflow-x: auto;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+
+  font-size: var(--font-size-xs);
+  line-height: 1;
+
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+
+  transition: background-color var(--transition-fast),
+    color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tab:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.active {
+  background-color: var(--bg-accent);
+  border-color: var(--border-accent);
+  color: var(--text-primary);
+}
+
+.name {
+  font-weight: var(--font-weight-medium);
+}
+
+.count {
+  padding: 2px 6px;
+  border-radius: 999px;
+
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+
+  font-size: 11px;
+}
+
+.active .count {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.tab[draggable="true"] {
+  cursor: grab;
+}
+
+.tab[draggable="true"]:active {
+  cursor: grabbing;
+}
