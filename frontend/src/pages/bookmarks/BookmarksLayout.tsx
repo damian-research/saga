@@ -150,6 +150,17 @@ export default function BookmarksLayout({
         {loading && <div>Loading…</div>}
 
         <table className={styles.table}>
+          <colgroup>
+            <col className={styles["col-name"]} />
+            <col className={styles["col-title"]} />
+            <col className={styles["col-level"]} />
+            <col className={styles["col-type"]} />
+            <col className={styles["col-archive"]} />
+            <col className={styles["col-tags"]} />
+            <col className={styles["col-online"]} />
+            <col className={styles["col-added"]} />
+          </colgroup>
+
           <thead>
             <tr>
               <th>Name</th>
@@ -157,9 +168,12 @@ export default function BookmarksLayout({
               <th>Level</th>
               <th>Type</th>
               <th>Archive</th>
+              <th>Tags</th>
+              <th>Online</th>
               <th>Added</th>
             </tr>
           </thead>
+
           <tbody>
             {visible.map((b) => (
               <tr
@@ -170,11 +184,22 @@ export default function BookmarksLayout({
                 onDoubleClick={() => onOpen(b)}
                 className={b.id === selectedId ? styles.selected : ""}
               >
-                <td>{b.customName}</td>
-                <td>{b.title}</td>
+                <td className={styles.ellipsis}>{b.customName}</td>
+                <td className={styles.ellipsis}>{b.title}</td>
                 <td>{b.ead3.level}</td>
                 <td>{b.ead3.localType ?? "—"}</td>
                 <td>{b.archive}</td>
+
+                {/* TAGS */}
+                <td className={styles.tagsCell}>
+                  {b.tags?.length ? b.tags.join(", ") : "—"}
+                </td>
+
+                {/* ONLINE */}
+                <td className={styles.centerCell}>
+                  {b.ead3.digitalObjectCount > 0 ? "✓" : "—"}
+                </td>
+
                 <td>{b.createdAt.slice(0, 10)}</td>
               </tr>
             ))}

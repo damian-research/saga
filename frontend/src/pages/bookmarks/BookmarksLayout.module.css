@@ -112,6 +112,32 @@
   width: 100%;
   border-collapse: collapse;
   font-size: var(--font-size-sm);
+  table-layout: fixed;
+}
+
+.col-name {
+  width: 18%;
+}
+.col-title {
+  width: 32%;
+}
+.col-level {
+  width: 8%;
+}
+.col-type {
+  width: 10%;
+}
+.col-archive {
+  width: 5%;
+}
+.col-tags {
+  width: 14%;
+}
+.col-online {
+  width: 5%;
+}
+.col-added {
+  width: 7%;
 }
 
 .table th {
@@ -142,4 +168,21 @@
 :global(.dark-mode) .table tbody tr.selected td {
   background-color: #1e3a5f;
   color: #e5e7eb;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.centerCell {
+  text-align: center;
+}
+
+.tagsCell {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-secondary);
 }
