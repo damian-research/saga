@@ -19,32 +19,73 @@
   color: var(--text-primary);
 }
 
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Buttons */
 .actions {
   display: flex;
-  gap: var(--spacing-md);
-  margin-bottom: 10px;
+  align-items: center;
+  gap: 8px;
 }
 
-.actions button {
+.actionButton {
+  height: 30px;
   padding: 6px 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   font-size: var(--font-size-xs);
-  color: var(--text-primary);
+  line-height: 1;
+  font-weight: var(--font-weight-medium);
+
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-secondary);
+
   background-color: var(--bg-secondary);
+  color: var(--text-primary);
+
   cursor: pointer;
-  transition: background-color var(--transition-normal);
+  user-select: none;
+
+  transition: background-color var(--transition-fast),
+    border-color var(--transition-fast), color var(--transition-fast);
 }
 
-.actions button:hover:not(:disabled) {
+.actionButton:hover:not(:disabled) {
   background-color: var(--bg-hover);
 }
 
-.actions button:disabled {
+.actionButton:disabled {
   opacity: 0.5;
   cursor: default;
 }
 
+.actionButtonDanger {
+  border-color: #7f1d1d;
+  background-color: #3f1d1d;
+  color: #fecaca;
+}
+
+.actionButtonDanger:hover:not(:disabled) {
+  background-color: #7f1d1d;
+  border-color: #7f1d1d;
+  color: #fecaca;
+}
+
+/* Filters */
 .filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -61,6 +102,7 @@
   color: var(--text-primary);
 }
 
+/* Table */
 .listPanel {
   flex: 1;
   overflow: auto;
@@ -100,37 +142,4 @@
 :global(.dark-mode) .table tbody tr.selected td {
   background-color: #1e3a5f;
   color: #e5e7eb;
-}
-
-/* Category actions */
-
-.categoryActions {
-  display: flex;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border-primary);
-}
-
-.categoryActions button {
-  padding: 4px 10px;
-  font-size: var(--font-size-xs);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-secondary);
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.categoryActions button:hover {
-  background-color: var(--bg-hover);
-}
-
-.categoryActions button.danger {
-  border-color: #7f1d1d;
-  background-color: #3f1d1d;
-  color: #fecaca;
-}
-
-.categoryActions button.danger:hover {
-  background-color: #7f1d1d;
 }

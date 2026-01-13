@@ -58,23 +58,81 @@ export default function BookmarksLayout({
     <div className={styles.container}>
       {/* ===== HEADER ===== */}
       <div className={styles.panel}>
-        <div className={styles.panelTitle}>Bookmarks</div>
+        <div className={styles.headerRow}>
+          <div className={styles.headerLeft}>
+            <div className={styles.panelTitle}>Bookmarks</div>
 
-        <div className={styles.actions}>
-          <button
-            onClick={() => ctx.openBookmarkWindow({ mode: "add-manual" })}
-          >
-            Add bookmark
-          </button>
+            <div className={styles.actions}>
+              <button
+                className={styles.actionButton}
+                onClick={() => ctx.openBookmarkWindow({ mode: "add-manual" })}
+              >
+                Add bookmark
+              </button>
 
-          <button
-            disabled={!selectedId}
-            onClick={() => selectedId && onRemove(selectedId)}
-          >
-            Remove bookmark
-          </button>
+              <button
+                className={styles.actionButton}
+                disabled={!selectedId}
+                onClick={() => selectedId && onRemove(selectedId)}
+              >
+                Remove bookmark
+              </button>
 
-          <button onClick={() => onExport(visible)}>Export</button>
+              <button
+                className={styles.actionButton}
+                onClick={() => onExport(visible)}
+              >
+                Export
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.actions}>
+            <button
+              className={styles.actionButton}
+              onClick={() => {
+                const name = prompt("New category name");
+                if (name) addCategory(name.trim());
+              }}
+            >
+              + Category
+            </button>
+
+            {activeCategoryId !== "uncategorized" && (
+              <>
+                <button
+                  className={styles.actionButton}
+                  onClick={() => {
+                    const current = categories.find(
+                      (c) => c.id === activeCategoryId
+                    );
+                    if (!current) return;
+
+                    const name = prompt("Rename category", current.name);
+                    if (name) renameCategory(activeCategoryId, name.trim());
+                  }}
+                >
+                  Rename
+                </button>
+
+                <button
+                  className={`${styles.actionButton} ${styles.actionButtonDanger}`}
+                  onClick={() => {
+                    if (
+                      confirm(
+                        "Remove category? Bookmarks will be moved to Uncategorized."
+                      )
+                    ) {
+                      removeCategory(activeCategoryId);
+                      setActiveCategoryId("uncategorized");
+                    }
+                  }}
+                >
+                  Remove
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -86,52 +144,6 @@ export default function BookmarksLayout({
         onSelect={setActiveCategoryId}
         onDropBookmark={handleDropOnCategory}
       />
-
-      {/* ===== CATEGORY ACTIONS ===== */}
-      <div className={styles.categoryActions}>
-        <button
-          onClick={() => {
-            const name = prompt("New category name");
-            if (name) addCategory(name.trim());
-          }}
-        >
-          + Category
-        </button>
-
-        {activeCategoryId !== "uncategorized" && (
-          <>
-            <button
-              onClick={() => {
-                const current = categories.find(
-                  (c) => c.id === activeCategoryId
-                );
-                if (!current) return;
-
-                const name = prompt("Rename category", current.name);
-                if (name) renameCategory(activeCategoryId, name.trim());
-              }}
-            >
-              Rename
-            </button>
-
-            <button
-              className={styles.danger}
-              onClick={() => {
-                if (
-                  confirm(
-                    "Remove category? Bookmarks will be moved to Uncategorized."
-                  )
-                ) {
-                  removeCategory(activeCategoryId);
-                  setActiveCategoryId("uncategorized");
-                }
-              }}
-            >
-              Remove
-            </button>
-          </>
-        )}
-      </div>
 
       {/* ===== BOOKMARK LIST (DRAG SOURCE) ===== */}
       <div className={`${styles.panel} ${styles.listPanel}`}>
