@@ -25,6 +25,7 @@ export interface Control {
 export interface FileDesc {
   titleStmt: TitleStmt;
   publicationStmt: PublicationStmt;
+  noteStmt?: NoteStmt;
 }
 
 export interface TitleStmt {
@@ -43,6 +44,26 @@ export interface EadDate {
   normal?: string;
   calendar?: string;
   era?: string;
+}
+
+export interface NoteStmt {
+  controlNote?: ControlNote;
+}
+
+export interface ControlNote {
+  paragraph?: ParagraphWithRef;
+}
+
+export interface ParagraphWithRef {
+  text?: string;
+  ref?: Reference;
+}
+
+export interface Reference {
+  show?: string;
+  actuate?: string;
+  href?: string;
+  text?: string;
 }
 
 export interface MaintenanceAgency {
@@ -66,6 +87,7 @@ export interface ArchDesc {
   localType?: string;
   did: Did;
   dsc?: Dsc;
+  controlAccess?: ControlAccess;
 }
 
 export interface Did {
@@ -134,6 +156,11 @@ export interface Dsc {
   dscType: string;
   head?: string;
   components: Component[];
+}
+
+export interface ControlAccess {
+  head?: string;
+  subjects?: Subject[];
 }
 
 export interface Component {

@@ -274,6 +274,9 @@ public class ArchDesc
 
     // [XmlElement("dsc")]
     public Dsc? Dsc { get; set; }
+
+    // [XmlElement("controlaccess")]
+    public ControlAccess? ControlAccess { get; set; }
 }
 
 public class Did
@@ -439,6 +442,15 @@ public class Dsc
 
     // [XmlElement("c")]
     public List<Component>? Components { get; set; }
+}
+
+public class ControlAccess
+{
+    // [XmlElement("head")]
+    public string? Head { get; set; }
+
+    // [XmlElement("subject")]
+    public List<Subject>? Subjects { get; set; }
 }
 
 public class Component

@@ -185,6 +185,12 @@ public class Restriction
 {
     [JsonPropertyName("status")]
     public string? Status { get; set; }
+
+    [JsonPropertyName("note")]
+    public string? Note { get; set; }
+
+    [JsonPropertyName("specificRestriction")]
+    public List<string>? SpecificRestriction { get; set; }
 }
 
 public class NaraDate
@@ -514,6 +520,7 @@ metadata.ingestTime              → Control.MaintenanceHistory.MaintenanceEvent
 "created"                        → Control.MaintenanceHistory.MaintenanceEvents[0].EventType.Value
 "machine"                        → Control.MaintenanceHistory.MaintenanceEvents[0].AgentType.Value
 "NARA Digital Archive System"   → Control.MaintenanceHistory.MaintenanceEvents[0].Agent
+"microformPublications[]"       → Comtrol.FileDesc.NoteStmt.COntroleNote.Paragraph
 
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ ARCHDESC & DID SECTION (Archive content description)                    │
@@ -533,6 +540,8 @@ record.coverageStartDate + coverageEndDate → ArchDesc.Did.UnitDate.Text (forma
 "ce"                            → ArchDesc.Did.UnitDate.Era
 record.scopeAndContentNote       → ArchDesc.Did.Abstract.Text
 record.generalNotes              → ArchDesc.Did.Abstract.Text (if scopeAndContentNote is null)
+record.useRestriction            → ArchDesc.ControlAccess.Subject.Part
+record.accessRestriction         → ArchDesc.ControlAccess.Subject.Part
 
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ REPOSITORY                                                              │
@@ -630,12 +639,9 @@ record.digitalObjects.length     → Ead.DigitalObjectCount (fallback)
 └─────────────────────────────────────────────────────────────────────────┘
 
 - record.subjects[]
-- record.useRestriction
-- record.accessRestriction
 - record.audiovisual
 - record.pinnedTerms[]
 - record.dataControlGroup
-- record.microformPublications[] (partially - available but not fully mapped)
 - record.variantControlNumbers[]
 - record.otherTitles[]
 - digitalObjects[].objectFileSize

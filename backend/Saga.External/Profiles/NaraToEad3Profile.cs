@@ -60,7 +60,8 @@ public class NaraToEad3Profile : Profile
                     Text = DateTime.Parse(src.Metadata.IngestTime).ToString("yyyy-MM-dd"),
                     Normal = DateTime.Parse(src.Metadata.IngestTime).ToString("yyyy-MM-dd")
                 }
-            }));
+            }))
+            .ForMember(dest => dest.NoteStmt, opt => opt.MapFrom(src => MapNoteStmt(src.Record)));
 
         CreateMap<Metadata, MaintenanceHistory>()
             .ForMember(dest => dest.MaintenanceEvents, opt => opt.MapFrom(src => new List<MaintenanceEvent>
@@ -86,7 +87,9 @@ public class NaraToEad3Profile : Profile
                             : null
             ))
             .ForMember(dest => dest.Did, opt => opt.MapFrom(src => src))
-            .ForMember(dest => dest.Dsc, opt => opt.MapFrom(src => src));
+            .ForMember(dest => dest.Dsc, opt => opt.MapFrom(src => src))
+            .ForMember(dest => dest.ControlAccess, opt => opt.MapFrom(src => MapControlAccess(src)));
+
 
         // Did (Descriptive Identification) mapping
         CreateMap<Record, Did>()
@@ -203,13 +206,7 @@ public class NaraToEad3Profile : Profile
 
         return new Repository
         {
-            CorpName = new CorpName
-            {
-                Parts =
-                    [
-                        new Part { LocalType = "corpname", Text = firstUnit.Name }
-                    ]
-            }
+            CorpName = new CorpName { Parts = [new Part { LocalType = "corpname", Text = firstUnit.Name }] }
         };
     }
 
@@ -255,13 +252,7 @@ public class NaraToEad3Profile : Profile
                         UnitTitle = new UnitTitle
                         {
                             Text = digitalObj.ObjectDescription ?? digitalObj.ObjectFilename ?? "name not found",
-                            GenreForm = new GenreForm
-                            {
-                                Parts =
-                                    [
-                                        new() { LocalType = "type_record", Text = digitalObj.ObjectType }
-                                    ]
-                            }
+                            GenreForm = new GenreForm { Parts = [new() { LocalType = "type_record", Text = digitalObj.ObjectType }] }
                         },
                         DaoSet = new DaoSet
                         {
@@ -294,15 +285,7 @@ public class NaraToEad3Profile : Profile
                                         Event = new Event
                                         {
                                             LocalType = "digital_object",
-                                            Subjects =
-                                            [
-                                                new() {
-                                                    Parts =
-                                                    [
-                                                        new Part { LocalType = "object", Text = digitalObj.ObjectFilename ?? "name not found", }
-                                                    ]
-                                                }
-                                            ]
+                                            Subjects =[new() {Parts =[new Part { LocalType = "object", Text = digitalObj.ObjectFilename ?? "name not found", }]}]
                                         }
                                     }
                                 ]
@@ -325,5 +308,90 @@ public class NaraToEad3Profile : Profile
             return src.Source.Record.DigitalObjects.Count;
 
         return 0;
+    }
+
+    private static ControlAccess? MapControlAccess(Record record)
+    {
+        var subjects = new List<Subject>();
+
+        // Access Restriction
+        if (!string.IsNullOrEmpty(record.AccessRestriction?.Status))
+        {
+            subjects.Add(new Subject
+            {
+                Parts =
+            [
+                new Part
+                {
+                    LocalType = "access_restriction",
+                    Rules = "nara",
+                    Text = record.AccessRestriction.Status
+                }
+            ]
+            });
+        }
+
+        // Use Restriction
+        if (record.UseRestriction != null)
+        {
+            var parts = new List<Part>();
+
+            if (!string.IsNullOrEmpty(record.UseRestriction.Status))
+                parts.Add(new Part { LocalType = "use_restriction_status", Rules = "nara", Text = record.UseRestriction.Status });
+
+            var combined = record.UseRestriction?.SpecificRestriction?
+                .Where(r => !string.IsNullOrWhiteSpace(r))
+                .ToList();
+
+            if (combined?.Count == 0)
+            {
+                parts.Add(new Part
+                {
+                    LocalType = "use_restriction_specific",
+                    Rules = "nara",
+                    Text = string.Join("; ", combined)
+                });
+            }
+
+            if (!string.IsNullOrEmpty(record.UseRestriction.Note))
+                parts.Add(new Part { LocalType = "use_restriction_note", Rules = "nara", Text = record.UseRestriction.Note });
+
+            if (parts.Count != 0)
+                subjects.Add(new Subject { Parts = parts });
+        }
+
+        if (subjects.Count == 0) return null;
+
+        return new ControlAccess
+        {
+            Head = "Access and Use Restrictions",
+            Subjects = subjects
+        };
+    }
+
+    private static NoteStmt? MapNoteStmt(Record record)
+    {
+        if (record.MicroformPublications == null || !record.MicroformPublications.Any())
+            return null;
+
+        // Konkatenuj wszystkie publikacje w jeden akapit
+        var publicationsText = string.Join(". ",
+            record.MicroformPublications.Select(p =>
+                !string.IsNullOrEmpty(p.Note)
+                    ? $"{p.Identifier} - {p.Title}. {p.Note}"
+                    : $"{p.Identifier} - {p.Title}"
+            )
+        );
+
+        return new NoteStmt
+        {
+            ControlNote = new ControlNote
+            {
+                Paragraph = new ParagraphWithRef
+                {
+                    Text = publicationsText
+                }
+            }
+        };
     }
 }
