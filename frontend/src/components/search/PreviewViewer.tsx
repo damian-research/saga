@@ -23,10 +23,8 @@ export default function PreviewViewer({
   onPrev,
 }: Props) {
   const [loading, setLoading] = useState(true);
-
   const currentIndex = objects.findIndex((o) => o.href === object.href);
-  const hasNext = currentIndex < objects.length - 1;
-  const hasPrev = currentIndex > 0;
+  const isSingle = objects.length <= 1;
 
   useEffect(() => {
     setLoading(true);
@@ -34,21 +32,21 @@ export default function PreviewViewer({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" && hasPrev) onPrev();
-      if (e.key === "ArrowRight" && hasNext) onNext();
+      if (!isSingle && e.key === "ArrowLeft") onPrev();
+      if (!isSingle && e.key === "ArrowRight") onNext();
       if (e.key === "Escape") onClose();
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hasPrev, hasNext, onPrev, onNext, onClose]);
+  }, [onPrev, onNext, onClose, isSingle]);
 
   const handlePrev = () => {
-    if (hasPrev) onPrev();
+    onPrev();
   };
 
   const handleNext = () => {
-    if (hasNext) onNext();
+    onNext();
   };
 
   // TITLE
@@ -107,7 +105,7 @@ export default function PreviewViewer({
           </div>
         </div>
 
-        {hasPrev && (
+        {!isSingle && (
           <button
             className={`${styles.edgeNav} ${styles.edgePrev}`}
             onClick={handlePrev}
@@ -158,7 +156,7 @@ export default function PreviewViewer({
           </div>
         </div>
 
-        {hasNext && (
+        {!isSingle && (
           <button
             className={`${styles.edgeNav} ${styles.edgeNext}`}
             onClick={handleNext}

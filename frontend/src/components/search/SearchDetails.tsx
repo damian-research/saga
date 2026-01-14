@@ -11,7 +11,13 @@ interface SearchDetailsProps {
 
 export default function SearchDetails({ setBusy }: SearchDetailsProps) {
   const { selectedRecord } = useSearch();
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  type RecordDetails = ReturnType<typeof parseRecordDetails>;
+  type DigitalObjects = RecordDetails["digitalObjects"];
+
+  const [activeObjects, setActiveObjects] = useState<DigitalObjects | null>(
+    null
+  );
+  const [activeIndex, setActiveIndex] = useState<number>(0);
 
   if (!selectedRecord) {
     return <div className={styles.empty}>Select a record to view details</div>;
@@ -22,6 +28,7 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
   async function handlePreview() {
     setBusy(true);
     try {
+      setActiveObjects(details.digitalObjects);
       setActiveIndex(0);
     } finally {
       setBusy(false);
@@ -129,10 +136,13 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
                   <button
                     className={styles.viewButton}
                     onClick={() => {
-                      const index = details.digitalObjects.findIndex(
+                      const found = details.digitalObjects.find(
                         (dao) => (dao.localType || dao.daoType) === item.type
                       );
-                      if (index !== -1) setActiveIndex(index);
+                      if (found) {
+                        setActiveObjects([found]);
+                        setActiveIndex(0);
+                      }
                     }}
                   >
                     View
@@ -185,22 +195,18 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
         </div>
       )}
 
-      {activeIndex !== null && details.digitalObjects[activeIndex] && (
+      {activeObjects && activeObjects[activeIndex] && (
         <PreviewViewer
           recordId={details.recordId}
-          object={details.digitalObjects[activeIndex]}
-          objects={details.digitalObjects}
-          onClose={() => setActiveIndex(null)}
-          onNext={() => {
-            if (activeIndex < details.digitalObjects.length - 1) {
-              setActiveIndex(activeIndex + 1);
-            }
-          }}
-          onPrev={() => {
-            if (activeIndex > 0) {
-              setActiveIndex(activeIndex - 1);
-            }
-          }}
+          object={activeObjects[activeIndex]}
+          objects={activeObjects}
+          onClose={() => setActiveObjects(null)}
+          onNext={() => setActiveIndex((i) => (i + 1) % activeObjects.length)}
+          onPrev={() =>
+            setActiveIndex(
+              (i) => (i - 1 + activeObjects.length) % activeObjects.length
+            )
+          }
         />
       )}
     </div>
