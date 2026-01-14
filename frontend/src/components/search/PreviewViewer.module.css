@@ -118,12 +118,12 @@
   background: #555;
 }
 
-.container:hover .edgeNav {
+.viewer:hover .edgeNav {
   opacity: 1;
 }
 
 .edgeNav {
-  position: fixed;
+  position: absolute;
   background: rgba(0, 0, 0, 0.3);
   border: none;
   color: white;
@@ -133,11 +133,11 @@
   cursor: pointer;
   transition: all var(--transition-normal);
   opacity: 0;
-  z-index: 1010;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 60px;
+  height: 120px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -158,12 +158,12 @@
 }
 
 .edgePrev {
-  left: 8%;
+  left: 0px;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .edgeNext {
-  right: 8%;
+  right: 0px;
   border-radius: var(--radius-sm) 0 0 var(--radius-sm);
 }
 

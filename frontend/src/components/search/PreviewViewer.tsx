@@ -100,17 +100,17 @@ export default function PreviewViewer({
           </div>
         </div>
 
-        <div className={styles.container}>
-          {hasPrev && (
-            <button
-              className={`${styles.edgeNav} ${styles.edgePrev}`}
-              onClick={handlePrev}
-              title="Previous object"
-            >
-              ←
-            </button>
-          )}
+        {hasPrev && (
+          <button
+            className={`${styles.edgeNav} ${styles.edgePrev}`}
+            onClick={handlePrev}
+            title="Previous object"
+          >
+            ←
+          </button>
+        )}
 
+        <div className={styles.container}>
           <div className={styles.body}>
             {object.href.toLowerCase().endsWith(".pdf") ? (
               <iframe
@@ -134,17 +134,17 @@ export default function PreviewViewer({
               </div>
             )}
           </div>
-
-          {hasNext && (
-            <button
-              className={`${styles.edgeNav} ${styles.edgeNext}`}
-              onClick={handleNext}
-              title="Next object"
-            >
-              →
-            </button>
-          )}
         </div>
+
+        {hasNext && (
+          <button
+            className={`${styles.edgeNav} ${styles.edgeNext}`}
+            onClick={handleNext}
+            title="Next object"
+          >
+            →
+          </button>
+        )}
       </div>
     </div>
   );
