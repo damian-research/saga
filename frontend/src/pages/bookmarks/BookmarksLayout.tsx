@@ -5,6 +5,7 @@ import styles from "./BookmarksLayout.module.css";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 import CategoryTabs from "./CategoryTabs";
+import TagManager from "../../components/bookmarks/TagManager";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -12,6 +13,7 @@ interface Props {
   onOpen: (b: Bookmark) => void;
   onRemove: (id: string) => void;
   onExport: (list: Bookmark[]) => void;
+  onUpdateBookmarks: (next: Bookmark[]) => void;
 }
 
 export default function BookmarksLayout({
@@ -20,6 +22,7 @@ export default function BookmarksLayout({
   onOpen,
   onRemove,
   onExport,
+  onUpdateBookmarks,
 }: Props) {
   const ctx = useContext(BookmarkContext);
   if (!ctx) throw new Error("BookmarkContext missing");
@@ -46,8 +49,10 @@ export default function BookmarksLayout({
     setDragBookmarkId(null);
   }
 
+  // TAG MANAGER
+  const [showTagManager, setShowTagManager] = useState(false);
+
   // TAGS
-  const MAX_VISIBLE_TAGS = 3;
   const tagCtx = useContext(TagContext);
   if (!tagCtx) throw new Error("TagContext missing");
 
@@ -116,6 +121,12 @@ export default function BookmarksLayout({
           </div>
 
           <div className={styles.actions}>
+            <button
+              className={styles.actionButton}
+              onClick={() => setShowTagManager(true)}
+            >
+              Manage tags
+            </button>
             <button
               className={styles.actionButton}
               onClick={() => {
@@ -221,16 +232,18 @@ export default function BookmarksLayout({
                 {/* TAGS */}
                 <td className={styles.tagsCell}>
                   {b.tags?.length ? (
-                    <div className={styles.tagList}>
-                      {b.tags.slice(0, MAX_VISIBLE_TAGS).map((t) => (
+                    <div
+                      className={styles.tagList}
+                      title={b.tags.map((t) => tagMap.get(t) ?? t).join(", ")}
+                    >
+                      {b.tags.slice(0, 3).map((t) => (
                         <span key={t} className={styles.tag}>
                           {tagMap.get(t) ?? t}
                         </span>
                       ))}
-
-                      {b.tags.length > MAX_VISIBLE_TAGS && (
+                      {b.tags.length > 3 && (
                         <span className={styles.tagMore}>
-                          +{b.tags.length - MAX_VISIBLE_TAGS}
+                          +{b.tags.length - 3}
                         </span>
                       )}
                     </div>
@@ -250,6 +263,9 @@ export default function BookmarksLayout({
           </tbody>
         </table>
       </div>
+      {showTagManager && (
+        <TagManager onClose={() => setShowTagManager(false)} />
+      )}
     </div>
   );
 }

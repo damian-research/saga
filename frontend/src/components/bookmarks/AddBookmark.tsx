@@ -1,7 +1,5 @@
-// AddBookmark
-//
 // AddBookmark.tsx
-import { useState, useContext } from "react";
+import { useState, useContext, useMemo } from "react";
 import styles from "./AddBookmark.module.css";
 import {
   ARCHIVES,
@@ -37,12 +35,11 @@ export default function AddBookmark({
   if (!tagCtx) throw new Error("TagContext missing");
 
   const { categories } = bookmarkCtx;
+  const { tags } = tagCtx;
 
   // ===== BASIC STATE =====
   const [customName, setCustomName] = useState(bookmark?.customName ?? "");
-  const [categoryId, setCategoryId] = useState<string>(
-    bookmark?.categoryId ?? ""
-  );
+  const [categoryId, setCategoryId] = useState(bookmark?.categoryId ?? "");
   const [url, setUrl] = useState(bookmark?.url ?? "");
   const [archive, setArchive] = useState<ArchiveName>(
     bookmark?.archive ?? "NARA"
@@ -52,16 +49,28 @@ export default function AddBookmark({
   const [resolveError, setResolveError] = useState<string | null>(null);
   const [base, setBase] = useState<Bookmark | null>(bookmark ?? null);
 
-  // ===== TAGS (JEDYNE ŹRÓDŁO PRAWDY) =====
+  // ===== TAGS (STRICT MODE) =====
   const [tagInput, setTagInput] = useState("");
   const [localTags, setLocalTags] = useState<string[]>(bookmark?.tags ?? []);
 
-  function addTag(raw: string) {
-    const name = raw.trim().toLowerCase();
-    if (!name) return;
-    if (localTags.includes(name)) return;
+  const suggestions = useMemo(() => {
+    const q = tagInput.trim().toLowerCase();
+    if (!q) return [];
 
+    return tags
+      .filter(
+        (t) =>
+          typeof t.name === "string" &&
+          t.name.startsWith(q) &&
+          !localTags.includes(t.name)
+      )
+      .slice(0, 6);
+  }, [tagInput, tags, localTags]);
+
+  function addExistingTag(name: string) {
+    if (localTags.includes(name)) return;
     setLocalTags((prev) => [...prev, name]);
+    setTagInput("");
   }
 
   function removeTag(name: string) {
@@ -135,38 +144,54 @@ export default function AddBookmark({
           />
         </label>
 
-        {/* ===== TAG INPUT ===== */}
+        {/* ===== TAG INPUT (STRICT) ===== */}
         <label>
           Tags
           <input
             value={tagInput}
-            placeholder="Add tag…"
+            placeholder="Start typing tag name…"
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === ",") {
+              if (e.key === "Enter") {
                 e.preventDefault();
-                addTag(tagInput);
-                setTagInput("");
               }
             }}
           />
         </label>
 
+        {/* ===== TAG SUGGESTIONS ===== */}
+        {tagInput && (
+          <div className={styles.tagSuggestions}>
+            {suggestions.length > 0 ? (
+              suggestions.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => addExistingTag(t.name)}
+                >
+                  {t.label}
+                </button>
+              ))
+            ) : (
+              <div className={styles.tagHint}>No matching tag</div>
+            )}
+          </div>
+        )}
+
         {/* ===== TAG PREVIEW ===== */}
         {localTags.length > 0 && (
           <div className={styles.tagPreview}>
-            {localTags.map((t) => (
-              <span key={t} className={styles.tagChip}>
-                {t}
-                <button
-                  type="button"
-                  onClick={() => removeTag(t)}
-                  aria-label="Remove tag"
-                >
-                  ×
-                </button>
-              </span>
-            ))}
+            {localTags.map((t) => {
+              const meta = tags.find((x) => x.name === t);
+              return (
+                <span key={t} className={styles.tagChip}>
+                  {meta?.label ?? t}
+                  <button type="button" onClick={() => removeTag(t)}>
+                    ×
+                  </button>
+                </span>
+              );
+            })}
           </div>
         )}
 
@@ -229,9 +254,6 @@ export default function AddBookmark({
               }
 
               if (!resolved) return;
-
-              // REGISTER TAGS GLOBALLY (JEDYNY MOMENT)
-              tagCtx.ensureTags(localTags);
 
               onSave({
                 ...resolved,

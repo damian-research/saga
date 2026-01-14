@@ -7,6 +7,15 @@ function normalize(name: string) {
   return name.trim().toLowerCase();
 }
 
+function isValidTag(t: any): t is Tag {
+  return (
+    t &&
+    typeof t.id === "string" &&
+    typeof t.name === "string" &&
+    typeof t.label === "string"
+  );
+}
+
 export default function TagProvider({
   children,
 }: {
@@ -14,8 +23,17 @@ export default function TagProvider({
 }) {
   const [tags, setTags] = useState<Tag[]>([]);
 
+  // ===== LOAD + NORMALIZE =====
   useEffect(() => {
-    setTags(loadTags());
+    const raw = loadTags();
+
+    const normalized = Array.isArray(raw) ? raw.filter(isValidTag) : [];
+
+    setTags(normalized);
+
+    if (normalized.length !== raw.length) {
+      saveTags(normalized);
+    }
   }, []);
 
   function persist(next: Tag[]) {
@@ -23,6 +41,7 @@ export default function TagProvider({
     saveTags(next);
   }
 
+  // ===== ENSURE =====
   const ensureTags = useCallback(
     (names: string[]) => {
       if (!names.length) return;
@@ -52,6 +71,7 @@ export default function TagProvider({
     [tags]
   );
 
+  // ===== RENAME =====
   const renameTag = useCallback(
     (tagId: string, newLabel: string) => {
       const label = newLabel.trim();
@@ -64,6 +84,7 @@ export default function TagProvider({
     [tags]
   );
 
+  // ===== REMOVE =====
   const removeTag = useCallback(
     (tagId: string) => {
       persist(tags.filter((t) => t.id !== tagId));
