@@ -22,14 +22,39 @@ export default function PreviewViewer({
   onNext,
   onPrev,
 }: Props) {
-  const [loading, setLoading] = useState(true);
-  const currentIndex = objects.findIndex((o) => o.href === object.href);
-  const isSingle = objects.length <= 1;
+  // ZOOM
+  const [zoom, setZoom] = useState(1);
+  const [isPanning, setIsPanning] = useState(false);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [start, setStart] = useState({ x: 0, y: 0 });
+  const resetZoom = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
 
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!e.ctrlKey) return;
+
+    e.preventDefault();
+
+    setZoom((z) => {
+      const delta = e.deltaY < 0 ? 0.1 : -0.1;
+      const next = z + delta;
+      return Math.min(3, Math.max(1, next));
+    });
+  };
+
+  // LOADER
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(true);
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
   }, [object.href]);
 
+  // NAVI
+  const currentIndex = objects.findIndex((o) => o.href === object.href);
+  const isSingle = objects.length <= 1;
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isSingle && e.key === "ArrowLeft") onPrev();
@@ -49,6 +74,28 @@ export default function PreviewViewer({
     onNext();
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoom <= 1) {
+      e.preventDefault();
+      return;
+    }
+    e.preventDefault();
+    setIsPanning(true);
+    setStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isPanning) return;
+    setPan({
+      x: e.clientX - start.x,
+      y: e.clientY - start.y,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsPanning(false);
+  };
+
   // TITLE
   const fileName = object.href?.split("/").pop() ?? "";
   const dotIndex = fileName.lastIndexOf(".");
@@ -61,6 +108,7 @@ export default function PreviewViewer({
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.viewer} onClick={(e) => e.stopPropagation()}>
+        {/* HEADER */}
         <div className={styles.header}>
           <div style={{ width: "95px" }} />
           <div className={styles.titleSection}>
@@ -90,6 +138,13 @@ export default function PreviewViewer({
             </div>
           </div>
           <div className={styles.headerActions}>
+            <button
+              className={styles.zoomBtn}
+              title="Reset zoom to 100%"
+              onClick={resetZoom}
+            >
+              {Math.round(zoom * 100)}%
+            </button>
             <button
               className={styles.downloadBtn}
               title="Download this object"
@@ -124,7 +179,7 @@ export default function PreviewViewer({
             </button>
           </div>
         </div>
-
+        {/* Viewer */}
         {!isSingle && (
           <button
             className={`${styles.edgeNav} ${styles.edgePrev}`}
@@ -142,23 +197,47 @@ export default function PreviewViewer({
             </div>
           )}
 
-          <div className={styles.body}>
+          <div
+            className={`${styles.body} ${zoom > 1 ? styles.pannable : ""}`}
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
             {object.href.toLowerCase().endsWith(".pdf") ? (
-              <iframe
-                src={object.href}
-                title={title}
-                className={styles.iframe}
-                onLoad={() => setLoading(false)}
-                onError={() => setLoading(false)}
-              />
+              <div
+                className={styles.zoomWrapper}
+                style={{
+                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                }}
+              >
+                <iframe
+                  src={object.href}
+                  title={title}
+                  className={styles.iframe}
+                  onLoad={() => setLoading(false)}
+                  onError={() => setLoading(false)}
+                  draggable={false}
+                />
+              </div>
             ) : object.href.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/i) ? (
-              <img
-                src={object.href}
-                alt={title}
-                className={styles.image}
-                onLoad={() => setLoading(false)}
-                onError={() => setLoading(false)}
-              />
+              <div
+                className={styles.zoomWrapper}
+                style={{
+                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                }}
+              >
+                <img
+                  src={object.href}
+                  alt={title}
+                  className={styles.image}
+                  onLoad={() => setLoading(false)}
+                  onError={() => setLoading(false)}
+                  draggable={false}
+                  onDragStart={(e) => e.preventDefault()}
+                />
+              </div>
             ) : (
               <div className={styles.message}>
                 <p>Unable to preview this object type.</p>
