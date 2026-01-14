@@ -43,12 +43,51 @@ export default function SearchDetails() {
         {details.digitalObjects.length > 0 && (
           <button
             className={styles.actionButton}
-            onClick={() => {
-              details.digitalObjects.forEach((o) => {
-                if (o.href) {
-                  window.open(o.href, "_blank");
+            onClick={async () => {
+              const objects = details.digitalObjects.filter((o) => o.href);
+              const count = objects.length;
+
+              if (count === 0) return;
+
+              if (count > 30) {
+                const confirmed = window.confirm(
+                  `You are about to download ${count} files.\n\nThis may take some time and put load on the server.\n\nDo you want to continue?`
+                );
+
+                if (!confirmed) {
+                  return;
                 }
-              });
+              }
+
+              const delay = (ms: number) =>
+                new Promise((resolve) => setTimeout(resolve, ms));
+
+              for (const object of objects) {
+                try {
+                  const res = await fetch(object.href);
+                  const blob = await res.blob();
+
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+
+                  a.href = url;
+                  const originalName =
+                    object.href.split("/").pop() ?? "download";
+                  a.download = `${details.recordId}-${originalName}`;
+
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+
+                  URL.revokeObjectURL(url);
+
+                  // throttle – 300 ms between downloads
+                  await delay(300);
+                } catch (e) {
+                  console.error("Download failed", e);
+                  window.open(object.href, "_blank");
+                }
+              }
             }}
           >
             Download All
@@ -58,7 +97,7 @@ export default function SearchDetails() {
           className={styles.actionButton}
           onClick={() => window.open(details.openWebUrl, "_blank")}
         >
-          Open Web
+          Open in Web
         </button>
       </div>
 

@@ -79,7 +79,9 @@ export default function PreviewViewer({
                   const a = document.createElement("a");
 
                   a.href = url;
-                  a.download = object.href.split("/").pop() ?? "download";
+                  const originalName =
+                    object.href.split("/").pop() ?? "download";
+                  a.download = `${details.recordId}-${originalName}`;
 
                   document.body.appendChild(a);
                   a.click();
