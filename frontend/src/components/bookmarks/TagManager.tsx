@@ -2,7 +2,7 @@
 import { useContext, useMemo, useState } from "react";
 import styles from "./TagManager.module.css";
 import { TagContext } from "../../context/BookmarkContext";
-import { useTagOperations } from "../../api/utils/useTagOperations";
+import { useTagOperations } from "../../api/hooks/useTagOperations";
 
 interface Props {
   onClose: () => void;

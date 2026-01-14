@@ -1,4 +1,4 @@
-// BookmarkContext.ts
+// context/BookmarkContext.ts
 import { createContext } from "react";
 import type { Ead3Response } from "../api/models/ead3.types";
 import type {
@@ -8,13 +8,14 @@ import type {
   Tag,
 } from "../api/models/bookmarks.types";
 
-// BOOKMARKS
+// ===== BOOKMARK MODAL =====
 export interface OpenAddBookmarkPayload {
   mode: WindowMode;
   record?: Ead3Response;
   bookmark?: Bookmark;
 }
 
+// ===== BOOKMARK CONTEXT =====
 export interface BookmarkActions {
   openBookmarkWindow(payload: OpenAddBookmarkPayload): void;
   categories: BookmarkCategory[];
@@ -27,10 +28,9 @@ export interface BookmarkActions {
 
 export const BookmarkContext = createContext<BookmarkActions | null>(null);
 
-// TAGS
+// ===== TAG CONTEXT =====
 export interface TagActions {
   tags: Tag[];
-
   ensureTags(names: string[]): void;
   renameTag(tagId: string, newLabel: string): void;
   removeTag(tagId: string): void;

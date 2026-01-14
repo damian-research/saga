@@ -255,6 +255,8 @@ export default function AddBookmark({
 
               if (!resolved) return;
 
+              tagCtx.ensureTags(localTags);
+
               onSave({
                 ...resolved,
                 categoryId,

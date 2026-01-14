@@ -1,8 +1,7 @@
 import type { Bookmark, Tag } from "../models/bookmarks.types";
 
-// Temporary local JSON persistence layer (dev-only)
-
-const STORAGE_KEY = "saga.bookmarks.json";
+const BOOKMARKS_KEY = "saga.bookmarks.json";
+const TAGS_KEY = "saga.tags.json";
 
 /**
  * Load bookmarks from mocked JSON storage.
@@ -10,7 +9,7 @@ const STORAGE_KEY = "saga.bookmarks.json";
  */
 export function loadBookmarks(): Bookmark[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(BOOKMARKS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -24,6 +23,15 @@ export function loadBookmarks(): Bookmark[] {
  * Save (add or update) a single bookmark.
  * This is a write-only persistence side-effect.
  */
+// bookmarks.service.ts
+export function saveBookmarks(bookmarks: Bookmark[]): void {
+  try {
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks, null, 2));
+  } catch (err) {
+    console.error("[bookmarks] failed to save batch", err);
+  }
+}
+
 export function saveBookmark(bookmark: Bookmark): void {
   const current = loadBookmarks();
 
@@ -33,7 +41,7 @@ export function saveBookmark(bookmark: Bookmark): void {
     : [...current, bookmark];
 
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next, null, 2));
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(next, null, 2));
   } catch (err) {
     console.error("[bookmarks] failed to save", err);
   }
@@ -47,15 +55,18 @@ export function removeBookmark(id: string): void {
   const next = current.filter((b) => b.id !== id);
 
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next, null, 2));
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(next, null, 2));
   } catch (err) {
     console.error("[bookmarks] failed to save", err);
   }
 }
 
+/**
+ * Load and Save Tags.
+ */
 export function loadTags(): Tag[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(TAGS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -65,5 +76,5 @@ export function loadTags(): Tag[] {
 }
 
 export function saveTags(tags: Tag[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tags, null, 2));
+  localStorage.setItem(TAGS_KEY, JSON.stringify(tags, null, 2));
 }
