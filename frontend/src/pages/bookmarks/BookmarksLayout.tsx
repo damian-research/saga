@@ -6,6 +6,7 @@ import type { Bookmark } from "../../api/models/bookmarks.types";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 import CategoryTabs from "./CategoryTabs";
 import TagManager from "../../components/bookmarks/TagManager";
+import CategoryManager from "../../components/bookmarks/CategoryManager";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -25,32 +26,15 @@ export default function BookmarksLayout({
   const ctx = useContext(BookmarkContext);
   if (!ctx) throw new Error("BookmarkContext missing");
 
-  // CATEGORIES
-  const {
-    categories,
-    addCategory,
-    renameCategory,
-    removeCategory,
-    updateBookmarkCategory,
-  } = ctx;
+  const { categories, updateBookmarkCategory } = ctx;
 
   const [activeCategoryId, setActiveCategoryId] = useState(
     categories[0]?.id ?? ""
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  function handleDropOnCategory(categoryId: string) {
-    if (!dragBookmarkId) return;
-
-    updateBookmarkCategory(dragBookmarkId, categoryId);
-    setActiveCategoryId(categoryId);
-    setDragBookmarkId(null);
-  }
-
-  // TAG MANAGER
   const [showTagManager, setShowTagManager] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
 
-  // TAGS
   const tagCtx = useContext(TagContext);
   if (!tagCtx) throw new Error("TagContext missing");
 
@@ -61,13 +45,36 @@ export default function BookmarksLayout({
     [tags]
   );
 
-  // DRAG STATE
   const [dragBookmarkId, setDragBookmarkId] = useState<string | null>(null);
 
-  // FILTER
   const visible = useMemo(() => {
     return bookmarks.filter((b) => b.categoryId === activeCategoryId);
   }, [bookmarks, activeCategoryId]);
+
+  function handleDropOnCategory(categoryId: string) {
+    if (!dragBookmarkId) return;
+
+    updateBookmarkCategory(dragBookmarkId, categoryId);
+    setActiveCategoryId(categoryId);
+    setDragBookmarkId(null);
+  }
+
+  // ===== HANDLE REMOVE WITH CONFIRMATION =====
+  function handleRemoveClick() {
+    if (!selectedId) return;
+
+    const bookmark = bookmarks.find((b) => b.id === selectedId);
+    if (!bookmark) return;
+
+    const confirmMessage = `Remove bookmark "${
+      bookmark.customName || bookmark.title
+    }"?`;
+
+    if (!confirm(confirmMessage)) return;
+
+    onRemove(selectedId);
+    setSelectedId(null); // ← clear selection after remove
+  }
 
   return (
     <div className={styles.container}>
@@ -87,7 +94,7 @@ export default function BookmarksLayout({
 
               <button
                 className={styles.actionButton}
-                disabled={!selectedId}
+                disabled={!selectedId} // ← aktywny tylko gdy selected
                 onClick={() => {
                   const b = bookmarks.find((x) => x.id === selectedId);
                   if (!b) return;
@@ -103,10 +110,10 @@ export default function BookmarksLayout({
 
               <button
                 className={styles.actionButton}
-                disabled={!selectedId}
-                onClick={() => selectedId && onRemove(selectedId)}
+                disabled={!selectedId} // ← aktywny tylko gdy selected
+                onClick={handleRemoveClick} // ← z potwierdzeniem
               >
-                Remove bookmark
+                Remove
               </button>
 
               <button
@@ -125,55 +132,18 @@ export default function BookmarksLayout({
             >
               Manage tags
             </button>
+
             <button
               className={styles.actionButton}
-              onClick={() => {
-                const name = prompt("New category name");
-                if (name) addCategory(name.trim());
-              }}
+              onClick={() => setShowCategoryManager(true)}
             >
-              + Category
+              Manage categories
             </button>
-
-            {activeCategoryId !== "uncategorized" && (
-              <>
-                <button
-                  className={styles.actionButton}
-                  onClick={() => {
-                    const current = categories.find(
-                      (c) => c.id === activeCategoryId
-                    );
-                    if (!current) return;
-
-                    const name = prompt("Rename category", current.name);
-                    if (name) renameCategory(activeCategoryId, name.trim());
-                  }}
-                >
-                  Rename
-                </button>
-
-                <button
-                  className={`${styles.actionButton} ${styles.actionButtonDanger}`}
-                  onClick={() => {
-                    if (
-                      confirm(
-                        "Remove category? Bookmarks will be moved to Uncategorized."
-                      )
-                    ) {
-                      removeCategory(activeCategoryId);
-                      setActiveCategoryId("uncategorized");
-                    }
-                  }}
-                >
-                  Remove
-                </button>
-              </>
-            )}
           </div>
         </div>
       </div>
 
-      {/* ===== CATEGORY TABS (DROP TARGETS) ===== */}
+      {/* ===== CATEGORY TABS ===== */}
       <CategoryTabs
         categories={categories}
         bookmarks={bookmarks}
@@ -182,7 +152,7 @@ export default function BookmarksLayout({
         onDropBookmark={handleDropOnCategory}
       />
 
-      {/* ===== BOOKMARK LIST (DRAG SOURCE) ===== */}
+      {/* ===== BOOKMARK LIST ===== */}
       <div className={`${styles.panel} ${styles.listPanel}`}>
         {loading && <div>Loading…</div>}
 
@@ -261,8 +231,14 @@ export default function BookmarksLayout({
           </tbody>
         </table>
       </div>
+
+      {/* ===== MODALS ===== */}
       {showTagManager && (
         <TagManager onClose={() => setShowTagManager(false)} />
+      )}
+
+      {showCategoryManager && (
+        <CategoryManager onClose={() => setShowCategoryManager(false)} />
       )}
     </div>
   );
