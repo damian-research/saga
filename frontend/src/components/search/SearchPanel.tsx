@@ -192,15 +192,6 @@ export default function SearchPanel() {
       </label>
 
       <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.button}
-          onClick={submit}
-          disabled={loading || !hasAnySearchValue(form)}
-        >
-          {loading ? "Searching…" : "Search"}
-        </button>
-
         {hasAnySearchValue(form) && (
           <button
             type="button"
@@ -211,6 +202,14 @@ export default function SearchPanel() {
             Clear
           </button>
         )}
+        <button
+          type="button"
+          className={styles.button}
+          onClick={submit}
+          disabled={loading || !hasAnySearchValue(form)}
+        >
+          {loading ? "Searching…" : "Search"}
+        </button>
       </div>
     </div>
   );
