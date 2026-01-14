@@ -65,9 +65,29 @@ export default function PreviewViewer({
           <div style={{ width: "95px" }} />
           <div className={styles.titleSection}>
             <h3 className={styles.title}>{title}</h3>
-            <span className={styles.counter}>
-              {currentIndex + 1} / {objects.length}
-            </span>
+            <div className={styles.counterWrapper}>
+              <select
+                className={styles.counterSelect}
+                value={currentIndex}
+                onChange={(e) => {
+                  const targetIndex = Number(e.target.value);
+                  const diff = targetIndex - currentIndex;
+                  if (diff === 0) return;
+                  if (diff > 0) {
+                    for (let i = 0; i < diff; i++) onNext();
+                  } else {
+                    for (let i = 0; i < Math.abs(diff); i++) onPrev();
+                  }
+                }}
+              >
+                {objects.map((_, idx) => (
+                  <option key={idx} value={idx}>
+                    {idx + 1}
+                  </option>
+                ))}
+              </select>
+              <span className={styles.counterLabel}>/ {objects.length}</span>
+            </div>
           </div>
           <div className={styles.headerActions}>
             <button
