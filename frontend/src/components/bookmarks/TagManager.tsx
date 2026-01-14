@@ -12,7 +12,7 @@ export default function TagManager({ onClose }: Props) {
   const tagCtx = useContext(TagContext);
   if (!tagCtx) throw new Error("TagContext missing");
 
-  const { tags, renameTag, removeTag } = tagCtx;
+  const { tags, renameTag, removeTag, ensureTags } = tagCtx;
 
   const [renameId, setRenameId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
@@ -20,9 +20,26 @@ export default function TagManager({ onClose }: Props) {
   const [mergeFromId, setMergeFromId] = useState<string | null>(null);
   const [mergeToId, setMergeToId] = useState<string | null>(null);
 
+  const [newTagInput, setNewTagInput] = useState("");
   const tagById = useMemo(() => new Map(tags.map((t) => [t.id, t])), [tags]);
 
   const { mergeTags, removeTagEverywhere } = useTagOperations();
+
+  // ==== CREATE =====
+  function createNewTag() {
+    const raw = newTagInput.trim();
+    if (!raw) return;
+
+    const name = raw.toLowerCase();
+
+    if (tags.some((t) => t.name === name)) {
+      alert("Tag already exists");
+      return;
+    }
+
+    ensureTags([name]);
+    setNewTagInput("");
+  }
 
   // ===== RENAME =====
   function submitRename() {
@@ -123,6 +140,19 @@ export default function TagManager({ onClose }: Props) {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* ===== CREATE PANEL ===== */}
+        <div className={styles.createPanel}>
+          <input
+            value={newTagInput}
+            placeholder="New tag name…"
+            onChange={(e) => setNewTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") createNewTag();
+            }}
+          />
+          <button onClick={createNewTag}>Add tag</button>
         </div>
 
         {/* ===== MERGE PANEL ===== */}

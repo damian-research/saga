@@ -73,6 +73,24 @@ export default function AddBookmark({
     setTagInput("");
   }
 
+  function createAndAddTag() {
+    const raw = tagInput.trim();
+    if (!raw) return;
+
+    const name = raw.toLowerCase();
+    const exists = tags.some((t) => t.name === name);
+
+    if (exists) {
+      if (!localTags.includes(name)) {
+        setLocalTags((prev) => [...prev, name]);
+      }
+    } else {
+      setLocalTags((prev) => [...prev, name]);
+    }
+
+    setTagInput("");
+  }
+
   function removeTag(name: string) {
     setLocalTags((prev) => prev.filter((t) => t !== name));
   }
@@ -154,6 +172,7 @@ export default function AddBookmark({
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
+                createAndAddTag();
               }
             }}
           />
@@ -173,7 +192,10 @@ export default function AddBookmark({
                 </button>
               ))
             ) : (
-              <div className={styles.tagHint}>No matching tag</div>
+              <div className={styles.tagHint}>
+                No matching tag. Press <strong>Enter</strong> to create "
+                {tagInput.trim()}"
+              </div>
             )}
           </div>
         )}
