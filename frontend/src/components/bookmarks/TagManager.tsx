@@ -84,11 +84,24 @@ export default function TagManager({ onClose }: Props) {
   }
 
   return (
-    <div className={styles.backdrop}>
-      <div className={styles.modal}>
+    <div className={styles.backdrop} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h3>Manage tags</h3>
-          <button onClick={onClose}>×</button>
+          {/* <button onClick={onClose}>×</button> */}
+        </div>
+
+        {/* ===== CREATE PANEL ===== */}
+        <div className={styles.createPanel}>
+          <input
+            value={newTagInput}
+            placeholder="New tag name…"
+            onChange={(e) => setNewTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") createNewTag();
+            }}
+          />
+          <button onClick={createNewTag}>Add tag</button>
         </div>
 
         <div className={styles.list}>
@@ -140,19 +153,6 @@ export default function TagManager({ onClose }: Props) {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* ===== CREATE PANEL ===== */}
-        <div className={styles.createPanel}>
-          <input
-            value={newTagInput}
-            placeholder="New tag name…"
-            onChange={(e) => setNewTagInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") createNewTag();
-            }}
-          />
-          <button onClick={createNewTag}>Add tag</button>
         </div>
 
         {/* ===== MERGE PANEL ===== */}

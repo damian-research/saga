@@ -1,3 +1,4 @@
+/* BookmarksLayout.module.css */
 .container {
   display: flex;
   flex-direction: column;
@@ -85,27 +86,46 @@
   color: #fecaca;
 }
 
-/* Filters */
+/* ===== FILTERS ===== */
 .filters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--spacing-md);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
 }
 
 .filters select,
 .filters input {
-  padding: 6px;
-  font-size: var(--font-size-xs);
-  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+  border-radius: 4px;
   border: 1px solid var(--border-secondary);
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  transition: border-color 0.15s;
 }
 
-/* Table */
+.filters input:focus,
+.filters select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.filters input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ===== TABLE ===== */
 .listPanel {
   flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tableWrapper {
+  flex: 1;
   overflow: auto;
+  position: relative;
 }
 
 .table {
@@ -140,13 +160,31 @@
   width: 7%;
 }
 
+/* ===== STICKY HEADER ===== */
+.table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
 .table th {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-secondary);
   font-weight: var(--font-weight-bold);
-  padding: 6px 8px;
+  padding: 8px;
   text-align: left;
   color: var(--text-primary);
+  user-select: none;
+}
+
+/* ===== SORTABLE HEADERS ===== */
+.sortable {
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.sortable:hover {
+  background-color: var(--bg-hover);
 }
 
 .table td {
@@ -180,7 +218,7 @@
   text-align: center;
 }
 
-/* TAGS */
+/* ===== TAGS ===== */
 .tagsCell {
   overflow: hidden;
   white-space: nowrap;
@@ -220,4 +258,12 @@
   border-radius: 999px;
   background-color: var(--bg-primary);
   border: 1px dashed var(--border-secondary);
+}
+
+/* ===== EMPTY STATE ===== */
+.emptyState {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 14px;
 }
