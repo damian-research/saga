@@ -13,7 +13,6 @@ interface Props {
   onOpen: (b: Bookmark) => void;
   onRemove: (id: string) => void;
   onExport: (list: Bookmark[]) => void;
-  onUpdateBookmarks: (next: Bookmark[]) => void;
 }
 
 export default function BookmarksLayout({
@@ -22,7 +21,6 @@ export default function BookmarksLayout({
   onOpen,
   onRemove,
   onExport,
-  onUpdateBookmarks,
 }: Props) {
   const ctx = useContext(BookmarkContext);
   if (!ctx) throw new Error("BookmarkContext missing");

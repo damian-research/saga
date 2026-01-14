@@ -121,6 +121,14 @@ export default function MainWindow() {
     );
   }
 
+  function updateBookmarks(updater: (prev: Bookmark[]) => Bookmark[]) {
+    setBookmarks((prev) => {
+      const next = updater(prev);
+      next.forEach(saveBookmark);
+      return next;
+    });
+  }
+
   function updateBookmarkCategory(id: string, categoryId: string) {
     setBookmarks((prev) => {
       const next = prev.map((b) => (b.id === id ? { ...b, categoryId } : b));
@@ -139,6 +147,7 @@ export default function MainWindow() {
         renameCategory,
         removeCategory,
         updateBookmarkCategory,
+        updateBookmarks,
       }}
     >
       <TagProvider>

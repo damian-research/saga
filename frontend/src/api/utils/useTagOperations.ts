@@ -1,19 +1,19 @@
 // useTagOperations.ts
 import { useContext } from "react";
-import { TagContext } from "../../context/BookmarkContext";
-import type { Bookmark } from "../../api/models/bookmarks.types";
+import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 
-export function useTagOperations(
-  bookmarks: Bookmark[],
-  setBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>
-) {
+export function useTagOperations() {
   const tagCtx = useContext(TagContext);
+  const bookmarkCtx = useContext(BookmarkContext);
+
   if (!tagCtx) throw new Error("TagContext missing");
+  if (!bookmarkCtx) throw new Error("BookmarkContext missing");
 
   const { renameTag, removeTag } = tagCtx;
+  const { updateBookmarks } = bookmarkCtx;
 
   function mergeTags(fromName: string, toName: string) {
-    setBookmarks((prev) =>
+    updateBookmarks((prev) =>
       prev.map((b) =>
         b.tags?.includes(fromName)
           ? {
@@ -28,7 +28,7 @@ export function useTagOperations(
   }
 
   function removeTagEverywhere(tagName: string) {
-    setBookmarks((prev) =>
+    updateBookmarks((prev) =>
       prev.map((b) => ({
         ...b,
         tags: b.tags?.filter((t) => t !== tagName),

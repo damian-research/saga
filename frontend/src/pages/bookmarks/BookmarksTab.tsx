@@ -8,14 +8,12 @@ interface Props {
   bookmarks: Bookmark[];
   loading: boolean;
   onRemoveBookmark: (id: string) => void;
-  setBookmarks: React.Dispatch<React.SetStateAction<Bookmark[]>>;
 }
 
 export default function BookmarksTab({
   bookmarks,
   loading,
   onRemoveBookmark,
-  setBookmarks,
 }: Props) {
   function openBookmark(b: Bookmark) {
     console.log("Open bookmark:", b);
@@ -41,7 +39,6 @@ export default function BookmarksTab({
         onOpen={openBookmark}
         onRemove={onRemoveBookmark}
         onExport={exportBookmarks}
-        onUpdateBookmarks={setBookmarks}
       />
     </div>
   );

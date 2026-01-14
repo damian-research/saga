@@ -2,6 +2,7 @@
 import { useContext, useMemo, useState } from "react";
 import styles from "./TagManager.module.css";
 import { TagContext } from "../../context/BookmarkContext";
+import { useTagOperations } from "../../api/utils/useTagOperations";
 
 interface Props {
   onClose: () => void;
@@ -20,6 +21,8 @@ export default function TagManager({ onClose }: Props) {
   const [mergeToId, setMergeToId] = useState<string | null>(null);
 
   const tagById = useMemo(() => new Map(tags.map((t) => [t.id, t])), [tags]);
+
+  const { mergeTags, removeTagEverywhere } = useTagOperations();
 
   // ===== RENAME =====
   function submitRename() {
@@ -40,6 +43,7 @@ export default function TagManager({ onClose }: Props) {
     const to = tagById.get(mergeToId);
     if (!from || !to) return;
 
+    mergeTags(from.name, to.name);
     removeTag(from.id);
 
     setMergeFromId(null);
@@ -58,6 +62,7 @@ export default function TagManager({ onClose }: Props) {
     )
       return;
 
+    removeTagEverywhere(tag.name);
     removeTag(tagId);
   }
 
