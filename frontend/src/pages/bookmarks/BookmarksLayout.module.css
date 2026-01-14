@@ -2,7 +2,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-md);
   height: 100%;
   background-color: var(--bg-primary);
 }
@@ -10,7 +10,7 @@
 .panel {
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-sm);
-  padding: 12px;
+  padding: var(--spacing-md);
 }
 
 .panelTitle {
@@ -24,45 +24,33 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-}
-
-.headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  gap: var(--spacing-md);
 }
 
 /* Buttons */
 .actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .actionButton {
   height: 30px;
-  padding: 6px 12px;
-
+  padding: var(--spacing-xs) var(--spacing-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   font-size: var(--font-size-xs);
   line-height: 1;
   font-weight: var(--font-weight-medium);
-
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-secondary);
-
   background-color: var(--bg-secondary);
   color: var(--text-primary);
-
   cursor: pointer;
   user-select: none;
-
   transition: background-color var(--transition-fast),
-    border-color var(--transition-fast), color var(--transition-fast);
+    border-color var(--transition-fast);
 }
 
 .actionButton:hover:not(:disabled) {
@@ -74,6 +62,21 @@
   cursor: default;
 }
 
+.actionButtonPrimary {
+  width: 30px;
+  height: 28px;
+  padding: 0;
+  font-size: 20px;
+  font-weight: 300;
+  background-color: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+.actionButtonPrimary:hover {
+  background-color: var(--accent-hover);
+}
+
 .actionButtonDanger {
   border-color: #7f1d1d;
   background-color: #3f1d1d;
@@ -83,35 +86,112 @@
 .actionButtonDanger:hover:not(:disabled) {
   background-color: #7f1d1d;
   border-color: #7f1d1d;
-  color: #fecaca;
+}
+
+/* Search input */
+.searchInput {
+  height: 30px;
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-width: 200px;
+  transition: border-color var(--transition-fast);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.searchInput::placeholder {
+  color: var(--text-tertiary);
 }
 
 /* ===== FILTERS ===== */
 .filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
 }
 
-.filters select,
-.filters input {
-  padding: 8px 10px;
-  font-size: 13px;
-  border-radius: 4px;
+.filters select {
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-secondary);
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: border-color 0.15s;
+  transition: border-color var(--transition-fast);
 }
 
-.filters input:focus,
 .filters select:focus {
   outline: none;
   border-color: var(--accent-primary);
 }
 
-.filters input::placeholder {
-  color: var(--text-tertiary);
+/* ===== TAG FILTER ===== */
+.tagFilter {
+  border-top: 1px solid var(--border-secondary);
+  padding-top: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.clearTagsButton {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.clearTagsButton:hover {
+  background: var(--bg-hover);
+}
+
+.tagOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  flex: 1;
+}
+
+.tagCheckbox {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+  color: var(--text-primary);
+}
+
+.tagCheckbox:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-primary);
+}
+
+.tagCheckbox input[type="checkbox"] {
+  display: none;
+}
+
+.tagCheckbox:has(input:checked) {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
 }
 
 /* ===== TABLE ===== */
@@ -125,7 +205,6 @@
 .tableWrapper {
   flex: 1;
   overflow: auto;
-  position: relative;
 }
 
 .table {
@@ -135,6 +214,7 @@
   table-layout: fixed;
 }
 
+/* Column widths */
 .col-name {
   width: 18%;
 }
@@ -160,7 +240,7 @@
   width: 7%;
 }
 
-/* ===== STICKY HEADER ===== */
+/* Sticky header */
 .table thead {
   position: sticky;
   top: 0;
@@ -171,16 +251,15 @@
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-secondary);
   font-weight: var(--font-weight-bold);
-  padding: 8px;
+  padding: var(--spacing-sm);
   text-align: left;
   color: var(--text-primary);
   user-select: none;
 }
 
-/* ===== SORTABLE HEADERS ===== */
 .sortable {
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color var(--transition-fast);
 }
 
 .sortable:hover {
@@ -189,7 +268,7 @@
 
 .table td {
   border: 1px solid var(--border-primary);
-  padding: 6px 8px;
+  padding: var(--spacing-xs) var(--spacing-sm);
   color: var(--text-primary);
 }
 
@@ -200,7 +279,6 @@
 
 .table tbody tr.selected td {
   background-color: var(--bg-accent);
-  color: var(--text-primary);
 }
 
 :global(.dark-mode) .table tbody tr.selected td {
@@ -218,7 +296,7 @@
   text-align: center;
 }
 
-/* ===== TAGS ===== */
+/* ===== TAGS IN TABLE ===== */
 .tagsCell {
   overflow: hidden;
   white-space: nowrap;
@@ -230,7 +308,7 @@
 .tagList {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--spacing-xs);
   max-height: 2.2em;
   overflow: hidden;
 }
@@ -238,26 +316,76 @@
 .tag {
   display: inline-flex;
   align-items: center;
-
-  padding: 2px 6px;
+  padding: 2px var(--spacing-xs);
   border-radius: 999px;
-
   font-size: 11px;
   line-height: 1;
   color: var(--text-primary);
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-secondary);
-
   white-space: nowrap;
 }
 
 .tagMore {
   font-size: 11px;
   color: var(--text-secondary);
-  padding: 2px 6px;
+  padding: 2px var(--spacing-xs);
   border-radius: 999px;
   background-color: var(--bg-primary);
   border: 1px dashed var(--border-secondary);
+}
+
+/* ===== ROW ACTIONS ===== */
+.cellWithActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.cellWithActions > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.rowActions {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.rowActionButton {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.rowActionButton:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-primary);
+}
+
+.rowActionButtonDanger {
+  color: #ef4444;
+  font-size: 18px;
+  font-weight: 300;
+}
+
+.rowActionButtonDanger:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
 }
 
 /* ===== EMPTY STATE ===== */
@@ -265,5 +393,5 @@
   padding: 40px 20px;
   text-align: center;
   color: var(--text-tertiary);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }

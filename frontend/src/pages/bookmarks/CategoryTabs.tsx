@@ -1,4 +1,4 @@
-// BookmarkTabs.tsx
+// CategoryTabs.tsx
 import type {
   Bookmark,
   BookmarkCategory,
@@ -22,12 +22,23 @@ export default function CategoryTabs({
 }: Props) {
   return (
     <div className={styles.tabs}>
+      {/* ALL CATEGORY */}
+      <button
+        className={`${styles.tab} ${
+          activeCategoryId === "__all__" ? styles.active : ""
+        }`}
+        onClick={() => onSelect("__all__")}
+      >
+        <span className={styles.name}>All</span>
+        <span className={styles.count}>{bookmarks.length}</span>
+      </button>
+
+      {/* USER CATEGORIES */}
       {categories
         .slice()
         .sort((a, b) => a.order - b.order)
         .map((c) => {
           const count = bookmarks.filter((b) => b.categoryId === c.id).length;
-
           const isActive = c.id === activeCategoryId;
 
           return (

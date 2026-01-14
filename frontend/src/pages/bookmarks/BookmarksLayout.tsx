@@ -30,9 +30,7 @@ export default function BookmarksLayout({
 
   const { categories, updateBookmarkCategory } = ctx;
 
-  const [activeCategoryId, setActiveCategoryId] = useState(
-    categories[0]?.id ?? ""
-  );
+  const [activeCategoryId, setActiveCategoryId] = useState("__all__");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showTagManager, setShowTagManager] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
@@ -43,7 +41,7 @@ export default function BookmarksLayout({
   const [filterType, setFilterType] = useState<string>("all");
   const [filterArchive, setFilterArchive] = useState<string>("all");
   const [filterOnline, setFilterOnline] = useState<string>("all");
-  const [filterTag, setFilterTag] = useState<string>("all");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   // ===== SORT =====
   const [sortField, setSortField] = useState<SortField>("added");
@@ -63,7 +61,10 @@ export default function BookmarksLayout({
 
   // ===== FILTERED & SORTED DATA =====
   const visible = useMemo(() => {
-    let result = bookmarks.filter((b) => b.categoryId === activeCategoryId);
+    let result =
+      activeCategoryId === "__all__"
+        ? bookmarks
+        : bookmarks.filter((b) => b.categoryId === activeCategoryId);
 
     // Filter by search
     if (searchQuery.trim()) {
@@ -74,7 +75,6 @@ export default function BookmarksLayout({
           b.title.toLowerCase().includes(q)
       );
     }
-
     // Filter by level
     if (filterLevel !== "all") {
       result = result.filter((b) => b.ead3.level === filterLevel);
@@ -97,9 +97,11 @@ export default function BookmarksLayout({
       result = result.filter((b) => b.ead3.digitalObjectCount === 0);
     }
 
-    // Filter by tag
-    if (filterTag !== "all") {
-      result = result.filter((b) => b.tags?.includes(filterTag));
+    // Filter by tags (match ALL selected tags)
+    if (selectedTags.length > 0) {
+      result = result.filter((b) =>
+        selectedTags.every((tag) => b.tags?.includes(tag))
+      );
     }
 
     // Sort
@@ -142,35 +144,34 @@ export default function BookmarksLayout({
     bookmarks,
     activeCategoryId,
     searchQuery,
+    filterLevel,
+    filterType,
     filterArchive,
     filterOnline,
-    filterTag,
+    selectedTags,
     sortField,
     sortDirection,
   ]);
 
   function handleDropOnCategory(categoryId: string) {
     if (!dragBookmarkId) return;
+    if (categoryId === "__all__") return; // Can't drop on "All"
 
     updateBookmarkCategory(dragBookmarkId, categoryId);
     setActiveCategoryId(categoryId);
     setDragBookmarkId(null);
   }
 
-  function handleRemoveClick() {
-    if (!selectedId) return;
+  function toggleTag(tagName: string) {
+    setSelectedTags((prev) =>
+      prev.includes(tagName)
+        ? prev.filter((t) => t !== tagName)
+        : [...prev, tagName]
+    );
+  }
 
-    const bookmark = bookmarks.find((b) => b.id === selectedId);
-    if (!bookmark) return;
-
-    const confirmMessage = `Remove bookmark "${
-      bookmark.customName || bookmark.title
-    }"?`;
-
-    if (!confirm(confirmMessage)) return;
-
-    onRemove(selectedId);
-    setSelectedId(null);
+  function clearTags() {
+    setSelectedTags([]);
   }
 
   function handleSort(field: SortField) {
@@ -182,13 +183,17 @@ export default function BookmarksLayout({
     }
   }
 
-  // Get unique values from bookmarks
+  // Get unique archives from bookmarks
   const levels = useMemo(() => {
-    return Array.from(new Set(bookmarks.map((b) => b.ead3?.level)));
+    return Array.from(
+      new Set(bookmarks.map((b) => b.ead3?.level).filter(Boolean))
+    );
   }, [bookmarks]);
 
   const types = useMemo(() => {
-    return Array.from(new Set(bookmarks.map((b) => b.ead3?.localType)));
+    return Array.from(
+      new Set(bookmarks.map((b) => b.ead3?.localType).filter(Boolean))
+    );
   }, [bookmarks]);
 
   const archives = useMemo(() => {
@@ -200,48 +205,22 @@ export default function BookmarksLayout({
       {/* ===== HEADER ===== */}
       <div className={styles.panel}>
         <div className={styles.headerRow}>
-          <div className={styles.headerLeft}>
-            <div className={styles.panelTitle}>Bookmarks</div>
+          <div className={styles.actions}>
+            <button
+              className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
+              onClick={() => ctx.openBookmarkWindow({ mode: "add-manual" })}
+              title="Add bookmark"
+            >
+              +
+            </button>
 
-            <div className={styles.actions}>
-              <button
-                className={styles.actionButton}
-                onClick={() => ctx.openBookmarkWindow({ mode: "add-manual" })}
-              >
-                Add bookmark
-              </button>
-
-              <button
-                className={styles.actionButton}
-                disabled={!selectedId}
-                onClick={() => {
-                  const b = bookmarks.find((x) => x.id === selectedId);
-                  if (!b) return;
-
-                  ctx.openBookmarkWindow({
-                    mode: "edit",
-                    bookmark: b,
-                  });
-                }}
-              >
-                Change
-              </button>
-
-              <button
-                className={styles.actionButton}
-                disabled={!selectedId}
-                onClick={handleRemoveClick}
-              >
-                Remove
-              </button>
-
-              <button
-                className={styles.actionButton}
-                onClick={() => onExport(visible)}
-              >
-                Export
-              </button>
-            </div>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Search bookmarks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
 
           <div className={styles.actions}>
@@ -258,28 +237,20 @@ export default function BookmarksLayout({
             >
               Manage categories
             </button>
+
+            <button
+              className={styles.actionButton}
+              onClick={() => onExport(visible)}
+            >
+              Export
+            </button>
           </div>
         </div>
       </div>
 
-      {/* ===== CATEGORY TABS ===== */}
-      <CategoryTabs
-        categories={categories}
-        bookmarks={bookmarks}
-        activeCategoryId={activeCategoryId}
-        onSelect={setActiveCategoryId}
-        onDropBookmark={handleDropOnCategory}
-      />
-
       {/* ===== FILTERS ===== */}
       <div className={styles.panel}>
         <div className={styles.filters}>
-          <input
-            type="text"
-            placeholder="Search by name or title..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
           <select
             value={filterLevel}
             onChange={(e) => setFilterLevel(e.target.value)}
@@ -322,20 +293,37 @@ export default function BookmarksLayout({
             <option value="yes">Online: Yes</option>
             <option value="no">Online: No</option>
           </select>
+        </div>
 
-          <select
-            value={filterTag}
-            onChange={(e) => setFilterTag(e.target.value)}
-          >
-            <option value="all">All tags</option>
+        {/* TAG MULTI-SELECT */}
+        <div className={styles.tagFilter}>
+          <button className={styles.clearTagsButton} onClick={clearTags}>
+            Clear all
+          </button>
+
+          <div className={styles.tagOptions}>
             {tags.map((tag) => (
-              <option key={tag.id} value={tag.name}>
-                {tag.label}
-              </option>
+              <label key={tag.id} className={styles.tagCheckbox}>
+                <input
+                  type="checkbox"
+                  checked={selectedTags.includes(tag.name)}
+                  onChange={() => toggleTag(tag.name)}
+                />
+                <span>{tag.label}</span>
+              </label>
             ))}
-          </select>
+          </div>
         </div>
       </div>
+
+      {/* ===== CATEGORY TABS ===== */}
+      <CategoryTabs
+        categories={categories}
+        bookmarks={bookmarks}
+        activeCategoryId={activeCategoryId}
+        onSelect={setActiveCategoryId}
+        onDropBookmark={handleDropOnCategory}
+      />
 
       {/* ===== BOOKMARK LIST ===== */}
       <div className={`${styles.panel} ${styles.listPanel}`}>
@@ -410,12 +398,56 @@ export default function BookmarksLayout({
                   onDragStart={() => setDragBookmarkId(b.id)}
                   onClick={() => setSelectedId(b.id)}
                   onDoubleClick={() => onOpen(b)}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setSelectedId(b.id);
+                  }}
                   className={b.id === selectedId ? styles.selected : ""}
                 >
-                  <td className={styles.ellipsis}>{b.customName}</td>
+                  <td className={styles.ellipsis}>
+                    <div className={styles.cellWithActions}>
+                      <span>{b.customName}</span>
+                      {b.id === selectedId && (
+                        <div className={styles.rowActions}>
+                          <button
+                            className={styles.rowActionButton}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              ctx.openBookmarkWindow({
+                                mode: "edit",
+                                bookmark: b,
+                              });
+                            }}
+                            title="Edit"
+                          >
+                            ✎
+                          </button>
+                          <button
+                            className={`${styles.rowActionButton} ${styles.rowActionButtonDanger}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (
+                                confirm(
+                                  `Remove bookmark "${
+                                    b.customName || b.title
+                                  }"?`
+                                )
+                              ) {
+                                onRemove(b.id);
+                                setSelectedId(null);
+                              }
+                            }}
+                            title="Remove"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </td>
                   <td className={styles.ellipsis}>{b.title}</td>
-                  <td>{b.ead3.level}</td>
-                  <td>{b.ead3.localType ?? "—"}</td>
+                  <td>{b.ead3?.level ?? "—"}</td>
+                  <td>{b.ead3?.localType ?? "—"}</td>
                   <td>{b.archive}</td>
 
                   {/* TAGS */}
@@ -443,7 +475,9 @@ export default function BookmarksLayout({
 
                   {/* ONLINE */}
                   <td className={styles.centerCell}>
-                    {b.ead3.digitalObjectCount > 0 ? "✓" : "—"}
+                    {b.ead3?.digitalObjectCount && b.ead3.digitalObjectCount > 0
+                      ? "✓"
+                      : "—"}
                   </td>
 
                   <td>{b.createdAt.slice(0, 10)}</td>
