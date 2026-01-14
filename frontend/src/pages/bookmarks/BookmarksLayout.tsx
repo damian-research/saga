@@ -47,6 +47,7 @@ export default function BookmarksLayout({
   }
 
   // TAGS
+  const MAX_VISIBLE_TAGS = 3;
   const tagCtx = useContext(TagContext);
   if (!tagCtx) throw new Error("TagContext missing");
 
@@ -58,7 +59,6 @@ export default function BookmarksLayout({
   );
 
   // DRAG STATE
-  const [dragCategoryId, setDragCategoryId] = useState<string | null>(null);
   const [dragBookmarkId, setDragBookmarkId] = useState<string | null>(null);
 
   // FILTER
@@ -222,11 +222,17 @@ export default function BookmarksLayout({
                 <td className={styles.tagsCell}>
                   {b.tags?.length ? (
                     <div className={styles.tagList}>
-                      {b.tags.map((t) => (
+                      {b.tags.slice(0, MAX_VISIBLE_TAGS).map((t) => (
                         <span key={t} className={styles.tag}>
                           {tagMap.get(t) ?? t}
                         </span>
                       ))}
+
+                      {b.tags.length > MAX_VISIBLE_TAGS && (
+                        <span className={styles.tagMore}>
+                          +{b.tags.length - MAX_VISIBLE_TAGS}
+                        </span>
+                      )}
                     </div>
                   ) : (
                     "—"

@@ -29,15 +29,20 @@ export default function AddBookmark({
   onClose,
   onSave,
 }: Props) {
+  // ===== CONTEXT =====
   const bookmarkCtx = useContext(BookmarkContext);
   if (!bookmarkCtx) throw new Error("BookmarkContext missing");
+
+  const tagCtx = useContext(TagContext);
+  if (!tagCtx) throw new Error("TagContext missing");
+
   const { categories } = bookmarkCtx;
 
+  // ===== BASIC STATE =====
+  const [customName, setCustomName] = useState(bookmark?.customName ?? "");
   const [categoryId, setCategoryId] = useState<string>(
     bookmark?.categoryId ?? ""
   );
-  const [customName, setCustomName] = useState(bookmark?.customName ?? "");
-  const [tagsRaw, setTagsRaw] = useState(bookmark?.tags?.join(", ") ?? "");
   const [url, setUrl] = useState(bookmark?.url ?? "");
   const [archive, setArchive] = useState<ArchiveName>(
     bookmark?.archive ?? "NARA"
@@ -47,15 +52,26 @@ export default function AddBookmark({
   const [resolveError, setResolveError] = useState<string | null>(null);
   const [base, setBase] = useState<Bookmark | null>(bookmark ?? null);
 
-  const tagNames = tagsRaw
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
+  // ===== TAGS (JEDYNE ŹRÓDŁO PRAWDY) =====
+  const [tagInput, setTagInput] = useState("");
+  const [localTags, setLocalTags] = useState<string[]>(bookmark?.tags ?? []);
+
+  function addTag(raw: string) {
+    const name = raw.trim().toLowerCase();
+    if (!name) return;
+    if (localTags.includes(name)) return;
+
+    setLocalTags((prev) => [...prev, name]);
+  }
+
+  function removeTag(name: string) {
+    setLocalTags((prev) => prev.filter((t) => t !== name));
+  }
+
   const isManual = mode === "add-manual";
   const isEdit = mode === "edit";
-  const tagCtx = useContext(TagContext);
-  tagCtx?.ensureTags(tagNames);
 
+  // ===== RENDER =====
   return (
     <div className={styles.backdrop} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -63,6 +79,7 @@ export default function AddBookmark({
           {isEdit ? "Change bookmark" : "Add bookmark"}
         </div>
 
+        {/* ===== MANUAL SOURCE ===== */}
         {isManual && (
           <>
             <label>
@@ -93,6 +110,7 @@ export default function AddBookmark({
           </>
         )}
 
+        {/* ===== CATEGORY ===== */}
         <label>
           Category
           <select
@@ -108,6 +126,7 @@ export default function AddBookmark({
           </select>
         </label>
 
+        {/* ===== NAME ===== */}
         <label>
           Custom name
           <input
@@ -116,27 +135,49 @@ export default function AddBookmark({
           />
         </label>
 
+        {/* ===== TAG INPUT ===== */}
         <label>
           Tags
           <input
-            placeholder="e.g. intel, ww2, signals"
-            value={tagsRaw}
-            onChange={(e) => setTagsRaw(e.target.value)}
+            value={tagInput}
+            placeholder="Add tag…"
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === ",") {
+                e.preventDefault();
+                addTag(tagInput);
+                setTagInput("");
+              }
+            }}
           />
         </label>
 
+        {/* ===== TAG PREVIEW ===== */}
+        {localTags.length > 0 && (
+          <div className={styles.tagPreview}>
+            {localTags.map((t) => (
+              <span key={t} className={styles.tagChip}>
+                {t}
+                <button
+                  type="button"
+                  onClick={() => removeTag(t)}
+                  aria-label="Remove tag"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+
         {resolveError && <div className={styles.error}>{resolveError}</div>}
 
+        {/* ===== ACTIONS ===== */}
         <div className={styles.actions}>
           <button
             disabled={resolving || !categoryId || !customName.trim()}
             onClick={async () => {
               if (!categoryId) return;
-
-              const tags = tagsRaw
-                .split(",")
-                .map((t) => t.trim())
-                .filter(Boolean);
 
               let resolved: Bookmark | null = base;
 
@@ -159,10 +200,10 @@ export default function AddBookmark({
 
                 try {
                   setResolving(true);
-                  const record = await getRecord(Number(match[1]));
-                  if (!record) throw new Error();
+                  const rec = await getRecord(Number(match[1]));
+                  if (!rec) throw new Error();
 
-                  resolved = mapEad3ToBookmark(record, {
+                  resolved = mapEad3ToBookmark(rec, {
                     mode,
                     categoryId,
                     customName: customName.trim(),
@@ -189,11 +230,14 @@ export default function AddBookmark({
 
               if (!resolved) return;
 
+              // REGISTER TAGS GLOBALLY (JEDYNY MOMENT)
+              tagCtx.ensureTags(localTags);
+
               onSave({
                 ...resolved,
-                tags: tagNames.map((t) => t.toLowerCase()),
                 categoryId,
                 customName: customName.trim(),
+                tags: localTags,
                 createdAt: resolved.createdAt ?? new Date().toISOString(),
               });
             }}
