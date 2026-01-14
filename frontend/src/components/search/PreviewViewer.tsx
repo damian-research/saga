@@ -5,6 +5,7 @@ import type { Dao } from "../../api/models/ead3.types";
 import styles from "./PreviewViewer.module.css";
 
 type Props = {
+  recordId: string;
   object: Dao;
   objects: Dao[];
   onClose: () => void;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function PreviewViewer({
+  recordId,
   object,
   objects,
   onClose,
@@ -50,10 +52,14 @@ export default function PreviewViewer({
     }
   };
 
-  const title =
-    [object.localType, object.daoType !== "derived" ? object.daoType : null]
-      .filter(Boolean)
-      .join(" – ") || "Digital Object";
+  // TITLE
+  const fileName = object.href?.split("/").pop() ?? "";
+  const dotIndex = fileName.lastIndexOf(".");
+  const page = dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName;
+  const extension =
+    dotIndex > 0 ? fileName.slice(dotIndex + 1).toUpperCase() : "";
+  const mediaType = extension ? `Image (${extension})` : "Digital Object";
+  const title = `ID: ${recordId} | Page: ${page} | ${mediaType}`;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -81,7 +87,7 @@ export default function PreviewViewer({
                   a.href = url;
                   const originalName =
                     object.href.split("/").pop() ?? "download";
-                  a.download = `${details.recordId}-${originalName}`;
+                  a.download = `${recordId}-${originalName}`;
 
                   document.body.appendChild(a);
                   a.click();

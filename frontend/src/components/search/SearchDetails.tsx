@@ -176,6 +176,7 @@ export default function SearchDetails() {
 
       {activeIndex !== null && details.digitalObjects[activeIndex] && (
         <PreviewViewer
+          recordId={details.recordId}
           object={details.digitalObjects[activeIndex]}
           objects={details.digitalObjects}
           onClose={() => setActiveIndex(null)}
