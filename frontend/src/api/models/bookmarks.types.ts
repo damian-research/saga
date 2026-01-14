@@ -1,20 +1,17 @@
 import type { PathSegment } from "./ead3.types";
 
-// export const TEMP_CATEGORIES = [
-//   "General",
-//   "Research",
-//   "WWII",
-//   "Intelligence",
-//   "Operations",
-//   "Technology",
-// ] as const;
-// export type Category = (typeof TEMP_CATEGORIES)[number];
-
 export interface BookmarkCategory {
   id: string; //} UUID
   name: string;
   order: number;
   color?: string;
+}
+
+export interface Tag {
+  id: string; // uuid
+  name: string; // canonical name (lowercase)
+  label: string; // display name
+  createdAt: string;
 }
 
 export const WINDOW_MODES = ["add-manual", "add-from-search", "edit"] as const;

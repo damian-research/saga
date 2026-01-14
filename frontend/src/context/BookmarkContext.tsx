@@ -5,8 +5,10 @@ import type {
   Bookmark,
   BookmarkCategory,
   WindowMode,
+  Tag,
 } from "../api/models/bookmarks.types";
 
+// BOOKMARKS
 export interface OpenAddBookmarkPayload {
   mode: WindowMode;
   record?: Ead3Response;
@@ -14,10 +16,7 @@ export interface OpenAddBookmarkPayload {
 }
 
 export interface BookmarkActions {
-  // bookmark modal
   openBookmarkWindow(payload: OpenAddBookmarkPayload): void;
-
-  // categories
   categories: BookmarkCategory[];
   addCategory(name: string): void;
   renameCategory(id: string, name: string): void;
@@ -26,3 +25,14 @@ export interface BookmarkActions {
 }
 
 export const BookmarkContext = createContext<BookmarkActions | null>(null);
+
+// TAGS
+export interface TagActions {
+  tags: Tag[];
+
+  ensureTags(names: string[]): void;
+  renameTag(tagId: string, newLabel: string): void;
+  removeTag(tagId: string): void;
+}
+
+export const TagContext = createContext<TagActions | null>(null);

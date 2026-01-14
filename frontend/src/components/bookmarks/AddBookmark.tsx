@@ -1,11 +1,10 @@
 // AddBookmark
 //
 // AddBookmark.tsx
-import { useState } from "react";
+import { useState, useContext } from "react";
 import styles from "./AddBookmark.module.css";
 import {
   ARCHIVES,
-  type BookmarkCategory,
   type ArchiveName,
   type Bookmark,
   type WindowMode,
@@ -13,12 +12,12 @@ import {
 import type { Ead3Response } from "../../api/models/ead3.types";
 import { getRecord } from "../../api/services/searchRecords.service";
 import { mapEad3ToBookmark } from "../../api/utils/ead3.mapper";
+import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 
 interface Props {
   mode: WindowMode;
   record?: Ead3Response;
   bookmark?: Bookmark;
-  categories: BookmarkCategory[];
   onClose: () => void;
   onSave: (bookmark: Bookmark) => void;
 }
@@ -27,14 +26,18 @@ export default function AddBookmark({
   mode,
   record,
   bookmark,
-  categories,
   onClose,
   onSave,
 }: Props) {
+  const bookmarkCtx = useContext(BookmarkContext);
+  if (!bookmarkCtx) throw new Error("BookmarkContext missing");
+  const { categories } = bookmarkCtx;
+
   const [categoryId, setCategoryId] = useState<string>(
     bookmark?.categoryId ?? ""
   );
   const [customName, setCustomName] = useState(bookmark?.customName ?? "");
+  const [tagsRaw, setTagsRaw] = useState(bookmark?.tags?.join(", ") ?? "");
   const [url, setUrl] = useState(bookmark?.url ?? "");
   const [archive, setArchive] = useState<ArchiveName>(
     bookmark?.archive ?? "NARA"
@@ -44,8 +47,14 @@ export default function AddBookmark({
   const [resolveError, setResolveError] = useState<string | null>(null);
   const [base, setBase] = useState<Bookmark | null>(bookmark ?? null);
 
+  const tagNames = tagsRaw
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
   const isManual = mode === "add-manual";
   const isEdit = mode === "edit";
+  const tagCtx = useContext(TagContext);
+  tagCtx?.ensureTags(tagNames);
 
   return (
     <div className={styles.backdrop} onClick={onClose}>
@@ -107,6 +116,15 @@ export default function AddBookmark({
           />
         </label>
 
+        <label>
+          Tags
+          <input
+            placeholder="e.g. intel, ww2, signals"
+            value={tagsRaw}
+            onChange={(e) => setTagsRaw(e.target.value)}
+          />
+        </label>
+
         {resolveError && <div className={styles.error}>{resolveError}</div>}
 
         <div className={styles.actions}>
@@ -114,6 +132,11 @@ export default function AddBookmark({
             disabled={resolving || !categoryId || !customName.trim()}
             onClick={async () => {
               if (!categoryId) return;
+
+              const tags = tagsRaw
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean);
 
               let resolved: Bookmark | null = base;
 
@@ -168,6 +191,7 @@ export default function AddBookmark({
 
               onSave({
                 ...resolved,
+                tags: tagNames.map((t) => t.toLowerCase()),
                 categoryId,
                 customName: customName.trim(),
                 createdAt: resolved.createdAt ?? new Date().toISOString(),

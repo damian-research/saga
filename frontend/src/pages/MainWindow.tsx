@@ -18,6 +18,7 @@ import {
   loadCategories,
   saveCategories,
 } from "../api/services/categories.service";
+import TagProvider from "../api/utils/TagProvider";
 
 type TabId = "bookmarks" | "nara" | "uk";
 
@@ -140,40 +141,41 @@ export default function MainWindow() {
         updateBookmarkCategory,
       }}
     >
-      <div className={`app-root ${isDarkMode ? "dark-mode" : ""}`}>
-        <Header
-          isDarkMode={isDarkMode}
-          onToggleDarkMode={() => setIsDarkMode((v) => !v)}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-
-        {bookmarkModal && (
-          <AddBookmark
-            mode={bookmarkModal.mode}
-            record={bookmarkModal.record}
-            bookmark={bookmarkModal.bookmark}
-            categories={categories}
-            onClose={() => setBookmarkModal(null)}
-            onSave={(bookmark) => {
-              submitBookmark(bookmark);
-              setBookmarkModal(null);
-            }}
+      <TagProvider>
+        <div className={`app-root ${isDarkMode ? "dark-mode" : ""}`}>
+          <Header
+            isDarkMode={isDarkMode}
+            onToggleDarkMode={() => setIsDarkMode((v) => !v)}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
           />
-        )}
 
-        <div className="app-content">
-          {activeTab === "bookmarks" && (
-            <BookmarksTab
-              bookmarks={bookmarks}
-              loading={loadingBookmarks}
-              onRemoveBookmark={handleRemoveBookmark}
+          {bookmarkModal && (
+            <AddBookmark
+              mode={bookmarkModal.mode}
+              record={bookmarkModal.record}
+              bookmark={bookmarkModal.bookmark}
+              onClose={() => setBookmarkModal(null)}
+              onSave={(bookmark) => {
+                submitBookmark(bookmark);
+                setBookmarkModal(null);
+              }}
             />
           )}
 
-          {activeTab === "nara" && <SearchTab />}
+          <div className="app-content">
+            {activeTab === "bookmarks" && (
+              <BookmarksTab
+                bookmarks={bookmarks}
+                loading={loadingBookmarks}
+                onRemoveBookmark={handleRemoveBookmark}
+              />
+            )}
+
+            {activeTab === "nara" && <SearchTab />}
+          </div>
         </div>
-      </div>
+      </TagProvider>
     </BookmarkContext.Provider>
   );
 }

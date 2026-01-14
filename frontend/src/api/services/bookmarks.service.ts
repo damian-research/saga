@@ -1,4 +1,4 @@
-import type { Bookmark } from "../models/bookmarks.types";
+import type { Bookmark, Tag } from "../models/bookmarks.types";
 
 // Temporary local JSON persistence layer (dev-only)
 
@@ -51,4 +51,19 @@ export function removeBookmark(id: string): void {
   } catch (err) {
     console.error("[bookmarks] failed to save", err);
   }
+}
+
+export function loadTags(): Tag[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveTags(tags: Tag[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tags, null, 2));
 }

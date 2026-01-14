@@ -3,7 +3,7 @@
 import { useContext, useMemo, useState } from "react";
 import styles from "./BookmarksLayout.module.css";
 import type { Bookmark } from "../../api/models/bookmarks.types";
-import { BookmarkContext } from "../../context/BookmarkContext";
+import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 import CategoryTabs from "./CategoryTabs";
 
 interface Props {
@@ -24,6 +24,7 @@ export default function BookmarksLayout({
   const ctx = useContext(BookmarkContext);
   if (!ctx) throw new Error("BookmarkContext missing");
 
+  // CATEGORIES
   const {
     categories,
     addCategory,
@@ -44,6 +45,17 @@ export default function BookmarksLayout({
     setActiveCategoryId(categoryId);
     setDragBookmarkId(null);
   }
+
+  // TAGS
+  const tagCtx = useContext(TagContext);
+  if (!tagCtx) throw new Error("TagContext missing");
+
+  const { tags } = tagCtx;
+
+  const tagMap = useMemo(
+    () => new Map(tags.map((t) => [t.name, t.label])),
+    [tags]
+  );
 
   // DRAG STATE
   const [dragCategoryId, setDragCategoryId] = useState<string | null>(null);
@@ -208,7 +220,17 @@ export default function BookmarksLayout({
 
                 {/* TAGS */}
                 <td className={styles.tagsCell}>
-                  {b.tags?.length ? b.tags.join(", ") : "—"}
+                  {b.tags?.length ? (
+                    <div className={styles.tagList}>
+                      {b.tags.map((t) => (
+                        <span key={t} className={styles.tag}>
+                          {tagMap.get(t) ?? t}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    "—"
+                  )}
                 </td>
 
                 {/* ONLINE */}
