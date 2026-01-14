@@ -3,7 +3,6 @@ import { useState } from "react";
 import Header from "../components/layout/Header/Header";
 import { SearchTab } from "./search";
 import { BookmarksTab } from "./bookmarks";
-import type { Bookmark } from "../api/models/bookmarks.types";
 import AddBookmark from "../components/bookmarks/AddBookmark";
 import { BookmarkContext } from "../context/BookmarkContext";
 import type { OpenAddBookmarkPayload } from "../context/BookmarkContext";

@@ -1,5 +1,6 @@
 // SearchLayout
 //
+import { useState } from "react";
 import {
   SearchPanel,
   SearchList,
@@ -10,11 +11,13 @@ import styles from "./SearchLayout.module.css";
 import { Loader } from "../../components/loaders/Loader";
 
 export default function SearchLayout() {
-  const { loading, error, clearError } = useSearch();
+  const [isBusy, setIsBusy] = useState(false);
+  const { error, clearError } = useSearch();
 
   return (
     <div className={styles.grid}>
-      <SearchPanel />
+      {isBusy && <Loader fullscreen />}
+      <SearchPanel setBusy={setIsBusy} />
 
       {error && (
         <div className={`${styles.error} ${styles[`error-${error.type}`]}`}>
@@ -29,16 +32,9 @@ export default function SearchLayout() {
         </div>
       )}
 
-      {loading ? (
-        <div className={styles.loadingContainer}>
-          <Loader size="large" />
-          <span className={styles.loadingText}>Searching...</span>
-        </div>
-      ) : (
-        <SearchList />
-      )}
+      <SearchList />
 
-      <SearchDetails />
+      <SearchDetails setBusy={setIsBusy} />
     </div>
   );
 }

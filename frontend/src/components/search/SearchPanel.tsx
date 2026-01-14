@@ -1,12 +1,16 @@
-// SearchPanel
-//
+// SearchPanel.tsx
 import { useState } from "react";
 import styles from "./SearchPanel.module.css";
 import type { SearchFormState } from ".";
 import { useSearch } from "../../context/SearchContext";
 
-export default function SearchPanel() {
-  const { search, loading } = useSearch();
+interface SearchPanelProps {
+  setBusy: (value: boolean) => void;
+}
+
+export default function SearchPanel({ setBusy }: SearchPanelProps) {
+  const { search } = useSearch();
+
   const [form, setForm] = useState<SearchFormState>({
     q: "",
     limit: 50,
@@ -17,7 +21,7 @@ export default function SearchPanel() {
     key: K,
     value: SearchFormState[K]
   ) {
-    setForm((f) => ({ ...f, [key]: value }));
+    setForm((prev) => ({ ...prev, [key]: value }));
   }
 
   function hasAnySearchValue(form: SearchFormState): boolean {
@@ -34,10 +38,15 @@ export default function SearchPanel() {
     );
   }
 
-  function submit() {
-    if (loading) return;
+  async function submit() {
     if (!hasAnySearchValue(form)) return;
-    search(form);
+
+    setBusy(true);
+    try {
+      await search(form);
+    } finally {
+      setBusy(false);
+    }
   }
 
   function clearForm() {
@@ -49,10 +58,11 @@ export default function SearchPanel() {
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter" && !loading && hasAnySearchValue(form)) {
-      e.preventDefault();
-      submit();
-    }
+    if (e.key !== "Enter") return;
+    if (!hasAnySearchValue(form)) return;
+
+    e.preventDefault();
+    submit();
   }
 
   return (
@@ -73,10 +83,10 @@ export default function SearchPanel() {
         Limit
         <input
           type="number"
-          value={form.limit}
-          onChange={(e) => update("limit", Number(e.target.value))}
           min={1}
           max={100}
+          value={form.limit}
+          onChange={(e) => update("limit", Number(e.target.value))}
         />
       </label>
 
@@ -197,18 +207,18 @@ export default function SearchPanel() {
             type="button"
             className={styles.clearButton}
             onClick={clearForm}
-            disabled={loading}
           >
             Clear
           </button>
         )}
+
         <button
           type="button"
           className={styles.button}
           onClick={submit}
-          disabled={loading || !hasAnySearchValue(form)}
+          disabled={!hasAnySearchValue(form)}
         >
-          {loading ? "Searching…" : "Search"}
+          Search
         </button>
       </div>
     </div>

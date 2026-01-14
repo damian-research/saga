@@ -1,8 +1,9 @@
 // Preview Viewer
 //
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Dao } from "../../api/models/ead3.types";
 import styles from "./PreviewViewer.module.css";
+import { Loader } from "../loaders/Loader";
 
 type Props = {
   recordId: string;
@@ -21,19 +22,21 @@ export default function PreviewViewer({
   onNext,
   onPrev,
 }: Props) {
+  const [loading, setLoading] = useState(true);
+
   const currentIndex = objects.findIndex((o) => o.href === object.href);
   const hasNext = currentIndex < objects.length - 1;
   const hasPrev = currentIndex > 0;
 
   useEffect(() => {
+    setLoading(true);
+  }, [object.href]);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" && hasPrev) {
-        onPrev();
-      } else if (e.key === "ArrowRight" && hasNext) {
-        onNext();
-      } else if (e.key === "Escape") {
-        onClose();
-      }
+      if (e.key === "ArrowLeft" && hasPrev) onPrev();
+      if (e.key === "ArrowRight" && hasNext) onNext();
+      if (e.key === "Escape") onClose();
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -41,15 +44,11 @@ export default function PreviewViewer({
   }, [hasPrev, hasNext, onPrev, onNext, onClose]);
 
   const handlePrev = () => {
-    if (hasPrev) {
-      onPrev();
-    }
+    if (hasPrev) onPrev();
   };
 
   const handleNext = () => {
-    if (hasNext) {
-      onNext();
-    }
+    if (hasNext) onNext();
   };
 
   // TITLE
@@ -65,7 +64,7 @@ export default function PreviewViewer({
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.viewer} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <div style={{ width: "95px" }}></div>
+          <div style={{ width: "95px" }} />
           <div className={styles.titleSection}>
             <h3 className={styles.title}>{title}</h3>
             <span className={styles.counter}>
@@ -119,15 +118,29 @@ export default function PreviewViewer({
         )}
 
         <div className={styles.container}>
+          {loading && (
+            <div className={styles.loaderOverlay}>
+              <Loader size="large" />
+            </div>
+          )}
+
           <div className={styles.body}>
             {object.href.toLowerCase().endsWith(".pdf") ? (
               <iframe
                 src={object.href}
                 title={title}
                 className={styles.iframe}
+                onLoad={() => setLoading(false)}
+                onError={() => setLoading(false)}
               />
             ) : object.href.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/i) ? (
-              <img src={object.href} alt={title} className={styles.image} />
+              <img
+                src={object.href}
+                alt={title}
+                className={styles.image}
+                onLoad={() => setLoading(false)}
+                onError={() => setLoading(false)}
+              />
             ) : (
               <div className={styles.message}>
                 <p>Unable to preview this object type.</p>
@@ -136,6 +149,7 @@ export default function PreviewViewer({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.link}
+                  onClick={() => setLoading(false)}
                 >
                   Open in new tab
                 </a>
