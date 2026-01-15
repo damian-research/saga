@@ -18,15 +18,7 @@ public class NaraToEad3Profile : Profile
                                 a.NaId != src.Source.Record.NaId &&
                                 !string.Equals(a.LevelOfDescription, src.Source.Record.LevelOfDescription, StringComparison.OrdinalIgnoreCase)
                             )
-                            .OrderBy(a =>
-                                a.LevelOfDescription.Equals("recordGroup", StringComparison.OrdinalIgnoreCase) ? 0 :
-                                a.LevelOfDescription.Equals("recordgrp", StringComparison.OrdinalIgnoreCase) ? 0 :
-                                a.LevelOfDescription.Equals("fonds", StringComparison.OrdinalIgnoreCase) ? 1 :
-                                a.LevelOfDescription.Equals("series", StringComparison.OrdinalIgnoreCase) ? 2 :
-                                a.LevelOfDescription.Equals("fileUnit", StringComparison.OrdinalIgnoreCase) ? 3 :
-                                a.LevelOfDescription.Equals("item", StringComparison.OrdinalIgnoreCase) ? 4 :
-                                99
-                            )
+                            .OrderBy(a => LevelOfDescriptionExtensions.ParseLevel(a.LevelOfDescription).GetHierarchyOrder())
                             .ToList()
                 ))
             .ForMember(
@@ -80,7 +72,8 @@ public class NaraToEad3Profile : Profile
 
         // ArchDesc mapping
         CreateMap<Record, ArchDesc>()
-            .ForMember(dest => dest.Level, opt => opt.MapFrom(src => src.LevelOfDescription))
+            .ForMember(dest => dest.Level, opt => opt.MapFrom(src =>
+                LevelOfDescriptionExtensions.ParseLevel(src.LevelOfDescription).ToEad3String()))
             .ForMember(dest => dest.LocalType, opt => opt.MapFrom(src =>
                         src.GeneralRecordsTypes != null && src.GeneralRecordsTypes.Any()
                             ? string.Join(" / ", src.GeneralRecordsTypes)
@@ -125,7 +118,7 @@ public class NaraToEad3Profile : Profile
 
         // Component mapping for digital objects
         CreateMap<DigitalObject, Component>()
-            .ForMember(dest => dest.Level, opt => opt.MapFrom(src => "item"))
+            .ForMember(dest => dest.Level, opt => opt.MapFrom(src => LevelOfDescription.Item.ToEad3String()))
             .ForMember(dest => dest.Did, opt => opt.MapFrom(src => new ComponentDid
             {
                 UnitId = src.ObjectId,
@@ -150,29 +143,30 @@ public class NaraToEad3Profile : Profile
         // Ancestor → PathSegment mapping (for Path property)
         CreateMap<Ancestor, PathSegment>()
             .ForMember(dest => dest.Level, opt => opt.MapFrom(src =>
-                src.LevelOfDescription.Equals("recordGroup", StringComparison.OrdinalIgnoreCase) ||
-                src.LevelOfDescription.Equals("recordgrp", StringComparison.OrdinalIgnoreCase)
-                    ? "recordgrp"
-                : src.LevelOfDescription.Equals("fileUnit", StringComparison.OrdinalIgnoreCase)
-                    ? "file"
-                : src.LevelOfDescription.ToLowerInvariant()
+                LevelOfDescriptionExtensions.ParseLevel(src.LevelOfDescription).ToEad3String()
             ))
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.NaId.ToString()))
             .ForMember(dest => dest.Label, opt => opt.MapFrom(src =>
-                src.LevelOfDescription.Equals("recordGroup", StringComparison.OrdinalIgnoreCase) ||
-                src.LevelOfDescription.Equals("recordgrp", StringComparison.OrdinalIgnoreCase)
-                    ? $"RG# {src.RecordGroupNumber} – {src.Title}"
-                : src.LevelOfDescription.Equals("series", StringComparison.OrdinalIgnoreCase)
-                    ? $"Series {src.Title}"
-                : src.LevelOfDescription.Equals("fileUnit", StringComparison.OrdinalIgnoreCase)
-                    ? $"File {src.Title}"
-                : src.Title
+                FormatPathLabel(src)
             ));
     }
 
     // ============================================================================
     // HELPER MAPPING METHODS
     // ============================================================================
+
+    private static string FormatPathLabel(Ancestor ancestor)
+    {
+        var level = LevelOfDescriptionExtensions.ParseLevel(ancestor.LevelOfDescription);
+
+        return level switch
+        {
+            LevelOfDescription.RecordGroup => $"RG# {ancestor.RecordGroupNumber} – {ancestor.Title}",
+            LevelOfDescription.Series => $"Series {ancestor.Title}",
+            LevelOfDescription.FileUnit => $"File {ancestor.Title}",
+            _ => ancestor.Title
+        };
+    }
 
     private static UnitDate MapDateRange(NaraDate start, NaraDate end)
     {
@@ -245,7 +239,7 @@ public class NaraToEad3Profile : Profile
             {
                 components.Add(new Component
                 {
-                    Level = "item",
+                    Level = LevelOfDescription.Item.ToEad3String(),
                     Did = new ComponentDid
                     {
                         UnitId = digitalObj.ObjectId?.ToString(),
@@ -374,7 +368,6 @@ public class NaraToEad3Profile : Profile
         if (record.MicroformPublications == null || !record.MicroformPublications.Any())
             return null;
 
-        // Konkatenuj wszystkie publikacje w jeden akapit
         var publicationsText = string.Join(". ",
             record.MicroformPublications.Select(p =>
                 !string.IsNullOrEmpty(p.Note)

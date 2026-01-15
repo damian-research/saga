@@ -1,6 +1,6 @@
-// recordParser
-//
+// recordParser.ts
 import type { Ead3Response, Dao } from "../models/ead3.types";
+import { getLevelLabel } from "../models/archive.types";
 
 export interface ParsedRecordDetails {
   title: string;
@@ -138,21 +138,13 @@ export interface ParsedListItem {
   digitalObjectCount: number;
 }
 
-const LEVEL_LABELS: Record<string, string> = {
-  item: "Item",
-  fileUnit: "File Unit",
-  series: "Series",
-  recordgrp: "Record Group",
-  collection: "Collection",
-};
-
 export function parseListItem(record: Ead3Response): ParsedListItem {
   const archDesc = record.archDesc;
 
   const title = archDesc.did.unitTitle;
   const unitId = archDesc.did.unitId?.text || "";
   const levelRaw = archDesc.level || "";
-  const level = LEVEL_LABELS[levelRaw] || levelRaw || "Unknown";
+  const level = getLevelLabel(levelRaw);
 
   const materialType = Array.isArray(archDesc.localType)
     ? archDesc.localType.join(" / ")

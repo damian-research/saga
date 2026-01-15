@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useSearch } from "../../context/SearchContext";
 import { parseRecordDetails } from "../../api/utils/recordParser";
+import { getLevelLabel } from "../../api/models/archive.types";
 import styles from "./SearchDetails.module.css";
 import PreviewViewer from "./PreviewViewer";
 
@@ -92,7 +93,7 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
         </div>
         <div className={styles.metadataRow}>
           <span className={styles.label}>Type:</span>
-          <span className={styles.value}>{details.level}</span>
+          <span className={styles.value}>{getLevelLabel(details.level)}</span>
         </div>
       </div>
 

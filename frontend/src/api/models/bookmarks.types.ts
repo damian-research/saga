@@ -1,10 +1,12 @@
 import type { PathSegment } from "./ead3.types";
+import type { ArchiveName, WindowMode } from "./archive.types";
 
 export interface BookmarkCategory {
-  id: string; //} UUID
+  id: string; // UUID
   name: string;
   order: number;
   color?: string;
+  createdAt: string;
 }
 
 export interface Tag {
@@ -14,12 +16,6 @@ export interface Tag {
   createdAt: string;
 }
 
-export const WINDOW_MODES = ["add-manual", "add-from-search", "edit"] as const;
-export type WindowMode = (typeof WINDOW_MODES)[number];
-
-export const ARCHIVES = ["NARA", "UKNA"] as const;
-export type ArchiveName = (typeof ARCHIVES)[number];
-
 export interface Bookmark {
   mode: WindowMode;
   id: string; // internal UUID
@@ -28,7 +24,7 @@ export interface Bookmark {
   title: string; // archDesc.did.unitTitle
   path: PathSegment[]; // EAD3 Path (ancestors only)
   ead3: {
-    level: string; // record.archDesc.level (raw)
+    level: string; // record.archDesc.level (raw string - can be any value)
     localType?: string; // record.archDesc.localType
     dscHead?: string; // record.archDesc.dsc?.head
     digitalObjectCount: number; // record.digitalObjectCount ?? 0
@@ -38,6 +34,13 @@ export interface Bookmark {
   createdAt: string;
   customName: string;
   note?: string; // user note (optional)
-
   url: string;
 }
+
+// Re-export for convenience
+export type {
+  ARCHIVES,
+  LEVELS,
+  ArchiveName,
+  WindowMode,
+} from "./archive.types";

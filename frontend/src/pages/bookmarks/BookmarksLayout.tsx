@@ -6,6 +6,7 @@ import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 import CategoryTabs from "./CategoryTabs";
 import TagManager from "../../components/bookmarks/TagManager";
 import CategoryManager from "../../components/bookmarks/CategoryManager";
+import { getLevelLabel } from "../../api/models/archive.types";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -256,9 +257,9 @@ export default function BookmarksLayout({
             onChange={(e) => setFilterLevel(e.target.value)}
           >
             <option value="all">All levels</option>
-            {levels.map((arch) => (
-              <option key={arch} value={arch}>
-                {arch}
+            {levels.map((level) => (
+              <option key={level} value={level}>
+                {getLevelLabel(level)}
               </option>
             ))}
           </select>
@@ -446,7 +447,7 @@ export default function BookmarksLayout({
                     </div>
                   </td>
                   <td className={styles.ellipsis}>{b.title}</td>
-                  <td>{b.ead3?.level ?? "—"}</td>
+                  <td>{getLevelLabel(b.ead3?.level ?? "")}</td>
                   <td>{b.ead3?.localType ?? "—"}</td>
                   <td>{b.archive}</td>
 

@@ -3,6 +3,7 @@ import { useState } from "react";
 import styles from "./SearchPanel.module.css";
 import type { SearchFormState } from ".";
 import { useSearch } from "../../context/SearchContext";
+import { LEVELS, LEVEL_LABELS } from "../../api/models/archive.types";
 
 interface SearchPanelProps {
   setBusy: (value: boolean) => void;
@@ -150,11 +151,11 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           }
         >
           <option value="">Any</option>
-          <option value="recordGroup">Record Group</option>
-          <option value="collection">Collection</option>
-          <option value="series">Series</option>
-          <option value="fileUnit">File Unit</option>
-          <option value="item">Item</option>
+          {LEVELS.map((level) => (
+            <option key={level} value={level}>
+              {LEVEL_LABELS[level]}
+            </option>
+          ))}
         </select>
       </label>
 

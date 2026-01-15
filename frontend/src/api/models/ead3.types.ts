@@ -1,3 +1,5 @@
+import type { LevelOfDescription } from "./archive.types";
+
 // ============================================================================
 // EAD3 TYPESCRIPT MODELS
 // ============================================================================
@@ -83,7 +85,7 @@ export interface MaintenanceEvent {
 }
 
 export interface ArchDesc {
-  level: string;
+  level: LevelOfDescription | string;
   localType?: string;
   did: Did;
   dsc?: Dsc;

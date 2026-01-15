@@ -1,12 +1,12 @@
 // AddBookmark.tsx
 import { useState, useContext, useMemo } from "react";
 import styles from "./AddBookmark.module.css";
-import {
-  ARCHIVES,
-  type ArchiveName,
-  type Bookmark,
-  type WindowMode,
+import type {
+  ArchiveName,
+  Bookmark,
+  WindowMode,
 } from "../../api/models/bookmarks.types";
+import { ARCHIVES } from "../../api/models/archive.types";
 import type { Ead3Response } from "../../api/models/ead3.types";
 import { getRecord } from "../../api/services/searchRecords.service";
 import { mapEad3ToBookmark } from "../../api/utils/ead3.mapper";

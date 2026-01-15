@@ -11,3 +11,4 @@ global using System.Text.RegularExpressions;
 global using AutoMapper;
 global using System.Text.Json.Serialization;
 global using Saga.Data.Models.RecordModel;
+global using Saga.Data.Enums;
