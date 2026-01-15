@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import SettingsMenu from "./SettingsMenu";
 import styles from "./Header.module.css";
+import { Settings } from "../../icons/index";
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -77,11 +78,11 @@ export default function Header({
 
       <div className={styles.actions} ref={containerRef}>
         <button
-          className={styles.hamburgerBtn}
+          className={styles.settingsBtn}
           aria-label="Settings"
           onClick={() => setOpen((v) => !v)}
         >
-          ☰
+          <Settings size={18} />
         </button>
 
         {open && (

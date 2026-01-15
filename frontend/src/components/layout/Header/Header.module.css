@@ -75,7 +75,7 @@
   margin-left: auto;
 }
 
-.hamburgerBtn {
+.settingsBtn {
   background: none;
   border: 1px solid var(--border-secondary);
   border-radius: var(--radius-sm);
@@ -84,9 +84,12 @@
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.hamburgerBtn:hover {
+.settingsBtn:hover {
   background-color: var(--bg-hover);
   border-color: var(--border-hover);
 }
