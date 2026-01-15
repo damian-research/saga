@@ -53,17 +53,6 @@ export default function BookmarksLayout({
     category: string;
   } | null>(null);
 
-  const selectedBookmark = useMemo(
-    () => bookmarks.find((b) => b.id === selectedId) || null,
-    [bookmarks, selectedId]
-  );
-
-  const categoryLabel = useMemo(() => {
-    if (!selectedBookmark) return "";
-    const cat = categories.find((c) => c.id === selectedBookmark.categoryId);
-    return cat ? cat.name : "Uncategorized";
-  }, [categories, selectedBookmark]);
-
   // ===== VIEW =====
   const {
     selectByPathSegment,

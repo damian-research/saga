@@ -10,6 +10,7 @@ const DEFAULT_CATEGORY: BookmarkCategory = {
   id: "uncategorized",
   name: "Uncategorized",
   order: 0,
+  createdAt: new Date().toISOString(),
 };
 
 export function useCategories(onCategoryRemoved: (id: string) => void) {
@@ -17,11 +18,17 @@ export function useCategories(onCategoryRemoved: (id: string) => void) {
 
   useEffect(() => {
     const loaded = loadCategories();
-    if (loaded.length === 0) {
+    const normalized = loaded.map((c) => ({
+      ...c,
+      createdAt: c.createdAt ?? new Date().toISOString(),
+    }));
+
+    if (normalized.length === 0) {
       setCategories([DEFAULT_CATEGORY]);
       saveCategories([DEFAULT_CATEGORY]);
     } else {
-      setCategories(loaded);
+      setCategories(normalized);
+      saveCategories(normalized);
     }
   }, []);
 
@@ -33,6 +40,7 @@ export function useCategories(onCategoryRemoved: (id: string) => void) {
           id: crypto.randomUUID(),
           name,
           order: prev.length,
+          createdAt: new Date().toISOString(),
         },
       ];
       saveCategories(next);
