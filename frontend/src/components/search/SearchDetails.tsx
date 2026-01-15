@@ -1,5 +1,6 @@
 // SearchDetails.tsx
 import { useState } from "react";
+import { Eye, ScanSearch, Globe, Download } from "../../components/icons";
 import { useSearch } from "../../context/SearchContext";
 import { parseRecordDetails } from "../../api/utils/recordParser";
 import { getLevelLabel } from "../../api/models/archive.types";
@@ -72,8 +73,12 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
       {/* BUTTONS */}
       <div className={styles.actions}>
         {details.digitalObjects.length > 0 && (
-          <button className={styles.actionButton} onClick={handlePreview}>
-            Preview
+          <button
+            className={styles.actionButton}
+            onClick={handlePreview}
+            title="Preview documents"
+          >
+            <Eye size={20} strokeWidth={2} />
           </button>
         )}
 
@@ -81,22 +86,28 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
           <button
             className={styles.actionButton}
             onClick={() => download(details.digitalObjects)}
+            title="Download ALL documents within this unit"
           >
-            Download All
+            <Download size={20} strokeWidth={2} />
           </button>
         )}
 
-        {details.level !== "item" && (
-          <button className={styles.actionButton} onClick={handleSearchWithin}>
-            Search within
+        {details.level !== "item" && details.level !== "fileUnit" && (
+          <button
+            className={styles.actionButton}
+            onClick={handleSearchWithin}
+            title="Run search within this unit"
+          >
+            <ScanSearch size={20} strokeWidth={2} />
           </button>
         )}
 
         <button
           className={styles.actionButton}
           onClick={() => window.open(details.openWebUrl, "_blank")}
+          title="Open NARA website catalog"
         >
-          Open in Web
+          <Globe size={20} strokeWidth={2} />
         </button>
       </div>
       {/* DESCRIPTION */}
@@ -138,8 +149,9 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
                         setActiveIndex(0);
                       }
                     }}
+                    title="Preview document"
                   >
-                    View
+                    <Eye size={18} strokeWidth={2} />
                   </button>
                 )}
               </li>

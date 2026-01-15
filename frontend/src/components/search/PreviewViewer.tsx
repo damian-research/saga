@@ -1,6 +1,7 @@
 // Preview Viewer
 //
 import { useEffect, useState } from "react";
+import { Download, ChevronLeft, ChevronRight, X } from "../../components/icons";
 import { createPortal } from "react-dom";
 import type { Dao } from "../../api/models/ead3.types";
 import styles from "./PreviewViewer.module.css";
@@ -112,7 +113,7 @@ export default function PreviewViewer({
   const page = dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName;
   const extension =
     dotIndex > 0 ? fileName.slice(dotIndex + 1).toUpperCase() : "";
-  const mediaType = extension ? `Image (${extension})` : "Digital Object";
+  const mediaType = extension ? `Image (${extension})` : "Digital document";
   const title = `ID: ${recordId} | Page: ${page} | ${mediaType}`;
 
   return createPortal(
@@ -157,13 +158,13 @@ export default function PreviewViewer({
             </button>
             <button
               className={styles.downloadBtn}
-              title="Download this object"
+              title="Download this document"
               onClick={() => download([object])}
             >
-              ↓
+              <Download size={14} strokeWidth={2} />
             </button>
             <button className={styles.closeBtn} onClick={onClose} title="Close">
-              ×
+              <X size={16} strokeWidth={2} />
             </button>
           </div>
         </div>
@@ -172,9 +173,9 @@ export default function PreviewViewer({
           <button
             className={`${styles.edgeNav} ${styles.edgePrev}`}
             onClick={handlePrev}
-            title="Previous object"
+            title="Previous document"
           >
-            ←
+            <ChevronLeft size={28} strokeWidth={2} />
           </button>
         )}
 
@@ -248,9 +249,9 @@ export default function PreviewViewer({
           <button
             className={`${styles.edgeNav} ${styles.edgeNext}`}
             onClick={handleNext}
-            title="Next object"
+            title="Next document"
           >
-            →
+            <ChevronRight size={28} strokeWidth={2} />
           </button>
         )}
       </div>

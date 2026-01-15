@@ -13,12 +13,12 @@ export {
   XCircle,
   ChevronDown,
   ChevronUp,
-  // UNUSED
-  CheckCircle2,
-  Cross,
+  Globe,
+  ScanSearch,
   Download,
-  FileCheck,
-  CloudCheck,
+  ChevronRight,
+  ChevronLeft,
+  X,
 } from "lucide-react";
 
 // components/icons/constants.ts

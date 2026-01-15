@@ -325,6 +325,7 @@ export default function BookmarksLayout({
               <button
                 className={styles.actionButton}
                 onClick={() => setShowTagManager(true)}
+                title="Tag Manager"
               >
                 <Tags size={18} />
               </button>
@@ -332,6 +333,7 @@ export default function BookmarksLayout({
               <button
                 className={styles.actionButton}
                 onClick={() => setShowCategoryManager(true)}
+                title="Category Manager"
               >
                 <FolderTree size={18} />
               </button>
@@ -339,6 +341,7 @@ export default function BookmarksLayout({
               <button
                 className={styles.actionButton}
                 onClick={() => onExport(visible)}
+                title="Export all bookmarks to JSON"
               >
                 <Share size={18} />
               </button>
@@ -353,6 +356,7 @@ export default function BookmarksLayout({
           <button
             className={`${styles.clearTagsButton} ${styles.actionButtonDanger}`}
             onClick={clearTags}
+            title="Clear selected tags"
           >
             <XCircle size={14} strokeWidth={2} />
           </button>

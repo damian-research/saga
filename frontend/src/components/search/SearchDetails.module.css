@@ -71,6 +71,9 @@
   color: var(--text-primary);
   cursor: pointer;
   transition: background-color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .actionButton:hover {
@@ -157,6 +160,9 @@
   background: var(--bg-secondary);
   color: var(--text-secondary);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .viewButton:hover {

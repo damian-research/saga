@@ -81,6 +81,7 @@ export default function Header({
           className={styles.settingsBtn}
           aria-label="Settings"
           onClick={() => setOpen((v) => !v)}
+          title="Application settings"
         >
           <Settings size={18} />
         </button>
