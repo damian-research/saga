@@ -113,7 +113,10 @@ export default function AddBookmark({
             <label>
               Link
               <input
+                type="url"
                 value={url}
+                placeholder="https://…"
+                pattern="https?://.+"
                 onChange={(e) => {
                   setUrl(e.target.value);
                   setBase(null);
