@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Dao } from "../../api/models/ead3.types";
 import styles from "./PreviewViewer.module.css";
 import { Loader } from "../loaders/Loader";
+import { useDownloadObjects } from "../../api/hooks/useDownloadObjects";
 
 type Props = {
   recordId: string;
@@ -22,6 +23,8 @@ export default function PreviewViewer({
   onNext,
   onPrev,
 }: Props) {
+  const { download } = useDownloadObjects({ recordId });
+
   // ZOOM
   const [zoom, setZoom] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
@@ -154,29 +157,7 @@ export default function PreviewViewer({
             <button
               className={styles.downloadBtn}
               title="Download this object"
-              onClick={async () => {
-                try {
-                  const res = await fetch(object.href);
-                  const blob = await res.blob();
-
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-
-                  a.href = url;
-                  const originalName =
-                    object.href.split("/").pop() ?? "download";
-                  a.download = `${recordId}-${originalName}`;
-
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-
-                  URL.revokeObjectURL(url);
-                } catch (e) {
-                  console.error("Download failed", e);
-                  window.open(object.href, "_blank");
-                }
-              }}
+              onClick={() => download([object])}
             >
               ↓
             </button>

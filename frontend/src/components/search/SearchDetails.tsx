@@ -5,6 +5,7 @@ import { parseRecordDetails } from "../../api/utils/recordParser";
 import { getLevelLabel } from "../../api/models/archive.types";
 import styles from "./SearchDetails.module.css";
 import PreviewViewer from "./PreviewViewer";
+import { useDownloadObjects } from "../../api/hooks/useDownloadObjects";
 
 interface SearchDetailsProps {
   setBusy: (value: boolean) => void;
@@ -14,69 +15,25 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
   const { selectedRecord } = useSearch();
   type RecordDetails = ReturnType<typeof parseRecordDetails>;
   type DigitalObjects = RecordDetails["digitalObjects"];
+  if (!selectedRecord) {
+    return <div className={styles.empty}>Select a record to view details</div>;
+  }
+  const details = parseRecordDetails(selectedRecord);
+  const { download } = useDownloadObjects({
+    recordId: details.recordId,
+    setBusy,
+  });
 
   const [activeObjects, setActiveObjects] = useState<DigitalObjects | null>(
     null
   );
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
-  if (!selectedRecord) {
-    return <div className={styles.empty}>Select a record to view details</div>;
-  }
-
-  const details = parseRecordDetails(selectedRecord);
-
   async function handlePreview() {
     setBusy(true);
     try {
       setActiveObjects(details.digitalObjects);
       setActiveIndex(0);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handleDownloadAll() {
-    const objects = details.digitalObjects.filter((o) => o.href);
-    const count = objects.length;
-
-    if (count === 0) return;
-
-    if (count > 30) {
-      const confirmed = window.confirm(
-        `You are about to download ${count} files.\n\nThis may take some time and put load on the server.\n\nDo you want to continue?`
-      );
-      if (!confirmed) return;
-    }
-
-    setBusy(true);
-    try {
-      const delay = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
-
-      for (const object of objects) {
-        try {
-          const res = await fetch(object.href);
-          const blob = await res.blob();
-
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-
-          a.href = url;
-          const originalName = object.href.split("/").pop() ?? "download";
-          a.download = `${details.recordId}-${originalName}`;
-
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-
-          URL.revokeObjectURL(url);
-          await delay(300);
-        } catch (e) {
-          console.error("Download failed", e);
-          window.open(object.href, "_blank");
-        }
-      }
     } finally {
       setBusy(false);
     }
@@ -105,7 +62,10 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
         )}
 
         {details.digitalObjects.length > 0 && (
-          <button className={styles.actionButton} onClick={handleDownloadAll}>
+          <button
+            className={styles.actionButton}
+            onClick={() => download(details.digitalObjects)}
+          >
             Download All
           </button>
         )}
