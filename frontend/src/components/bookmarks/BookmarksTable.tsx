@@ -7,14 +7,12 @@ interface Props {
   items: Bookmark[];
   loading: boolean;
   selectedId: string | null;
-
   tagMap: Map<string, string>;
-
   onSelect: (id: string) => void;
   onOpen: (b: Bookmark) => void;
   onEdit: (b: Bookmark) => void;
   onRemove: (id: string) => void;
-
+  onView: (b: Bookmark) => void;
   onDragStart: (id: string) => void;
 }
 
@@ -27,6 +25,7 @@ export default function BookmarksTable({
   onOpen,
   onEdit,
   onRemove,
+  onView,
   onDragStart,
 }: Props) {
   const hasItems = items.length > 0;
@@ -82,6 +81,16 @@ export default function BookmarksTable({
 
                     {b.id === selectedId && (
                       <div className={styles.rowActions}>
+                        <button
+                          className={styles.rowActionButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onView(b);
+                          }}
+                          title="View details"
+                        >
+                          👁
+                        </button>
                         <button
                           className={styles.rowActionButton}
                           onClick={(e) => {

@@ -3,6 +3,7 @@
 import BookmarksLayout from "./BookmarksLayout";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import styles from "./BookmarksTab.module.css";
+import { SearchProvider } from "../../context/SearchContext";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -33,13 +34,15 @@ export default function BookmarksTab({
 
   return (
     <div className={styles.container}>
-      <BookmarksLayout
-        bookmarks={bookmarks}
-        loading={loading}
-        onOpen={openBookmark}
-        onRemove={onRemoveBookmark}
-        onExport={exportBookmarks}
-      />
+      <SearchProvider>
+        <BookmarksLayout
+          bookmarks={bookmarks}
+          loading={loading}
+          onOpen={openBookmark}
+          onRemove={onRemoveBookmark}
+          onExport={exportBookmarks}
+        />
+      </SearchProvider>
     </div>
   );
 }

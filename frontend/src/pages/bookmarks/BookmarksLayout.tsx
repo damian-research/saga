@@ -3,6 +3,8 @@ import { useContext, useMemo, useState } from "react";
 import styles from "./BookmarksLayout.module.css";
 import { getLevelLabel, type Bookmark } from "../../api/models/";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
+import { useSearch } from "../../context/SearchContext";
+import { SearchDetails } from "../../components/search";
 import {
   BookmarksTable,
   TagManager,
@@ -30,13 +32,29 @@ export default function BookmarksLayout({
 }: Props) {
   const ctx = useContext(BookmarkContext);
   if (!ctx) throw new Error("BookmarkContext missing");
-
   const { categories, updateBookmarkCategory } = ctx;
 
   const [activeCategoryId, setActiveCategoryId] = useState("__all__");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showTagManager, setShowTagManager] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  // ===== VIEW =====
+  const {
+    selectByPathSegment,
+    selectedRecord,
+    loading: searchLoading,
+  } = useSearch();
+
+  async function handleView(b: Bookmark) {
+    const segmentId = b.eadId;
+
+    if (!segmentId) return;
+
+    await selectByPathSegment(segmentId);
+    setDetailsOpen(true);
+  }
 
   // ===== FILTERS =====
   const [searchQuery, setSearchQuery] = useState("");
@@ -341,6 +359,7 @@ export default function BookmarksLayout({
           onRemove(id);
           setSelectedId(null);
         }}
+        onView={handleView}
         onDragStart={setDragBookmarkId}
       />
 
@@ -352,6 +371,20 @@ export default function BookmarksLayout({
       {showCategoryManager && (
         <CategoryManager onClose={() => setShowCategoryManager(false)} />
       )}
+
+      <div
+        className={`${styles.detailsDrawer} ${
+          detailsOpen ? styles.detailsDrawerOpen : ""
+        }`}
+      >
+        {detailsOpen && searchLoading && (
+          <div className={styles.loading}>Loading…</div>
+        )}
+
+        {detailsOpen && !searchLoading && selectedRecord && (
+          <SearchDetails setBusy={() => {}} />
+        )}
+      </div>
     </div>
   );
 }
