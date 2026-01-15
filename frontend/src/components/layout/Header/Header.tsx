@@ -6,8 +6,8 @@ import { Settings } from "../../icons/index";
 interface HeaderProps {
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
-  activeTab: "bookmarks" | "nara" | "uk";
-  onTabChange: (tab: "bookmarks" | "nara" | "uk") => void;
+  activeTab: "bookmarks" | "search" | "uk";
+  onTabChange: (tab: "bookmarks" | "search" | "uk") => void;
 }
 
 export default function Header({
@@ -60,9 +60,9 @@ export default function Header({
         </button>
         <button
           className={`${styles.tabButton} ${
-            activeTab === "nara" ? styles.active : ""
+            activeTab === "search" ? styles.active : ""
           }`}
-          onClick={() => onTabChange("nara")}
+          onClick={() => onTabChange("search")}
         >
           NARA
         </button>

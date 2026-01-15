@@ -7,8 +7,6 @@ export { default as SearchListItem } from "./SearchListItem";
 export { default as SearchPanel } from "./SearchPanel";
 
 // Types
-// components/search/index.ts
-export type { SearchFormState } from "../../api/models/types";
 export type { Ead3Response, Dao } from "../../api/models/ead3.types";
 export type { Bookmark } from "../../api/models/bookmarks.types";
 

@@ -1,23 +1,16 @@
 // SearchPanel.tsx
-import { useState } from "react";
 import { Search, XCircle } from "../../components/icons";
 import styles from "./SearchPanel.module.css";
-import type { SearchFormState } from ".";
 import { useSearch } from "../../context/SearchContext";
 import { LEVELS, LEVEL_LABELS } from "../../api/models/archive.types";
+import type { SearchFormState } from "../../api/models/search.types";
 
 interface SearchPanelProps {
   setBusy: (value: boolean) => void;
 }
 
 export default function SearchPanel({ setBusy }: SearchPanelProps) {
-  const { search } = useSearch();
-
-  const [form, setForm] = useState<SearchFormState>({
-    q: "",
-    limit: 50,
-    onlineAvailable: true,
-  });
+  const { search, clearResults, form, setForm } = useSearch();
 
   function update<K extends keyof SearchFormState>(
     key: K,
@@ -57,6 +50,8 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
       limit: 50,
       onlineAvailable: true,
     });
+
+    clearResults();
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -214,6 +209,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           className={styles.clearButton}
           onClick={clearForm}
           disabled={!hasAnySearchValue(form)}
+          title="Clear form and results"
         >
           <XCircle size={20} strokeWidth={2} />
         </button>
@@ -223,6 +219,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           className={styles.button}
           onClick={submit}
           disabled={!hasAnySearchValue(form)}
+          title="Search in the Archvie Catalog"
         >
           <Search size={20} strokeWidth={2} />
         </button>

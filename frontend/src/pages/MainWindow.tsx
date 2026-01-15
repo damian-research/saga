@@ -4,13 +4,14 @@ import { Header } from "../components/layout";
 import { SearchTab } from "./search";
 import { BookmarksTab } from "./bookmarks";
 import { AddBookmark } from "../components/bookmarks";
+import { SearchProvider } from "../context/SearchContext";
 import { BookmarkContext } from "../context/BookmarkContext";
 import type { OpenAddBookmarkPayload } from "../context/BookmarkContext";
 import TagProvider from "../api/utils/TagProvider";
 import { useBookmarks } from "../api/hooks/useBokmarks";
 import { useCategories, DEFAULT_CATEGORY } from "../api/hooks/useCategories";
 
-type TabId = "bookmarks" | "nara" | "uk";
+type TabId = "bookmarks" | "search" | "uk";
 
 export default function MainWindow() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -33,48 +34,50 @@ export default function MainWindow() {
   });
 
   return (
-    <BookmarkContext.Provider
-      value={{
-        openBookmarkWindow: setBookmarkModal,
-        ...categoryOps,
-        updateBookmarkCategory: bookmarkOps.updateCategory,
-        updateBookmarks: bookmarkOps.updateMany,
-      }}
-    >
-      <TagProvider>
-        <div className={"app-root"}>
-          <Header
-            isDarkMode={isDarkMode}
-            onToggleDarkMode={() => setIsDarkMode((v) => !v)}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
-
-          {bookmarkModal && (
-            <AddBookmark
-              mode={bookmarkModal.mode}
-              record={bookmarkModal.record}
-              bookmark={bookmarkModal.bookmark}
-              onClose={() => setBookmarkModal(null)}
-              onSave={(bookmark) => {
-                bookmarkOps.saveOne(bookmark);
-                setBookmarkModal(null);
-              }}
+    <SearchProvider>
+      <BookmarkContext.Provider
+        value={{
+          openBookmarkWindow: setBookmarkModal,
+          ...categoryOps,
+          updateBookmarkCategory: bookmarkOps.updateCategory,
+          updateBookmarks: bookmarkOps.updateMany,
+        }}
+      >
+        <TagProvider>
+          <div className={"app-root"}>
+            <Header
+              isDarkMode={isDarkMode}
+              onToggleDarkMode={() => setIsDarkMode((v) => !v)}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
             />
-          )}
 
-          <div className="app-content">
-            {activeTab === "bookmarks" && (
-              <BookmarksTab
-                bookmarks={bookmarkOps.bookmarks}
-                loading={bookmarkOps.loading}
-                onRemoveBookmark={bookmarkOps.remove}
+            {bookmarkModal && (
+              <AddBookmark
+                mode={bookmarkModal.mode}
+                record={bookmarkModal.record}
+                bookmark={bookmarkModal.bookmark}
+                onClose={() => setBookmarkModal(null)}
+                onSave={(bookmark) => {
+                  bookmarkOps.saveOne(bookmark);
+                  setBookmarkModal(null);
+                }}
               />
             )}
-            {activeTab === "nara" && <SearchTab />}
+
+            <div className="app-content">
+              {activeTab === "bookmarks" && (
+                <BookmarksTab
+                  bookmarks={bookmarkOps.bookmarks}
+                  loading={bookmarkOps.loading}
+                  onRemoveBookmark={bookmarkOps.remove}
+                />
+              )}
+              {activeTab === "search" && <SearchTab />}
+            </div>
           </div>
-        </div>
-      </TagProvider>
-    </BookmarkContext.Provider>
+        </TagProvider>
+      </BookmarkContext.Provider>
+    </SearchProvider>
   );
 }

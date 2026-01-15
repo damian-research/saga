@@ -1,7 +1,7 @@
 // context/SearchContext.tsx
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Ead3Response } from "../api/models/ead3.types";
-import type { SearchFormState } from "../components/search";
+import type { SearchFormState } from "../api/models/search.types";
 import {
   searchRecords,
   getRecord,
@@ -27,6 +27,10 @@ interface SearchContextValue {
   searchWithin: (parentId: string) => Promise<void>;
   clearError: () => void;
   clearResults: () => void;
+
+  // Form
+  form: SearchFormState;
+  setForm: React.Dispatch<React.SetStateAction<SearchFormState>>;
 }
 
 const SearchContext = createContext<SearchContextValue | null>(null);
@@ -42,6 +46,11 @@ export function SearchProvider({ children }: SearchProviderProps) {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<SearchError | null>(null);
+  const [form, setForm] = useState<SearchFormState>({
+    q: "",
+    limit: 50,
+    onlineAvailable: true,
+  });
 
   async function search(form: SearchFormState) {
     setLoading(true);
@@ -97,8 +106,6 @@ export function SearchProvider({ children }: SearchProviderProps) {
     }
   }
 
-  // Dodaj do interface i return value
-
   function clearError() {
     setError(null);
   }
@@ -121,6 +128,8 @@ export function SearchProvider({ children }: SearchProviderProps) {
         searchWithin,
         clearError,
         clearResults,
+        form,
+        setForm,
       }}
     >
       {children}
