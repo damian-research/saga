@@ -27,6 +27,11 @@ export function getLevelLabel(level: string): string {
   return LEVEL_LABELS[level as LevelOfDescription] ?? level;
 }
 
+// Helper function to get CSS class suffix for level
+export function getLevelClass(level: LevelOfDescription): string {
+  return level;
+}
+
 // ===== WINDOW MODES =====
 export const WINDOW_MODES = ["add-manual", "add-from-search", "edit"] as const;
 export type WindowMode = (typeof WINDOW_MODES)[number];

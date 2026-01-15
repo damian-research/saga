@@ -6,7 +6,11 @@ import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 import CategoryTabs from "./CategoryTabs";
 import TagManager from "../../components/bookmarks/TagManager";
 import CategoryManager from "../../components/bookmarks/CategoryManager";
-import { getLevelLabel } from "../../api/models/archive.types";
+import {
+  getLevelLabel,
+  getLevelClass,
+  type LevelOfDescription,
+} from "../../api/models/archive.types";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -405,6 +409,7 @@ export default function BookmarksLayout({
                   }}
                   className={b.id === selectedId ? styles.selected : ""}
                 >
+                  {/* CUSTOM NAME */}
                   <td className={styles.ellipsis}>
                     <div className={styles.cellWithActions}>
                       <span>{b.customName}</span>
@@ -446,9 +451,28 @@ export default function BookmarksLayout({
                       )}
                     </div>
                   </td>
+                  {/* TITLE */}
                   <td className={styles.ellipsis}>{b.title}</td>
-                  <td>{getLevelLabel(b.ead3?.level ?? "")}</td>
+                  {/* LEVEL */}
+                  <td>
+                    {b.ead3?.level && (
+                      <span
+                        className={`${styles.levelBadge} ${
+                          styles[
+                            `level${b.ead3.level[0].toUpperCase()}${b.ead3.level.slice(
+                              1
+                            )}`
+                          ]
+                        }`}
+                      >
+                        {getLevelLabel(b.ead3.level)}
+                      </span>
+                    )}
+                    {!b.ead3?.level && "—"}
+                  </td>
+                  {/* TYPE */}
                   <td>{b.ead3?.localType ?? "—"}</td>
+                  {/* ARCHIVE */}
                   <td>{b.archive}</td>
 
                   {/* TAGS */}

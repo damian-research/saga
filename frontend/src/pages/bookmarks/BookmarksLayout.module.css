@@ -296,6 +296,42 @@
   text-align: center;
 }
 
+/* ===== LEVEL BADGES ===== */
+.levelBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.levelRecordGroup {
+  background-color: var(--level-recordGroup-bg);
+  color: var(--level-recordGroup-text);
+}
+
+.levelCollection {
+  background-color: var(--level-collection-bg);
+  color: var(--level-collection-text);
+}
+
+.levelSeries {
+  background-color: var(--level-series-bg);
+  color: var(--level-series-text);
+}
+
+.levelFileUnit {
+  background-color: var(--level-fileUnit-bg);
+  color: var(--level-fileUnit-text);
+}
+
+.levelItem {
+  background-color: var(--level-item-bg);
+  color: var(--level-item-text);
+}
+
 /* ===== TAGS IN TABLE ===== */
 .tagsCell {
   overflow: hidden;
