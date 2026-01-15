@@ -22,7 +22,14 @@ interface Props {
   onExport: (list: Bookmark[]) => void;
 }
 
-type SortField = "name" | "title" | "level" | "archive" | "added";
+type SortField =
+  | "name"
+  | "title"
+  | "level"
+  | "archive"
+  | "added"
+  | "online"
+  | "type";
 type SortDirection = "asc" | "desc";
 
 export default function BookmarksLayout({
@@ -41,6 +48,21 @@ export default function BookmarksLayout({
   const [showTagManager, setShowTagManager] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsHeader, setDetailsHeader] = useState<{
+    name: string;
+    category: string;
+  } | null>(null);
+
+  const selectedBookmark = useMemo(
+    () => bookmarks.find((b) => b.id === selectedId) || null,
+    [bookmarks, selectedId]
+  );
+
+  const categoryLabel = useMemo(() => {
+    if (!selectedBookmark) return "";
+    const cat = categories.find((c) => c.id === selectedBookmark.categoryId);
+    return cat ? cat.name : "Uncategorized";
+  }, [categories, selectedBookmark]);
 
   // ===== VIEW =====
   const {
@@ -53,6 +75,12 @@ export default function BookmarksLayout({
     const segmentId = b.eadId;
 
     if (!segmentId) return;
+
+    const cat = categories.find((c) => c.id === b.categoryId);
+    setDetailsHeader({
+      name: b.customName || b.title,
+      category: cat ? cat.name : "Uncategorized",
+    });
 
     await selectByPathSegment(segmentId);
     setDetailsOpen(true);
@@ -150,6 +178,14 @@ export default function BookmarksLayout({
           bVal = b.archive;
           break;
         case "added":
+          aVal = a.createdAt;
+          bVal = b.createdAt;
+          break;
+        case "online":
+          aVal = a.createdAt;
+          bVal = b.createdAt;
+          break;
+        case "type":
           aVal = a.createdAt;
           bVal = b.createdAt;
           break;
@@ -362,6 +398,9 @@ export default function BookmarksLayout({
         loading={loading}
         selectedId={selectedId}
         tagMap={tagMap}
+        sortField={sortField}
+        sortDirection={sortDirection}
+        onSort={handleSort}
         onSelect={setSelectedId}
         onOpen={onOpen}
         onEdit={(b) => ctx.openBookmarkWindow({ mode: "edit", bookmark: b })}
@@ -387,13 +426,38 @@ export default function BookmarksLayout({
           detailsOpen ? styles.detailsDrawerOpen : ""
         }`}
       >
-        <button
-          className={`${styles.closeButton} ${styles.detailsCloseOverlay}`}
-          title="Close details"
-          onClick={() => setDetailsOpen(false)}
-        >
-          ×
-        </button>
+        <div className={styles.detailsHeader}>
+          <div className={styles.detailsMeta}>
+            {detailsHeader && (
+              <>
+                <div className={styles.detailsRow}>
+                  <span className={styles.detailsLabel}>MyName:</span>
+                  <span className={styles.detailsValue}>
+                    {detailsHeader.name}
+                  </span>
+                </div>
+
+                <div className={styles.detailsRow}>
+                  <span className={styles.detailsLabel}>Category:</span>
+                  <span className={styles.detailsValue}>
+                    {detailsHeader.category}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+
+          <button
+            className={styles.closeButton}
+            title="Close details"
+            onClick={() => {
+              setDetailsOpen(false);
+              setDetailsHeader(null);
+            }}
+          >
+            ×
+          </button>
+        </div>
 
         {detailsOpen && searchLoading && (
           <div className={styles.loading}>Loading…</div>

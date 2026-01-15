@@ -233,7 +233,7 @@
   position: fixed;
   top: var(--app-header-height);
   right: 0;
-  width: 420px;
+  width: 320px;
   height: calc(100vh - var(--app-header-height));
   background: var(--panel-bg);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
@@ -250,6 +250,41 @@
 
 .loading {
   padding: 16px;
+}
+
+.detailsHeader {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+}
+
+.detailsMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.detailsName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detailsCategory {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
 }
 
 .closeButton {
@@ -272,7 +307,7 @@
 }
 
 .detailsContent {
-  padding-top: var(--spacing-md);
+  /* padding-top: var(--spacing-md); */
 }
 
 .detailsCloseOverlay {
@@ -280,4 +315,10 @@
   top: 18px;
   right: 18px;
   z-index: 2;
+}
+
+.detailsRow {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
 }

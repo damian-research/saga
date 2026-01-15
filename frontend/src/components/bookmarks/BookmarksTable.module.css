@@ -70,6 +70,13 @@
   background-color: var(--bg-hover);
 }
 
+.thContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+}
+
 .table td {
   border: 1px solid var(--border-primary);
   padding: var(--spacing-xs) var(--spacing-sm);
@@ -243,4 +250,16 @@
 /* ICONS */
 .onlineIcon {
   color: #22c55e; /* green-500 */
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.sortArrow {
+  margin-left: 6px;
+  font-size: 10px;
+  opacity: 0.7;
 }

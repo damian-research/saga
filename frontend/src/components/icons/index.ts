@@ -11,6 +11,8 @@ export {
   Share,
   Settings,
   XCircle,
+  ChevronDown,
+  ChevronUp,
   // UNUSED
   CheckCircle2,
   Cross,

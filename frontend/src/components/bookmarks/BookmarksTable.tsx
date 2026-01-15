@@ -1,5 +1,13 @@
 // BookmarksTable.tsx
-import { Eye, Pencil, Trash2, Cloud, CloudOff } from "../../components/icons";
+import {
+  Eye,
+  Pencil,
+  Trash2,
+  Cloud,
+  CloudOff,
+  ChevronDown,
+  ChevronUp,
+} from "../../components/icons";
 import styles from "./BookmarksTable.module.css";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import { getLevelLabel } from "../../api/models/archive.types";
@@ -9,7 +17,19 @@ interface Props {
   loading: boolean;
   selectedId: string | null;
   tagMap: Map<string, string>;
-  onSelect: (id: string) => void;
+  sortField:
+    | "name"
+    | "title"
+    | "level"
+    | "archive"
+    | "added"
+    | "online"
+    | "type";
+  sortDirection: "asc" | "desc";
+  onSort: (
+    field: "name" | "title" | "level" | "archive" | "added" | "online" | "type"
+  ) => void;
+  onSelect: (id: string | null) => void;
   onOpen: (b: Bookmark) => void;
   onEdit: (b: Bookmark) => void;
   onRemove: (id: string) => void;
@@ -22,6 +42,9 @@ export default function BookmarksTable({
   loading,
   selectedId,
   tagMap,
+  sortField,
+  sortDirection,
+  onSort,
   onSelect,
   onOpen,
   onEdit,
@@ -30,6 +53,16 @@ export default function BookmarksTable({
   onDragStart,
 }: Props) {
   const hasItems = items.length > 0;
+
+  function renderSortIcon(field: string) {
+    if (sortField !== field) return null;
+
+    return sortDirection === "asc" ? (
+      <ChevronUp size={12} />
+    ) : (
+      <ChevronDown size={12} />
+    );
+  }
 
   return (
     <div
@@ -53,14 +86,49 @@ export default function BookmarksTable({
 
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Title</th>
-              <th>Level</th>
-              <th>Type</th>
-              <th>Archive</th>
+              <th onClick={() => onSort("name")} className={styles.sortable}>
+                <span className={styles.thContent}>
+                  Name
+                  {renderSortIcon("name")}
+                </span>
+              </th>
+              <th className={styles.sortable} onClick={() => onSort("title")}>
+                <span className={styles.thContent}>
+                  Title
+                  {renderSortIcon("title")}
+                </span>
+              </th>
+              <th className={styles.sortable} onClick={() => onSort("level")}>
+                <span className={styles.thContent}>
+                  Level
+                  {renderSortIcon("level")}
+                </span>
+              </th>
+              <th className={styles.sortable} onClick={() => onSort("type")}>
+                <span className={styles.thContent}>
+                  Type
+                  {renderSortIcon("type")}
+                </span>
+              </th>
+              <th className={styles.sortable} onClick={() => onSort("archive")}>
+                <span className={styles.thContent}>
+                  Archive
+                  {renderSortIcon("archive")}
+                </span>
+              </th>
               <th>Tags</th>
-              <th>Online</th>
-              <th>Added</th>
+              <th className={styles.sortable} onClick={() => onSort("online")}>
+                <span className={styles.thContent}>
+                  Online
+                  {renderSortIcon("online")}
+                </span>
+              </th>
+              <th className={styles.sortable} onClick={() => onSort("added")}>
+                <span className={styles.thContent}>
+                  Added
+                  {renderSortIcon("added")}
+                </span>
+              </th>
             </tr>
           </thead>
 
