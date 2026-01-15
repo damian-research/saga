@@ -1,6 +1,7 @@
 // Preview Viewer
 //
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Dao } from "../../api/models/ead3.types";
 import styles from "./PreviewViewer.module.css";
 import { Loader } from "../loaders/Loader";
@@ -114,7 +115,7 @@ export default function PreviewViewer({
   const mediaType = extension ? `Image (${extension})` : "Digital Object";
   const title = `ID: ${recordId} | Page: ${page} | ${mediaType}`;
 
-  return (
+  return createPortal(
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.viewer} onClick={(e) => e.stopPropagation()}>
         {/* HEADER */}
@@ -253,6 +254,7 @@ export default function PreviewViewer({
           </button>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

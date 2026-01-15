@@ -1,5 +1,5 @@
 // MainWindow.tsx - zaktualizowane importy
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "../components/layout";
 import { SearchTab } from "./search";
 import { BookmarksTab } from "./bookmarks";
@@ -17,7 +17,9 @@ export default function MainWindow() {
   const [activeTab, setActiveTab] = useState<TabId>("bookmarks");
   const [bookmarkModal, setBookmarkModal] =
     useState<OpenAddBookmarkPayload | null>(null);
-
+  useEffect(() => {
+    document.body.classList.toggle("dark-mode", isDarkMode);
+  }, [isDarkMode]);
   const bookmarkOps = useBookmarks();
 
   const categoryOps = useCategories((removedCategoryId) => {
@@ -40,7 +42,7 @@ export default function MainWindow() {
       }}
     >
       <TagProvider>
-        <div className={`app-root ${isDarkMode ? "dark-mode" : ""}`}>
+        <div className={"app-root"}>
           <Header
             isDarkMode={isDarkMode}
             onToggleDarkMode={() => setIsDarkMode((v) => !v)}

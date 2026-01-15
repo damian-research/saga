@@ -194,13 +194,21 @@
   color: white;
 }
 
+/* ===== EMPTY STATE ===== */
+.emptyState {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+}
+
 /* Details */
 .detailsDrawer {
   position: fixed;
-  top: 0;
+  top: var(--app-header-height);
   right: 0;
   width: 420px;
-  height: 100vh;
+  height: calc(100vh - var(--app-header-height));
   background: var(--panel-bg);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
@@ -218,10 +226,32 @@
   padding: 16px;
 }
 
-/* ===== EMPTY STATE ===== */
-.emptyState {
-  padding: 40px 20px;
-  text-align: center;
-  color: var(--text-tertiary);
-  font-size: var(--font-size-sm);
+.closeButton {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  background: var(--bg-hover);
+}
+
+.detailsContent {
+  padding-top: var(--spacing-md);
+}
+
+.detailsCloseOverlay {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
 }

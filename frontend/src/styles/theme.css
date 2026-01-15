@@ -1,4 +1,7 @@
 :root {
+  /* App Components */
+  --app-header-height: 61px;
+
   /* Backgrounds */
   --bg-primary: #ffffff;
   --bg-secondary: #f4f4f4;

@@ -377,12 +377,22 @@ export default function BookmarksLayout({
           detailsOpen ? styles.detailsDrawerOpen : ""
         }`}
       >
+        <button
+          className={`${styles.closeButton} ${styles.detailsCloseOverlay}`}
+          title="Close details"
+          onClick={() => setDetailsOpen(false)}
+        >
+          ×
+        </button>
+
         {detailsOpen && searchLoading && (
           <div className={styles.loading}>Loading…</div>
         )}
 
         {detailsOpen && !searchLoading && selectedRecord && (
-          <SearchDetails setBusy={() => {}} />
+          <div className={styles.detailsContent}>
+            <SearchDetails setBusy={() => {}} />
+          </div>
         )}
       </div>
     </div>
