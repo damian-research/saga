@@ -1,5 +1,6 @@
 // components/bookmarks/CategoryManager.tsx
 import { useContext, useState } from "react";
+import { Save, Pencil, Trash2, X } from "../../components/icons";
 import styles from "./TagManager.module.css"; // ← reuse styles
 import { BookmarkContext } from "../../context/BookmarkContext";
 
@@ -80,7 +81,10 @@ export default function CategoryManager({ onClose }: Props) {
               if (e.key === "Enter") createNewCategory();
             }}
           />
-          <button onClick={createNewCategory}>Add category</button>
+          <button onClick={createNewCategory} title="Add new Category">
+            {" "}
+            <Save size={20} />
+          </button>
         </div>
 
         {/* ===== LIST ===== */}
@@ -115,8 +119,13 @@ export default function CategoryManager({ onClose }: Props) {
               <div className={styles.actions}>
                 {renameId === c.id ? (
                   <>
-                    <button onClick={submitRename}>Save</button>
-                    <button onClick={() => setRenameId(null)}>Cancel</button>
+                    <button title="Save changes" onClick={submitRename}>
+                      {" "}
+                      <Save size={16} />
+                    </button>
+                    <button title="Cancel" onClick={() => setRenameId(null)}>
+                      <X size={16} />
+                    </button>
                   </>
                 ) : (
                   <>
@@ -126,16 +135,18 @@ export default function CategoryManager({ onClose }: Props) {
                         setRenameValue(c.name);
                       }}
                       disabled={c.id === "uncategorized"}
+                      title="Rename"
                     >
-                      Rename
+                      <Pencil size={16} />
                     </button>
 
                     <button
                       className={styles.danger}
                       onClick={() => submitRemove(c.id)}
                       disabled={c.id === "uncategorized"}
+                      title="Remove"
                     >
-                      Remove
+                      <Trash2 size={16} />
                     </button>
                   </>
                 )}

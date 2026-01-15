@@ -1,5 +1,6 @@
 // AddBookmark.tsx
 import { useState, useContext, useMemo } from "react";
+import { Save } from "../../components/icons";
 import styles from "./AddBookmark.module.css";
 import type {
   ArchiveName,
@@ -288,7 +289,7 @@ export default function AddBookmark({
               });
             }}
           >
-            Save
+            <Save size={20} />
           </button>
         </div>
       </div>

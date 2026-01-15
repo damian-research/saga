@@ -26,7 +26,11 @@ export default function BookmarkStar({ record, isSaved = false }: Props) {
         });
       }}
     >
-      {isSaved ? <Bookmark size={20} /> : <Bookmark size={18} />}
+      {isSaved ? (
+        <Bookmark size={20} strokeWidth={2} />
+      ) : (
+        <Bookmark size={18} strokeWidth={2} />
+      )}
     </button>
   );
 }

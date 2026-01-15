@@ -1,5 +1,6 @@
 // TagManager.tsx
 import { useContext, useMemo, useState } from "react";
+import { Save, Pencil, Merge, Trash2, X } from "../../components/icons";
 import styles from "./TagManager.module.css";
 import { TagContext } from "../../context/BookmarkContext";
 import { useTagOperations } from "../../api/hooks/useTagOperations";
@@ -101,7 +102,10 @@ export default function TagManager({ onClose }: Props) {
               if (e.key === "Enter") createNewTag();
             }}
           />
-          <button onClick={createNewTag}>Add tag</button>
+          <button onClick={createNewTag} title="Add new tag">
+            {" "}
+            <Save size={20} />
+          </button>
         </div>
 
         <div className={styles.list}>
@@ -126,8 +130,14 @@ export default function TagManager({ onClose }: Props) {
               <div className={styles.actions}>
                 {renameId === t.id ? (
                   <>
-                    <button onClick={submitRename}>Save</button>
-                    <button onClick={() => setRenameId(null)}>Cancel</button>
+                    <button title="Save changes" onClick={submitRename}>
+                      {" "}
+                      <Save size={16} />
+                    </button>
+                    <button title="Cancel" onClick={() => setRenameId(null)}>
+                      {" "}
+                      <X size={16} />
+                    </button>
                   </>
                 ) : (
                   <>
@@ -136,17 +146,21 @@ export default function TagManager({ onClose }: Props) {
                         setRenameId(t.id);
                         setRenameValue(t.label);
                       }}
+                      title="Rename"
                     >
-                      Rename
+                      <Pencil size={16} />
                     </button>
 
-                    <button onClick={() => setMergeFromId(t.id)}>Merge</button>
+                    <button onClick={() => setMergeFromId(t.id)} title="Merge">
+                      <Merge size={16} />
+                    </button>
 
                     <button
                       className={styles.danger}
                       onClick={() => submitRemove(t.id)}
+                      title="Remove"
                     >
-                      Remove
+                      <Trash2 size={16} />
                     </button>
                   </>
                 )}
@@ -162,25 +176,35 @@ export default function TagManager({ onClose }: Props) {
               Merge <strong>{tagById.get(mergeFromId)?.label}</strong> into:
             </div>
 
-            <select
-              value={mergeToId ?? ""}
-              onChange={(e) => setMergeToId(e.target.value)}
-            >
-              <option value="">Select target tag</option>
-              {tags
-                .filter((t) => t.id !== mergeFromId)
-                .map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.label}
-                  </option>
-                ))}
-            </select>
-
-            <div className={styles.mergeActions}>
-              <button onClick={submitMerge} disabled={!mergeToId}>
-                Confirm merge
+            <div className={`${styles.mergeRow} ${styles.mergeActions}`}>
+              <select
+                value={mergeToId ?? ""}
+                onChange={(e) => setMergeToId(e.target.value)}
+              >
+                <option value="">Select target tag</option>
+                {tags
+                  .filter((t) => t.id !== mergeFromId)
+                  .map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.label}
+                    </option>
+                  ))}
+              </select>
+              <button
+                className={styles.mergeActions}
+                onClick={submitMerge}
+                disabled={!mergeToId}
+                title="Merge tags into"
+              >
+                <Save size={16} />
               </button>
-              <button onClick={() => setMergeFromId(null)}>Cancel</button>
+              <button
+                className={styles.mergeActions}
+                onClick={() => setMergeFromId(null)}
+                title="Cancel"
+              >
+                <X size={16} />
+              </button>
             </div>
           </div>
         )}

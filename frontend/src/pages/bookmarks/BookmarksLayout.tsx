@@ -340,7 +340,15 @@ export default function BookmarksLayout({
 
               <button
                 className={styles.actionButton}
-                onClick={() => onExport(visible)}
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      `Export ${visible.length} bookmarks to a file?`
+                    )
+                  ) {
+                    onExport(visible);
+                  }
+                }}
                 title="Export all bookmarks to JSON"
               >
                 <Share size={18} />
