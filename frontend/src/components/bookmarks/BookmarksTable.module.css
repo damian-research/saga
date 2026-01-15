@@ -239,3 +239,8 @@
   opacity: 1;
   pointer-events: auto;
 }
+
+/* ICONS */
+.onlineIcon {
+  color: #22c55e; /* green-500 */
+}

@@ -1,4 +1,5 @@
 // BookmarksLayout.tsx
+import { Plus, Share, FolderTree, Tags, XCircle } from "../../components/icons";
 import { useContext, useMemo, useState } from "react";
 import styles from "./BookmarksLayout.module.css";
 import { getLevelLabel, type Bookmark } from "../../api/models/";
@@ -228,102 +229,109 @@ export default function BookmarksLayout({
       {/* ===== HEADER ===== */}
       <div className={styles.panel}>
         <div className={styles.headerRow}>
-          <div className={styles.actions}>
-            <button
-              className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
-              onClick={() => ctx.openBookmarkWindow({ mode: "add-manual" })}
-              title="Add bookmark"
-            >
-              +
-            </button>
+          <div className={styles.headerLeft}>
+            {/* LEFT */}
+            <div className={styles.actions}>
+              <button
+                className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
+                onClick={() => ctx.openBookmarkWindow({ mode: "add-manual" })}
+                title="Add bookmark"
+              >
+                <Plus size={26} strokeWidth={2} />
+              </button>
 
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder="Search bookmarks..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder="Search bookmarks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
-
-          <div className={styles.actions}>
-            <button
-              className={styles.actionButton}
-              onClick={() => setShowTagManager(true)}
+          {/* CENTER - FILTERS */}
+          <div className={styles.headerCenter}>
+            <select
+              value={filterLevel}
+              onChange={(e) => setFilterLevel(e.target.value)}
             >
-              Manage tags
-            </button>
-
-            <button
-              className={styles.actionButton}
-              onClick={() => setShowCategoryManager(true)}
+              <option value="all">All levels</option>
+              {levels.map((level) => (
+                <option key={level} value={level}>
+                  {getLevelLabel(level)}
+                </option>
+              ))}
+            </select>
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
             >
-              Manage categories
-            </button>
-
-            <button
-              className={styles.actionButton}
-              onClick={() => onExport(visible)}
+              <option value="all">All types</option>
+              {types.map((arch) => (
+                <option key={arch} value={arch}>
+                  {arch}
+                </option>
+              ))}
+            </select>
+            <select
+              value={filterArchive}
+              onChange={(e) => setFilterArchive(e.target.value)}
             >
-              Export
-            </button>
+              <option value="all">All archives</option>
+              {archives.map((arch) => (
+                <option key={arch} value={arch}>
+                  {arch}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={filterOnline}
+              onChange={(e) => setFilterOnline(e.target.value)}
+            >
+              <option value="all">Online: All</option>
+              <option value="yes">Online: Yes</option>
+              <option value="no">Online: No</option>
+            </select>
+          </div>
+          {/* RIGHT */}
+          <div className={styles.headerRight}>
+            <div className={styles.actions}>
+              <button
+                className={styles.actionButton}
+                onClick={() => setShowTagManager(true)}
+              >
+                <Tags size={18} />
+              </button>
+
+              <button
+                className={styles.actionButton}
+                onClick={() => setShowCategoryManager(true)}
+              >
+                <FolderTree size={18} />
+              </button>
+
+              <button
+                className={styles.actionButton}
+                onClick={() => onExport(visible)}
+              >
+                <Share size={18} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ===== FILTERS ===== */}
+      {/* TAG MULTI-SELECT */}
       <div className={styles.panel}>
-        <div className={styles.filters}>
-          <select
-            value={filterLevel}
-            onChange={(e) => setFilterLevel(e.target.value)}
-          >
-            <option value="all">All levels</option>
-            {levels.map((level) => (
-              <option key={level} value={level}>
-                {getLevelLabel(level)}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-          >
-            <option value="all">All types</option>
-            {types.map((arch) => (
-              <option key={arch} value={arch}>
-                {arch}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filterArchive}
-            onChange={(e) => setFilterArchive(e.target.value)}
-          >
-            <option value="all">All archives</option>
-            {archives.map((arch) => (
-              <option key={arch} value={arch}>
-                {arch}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={filterOnline}
-            onChange={(e) => setFilterOnline(e.target.value)}
-          >
-            <option value="all">Online: All</option>
-            <option value="yes">Online: Yes</option>
-            <option value="no">Online: No</option>
-          </select>
-        </div>
-
-        {/* TAG MULTI-SELECT */}
         <div className={styles.tagFilter}>
-          <button className={styles.clearTagsButton} onClick={clearTags}>
-            Clear all
+          <button
+            className={`${styles.clearTagsButton} ${styles.actionButtonDanger}`}
+            onClick={clearTags}
+          >
+            <XCircle size={14} strokeWidth={2} />
           </button>
-
+          <div className={styles.tagSeparator} />
           <div className={styles.tagOptions}>
             {tags.map((tag) => (
               <label key={tag.id} className={styles.tagCheckbox}>

@@ -1,4 +1,5 @@
 // BookmarksTable.tsx
+import { Eye, Pencil, Trash2, Cloud, CloudOff } from "../../components/icons";
 import styles from "./BookmarksTable.module.css";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import { getLevelLabel } from "../../api/models/archive.types";
@@ -38,10 +39,7 @@ export default function BookmarksTable({
       {loading && <div>Loading…</div>}
 
       <div className={styles.tableWrapper}>
-        <table
-          className={styles.table}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <table className={styles.table} onClick={(e) => e.stopPropagation()}>
           <colgroup>
             <col className={styles["col-name"]} />
             <col className={styles["col-title"]} />
@@ -94,7 +92,7 @@ export default function BookmarksTable({
                         }}
                         title="View details"
                       >
-                        V
+                        <Eye size={14} />
                       </button>
                       <button
                         className={styles.rowActionButton}
@@ -104,7 +102,7 @@ export default function BookmarksTable({
                         }}
                         title="Edit"
                       >
-                        E
+                        <Pencil size={14} />
                       </button>
                       <button
                         className={`${styles.rowActionButton} ${styles.rowActionButtonDanger}`}
@@ -120,7 +118,7 @@ export default function BookmarksTable({
                         }}
                         title="Remove"
                       >
-                        ×
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </div>
@@ -175,9 +173,16 @@ export default function BookmarksTable({
 
                 {/* ONLINE */}
                 <td className={styles.centerCell}>
-                  {b.ead3?.digitalObjectCount && b.ead3.digitalObjectCount > 0
-                    ? "✓"
-                    : "—"}
+                  {b.ead3?.digitalObjectCount &&
+                  b.ead3.digitalObjectCount > 0 ? (
+                    <Cloud
+                      size={18}
+                      strokeWidth={2}
+                      className={styles.onlineIcon}
+                    />
+                  ) : (
+                    <CloudOff size={18} />
+                  )}
                 </td>
 
                 {/* ADDED */}

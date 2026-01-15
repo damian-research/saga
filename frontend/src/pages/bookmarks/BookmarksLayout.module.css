@@ -27,6 +27,29 @@
   gap: var(--spacing-md);
 }
 
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.headerCenter {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
 /* Buttons */
 .actions {
   display: flex;
@@ -91,13 +114,14 @@
 /* Search input */
 .searchInput {
   height: 30px;
+  margin-left: 6px;
   padding: 0 var(--spacing-sm);
   font-size: var(--font-size-xs);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-secondary);
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  min-width: 200px;
+  min-width: 250px;
   transition: border-color var(--transition-fast);
 }
 
@@ -111,14 +135,8 @@
 }
 
 /* ===== FILTERS ===== */
-.filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-}
-
-.filters select {
+.headerCenter select {
+  width: 200px;
   padding: var(--spacing-sm);
   font-size: var(--font-size-xs);
   border-radius: var(--radius-sm);
@@ -128,15 +146,13 @@
   transition: border-color var(--transition-fast);
 }
 
-.filters select:focus {
+.headerCenter select:focus {
   outline: none;
   border-color: var(--accent-primary);
 }
 
 /* ===== TAG FILTER ===== */
 .tagFilter {
-  border-top: 1px solid var(--border-secondary);
-  padding-top: var(--spacing-md);
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
@@ -152,10 +168,20 @@
   cursor: pointer;
   transition: background-color var(--transition-fast);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .clearTagsButton:hover {
   background: var(--bg-hover);
+}
+
+.tagSeparator {
+  width: 1px;
+  align-self: stretch;
+  background-color: var(--border-secondary);
+  margin: 0 var(--spacing-sm);
 }
 
 .tagOptions {
