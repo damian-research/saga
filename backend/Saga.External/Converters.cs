@@ -64,19 +64,26 @@ public class StringToLongConverter : JsonConverter<long>
 
 public static class JsonConverter
 {
+    public static readonly JsonSerializerOptions JsonOptionWriteIntended = new()
+    {
+        WriteIndented = true
+    };
+
+    public static readonly JsonSerializerOptions PrettyJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        Converters =
+            {
+                new StringToIntConverter(),
+                new StringToLongConverter()
+            }
+    };
+
     public static NaraResponse ConvertToNara(string json)
     {
         if (string.IsNullOrWhiteSpace(json))
             throw new ArgumentException("JSON input is null or empty.", nameof(json));
 
-        return JsonSerializer.Deserialize<NaraResponse>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            Converters =
-            {
-                new StringToIntConverter(),
-                new StringToLongConverter()
-            }
-        }) ?? throw new JsonException("Failed to deserialize NARA response.");
+        return JsonSerializer.Deserialize<NaraResponse>(json, PrettyJsonOptions) ?? throw new JsonException("Failed to deserialize NARA response.");
     }
 }

@@ -30,8 +30,9 @@ public sealed class NaraClientWithMapper : INaraClient
 
         var eads = _mapper.MapMultipleToEad3(naraResponse);
 
-        var naraResponseJson = JsonSerializer.Serialize(naraResponse, new JsonSerializerOptions { WriteIndented = true });
-        var eadJson = JsonSerializer.Serialize(eads, new JsonSerializerOptions { WriteIndented = true });
+        // Debug logs
+        // var naraResponseJson = JsonSerializer.Serialize(naraResponse, JsonConverter.JsonOptionWriteIntended);
+        // var eadJson = JsonSerializer.Serialize(eads, JsonConverter.JsonOptionWriteIntended);
 
         return eads;
     }
@@ -46,8 +47,9 @@ public sealed class NaraClientWithMapper : INaraClient
 
         var ead = _mapper.MapToEad3(naraResponse);
 
-        var naraResponseJson = JsonSerializer.Serialize(naraResponse, new JsonSerializerOptions { WriteIndented = true });
-        var eadJson = JsonSerializer.Serialize(ead, new JsonSerializerOptions { WriteIndented = true });
+        // Debug logs
+        // var naraResponseJson = JsonSerializer.Serialize(naraResponse, JsonConverter.JsonOptionWriteIntended));
+        // var eadJson = JsonSerializer.Serialize(ead, JsonConverter.JsonOptionWriteIntended);
 
         return ead;
     }
@@ -64,8 +66,8 @@ public sealed class NaraClientWithMapper : INaraClient
         var eads = _mapper.MapMultipleToEad3(naraResponse);
 
         // Debug logs
-        var naraResponseJson = JsonSerializer.Serialize(naraResponse, new JsonSerializerOptions { WriteIndented = true });
-        var eadJson = JsonSerializer.Serialize(eads, new JsonSerializerOptions { WriteIndented = true });
+        // var naraResponseJson = JsonSerializer.Serialize(naraResponse, JsonConverter.JsonOptionWriteIntended);
+        // var eadJson = JsonSerializer.Serialize(eads, JsonConverter.JsonOptionWriteIntended);
 
         return [.. eads];
     }
