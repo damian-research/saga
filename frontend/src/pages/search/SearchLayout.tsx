@@ -12,11 +12,11 @@ import { Loader } from "../../components/loaders/Loader";
 
 export default function SearchLayout() {
   const [isBusy, setIsBusy] = useState(false);
-  const { error, clearError } = useSearch();
+  const { error, clearError, loading } = useSearch();
 
   return (
     <div className={styles.grid}>
-      {isBusy && <Loader fullscreen />}
+      {(isBusy || loading) && <Loader fullscreen />}
       <SearchPanel setBusy={setIsBusy} />
 
       {error && (

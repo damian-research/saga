@@ -24,11 +24,18 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
     setBusy,
   });
 
+  // DESCRIPTION
+  const [showFullDesc, setShowFullDesc] = useState(false);
+  const MAX_DESC_LENGTH = 300;
+  const truncatedDesc = details.description?.slice(0, MAX_DESC_LENGTH);
+  const needsTruncate = (details.description?.length ?? 0) > MAX_DESC_LENGTH;
+
   const [activeObjects, setActiveObjects] = useState<DigitalObjects | null>(
     null
   );
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
+  // PREVIEW
   async function handlePreview() {
     setBusy(true);
     try {
@@ -81,7 +88,18 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
       {details.description && (
         <div className={styles.description}>
           <h3 className={styles.sectionTitle}>Description</h3>
-          <p>{details.description}</p>
+          <p>
+            {showFullDesc ? details.description : truncatedDesc}
+            {needsTruncate && !showFullDesc && "..."}
+          </p>
+          {needsTruncate && (
+            <button
+              className={styles.showMoreButton}
+              onClick={() => setShowFullDesc(!showFullDesc)}
+            >
+              {showFullDesc ? "Show less" : "Show more"}
+            </button>
+          )}
         </div>
       )}
 

@@ -45,6 +45,7 @@
   font-weight: var(--font-weight-bold);
   color: var(--text-secondary);
 }
+
 /* === Online objects section spacing === */
 .onlineObjects {
   margin-top: 30px;
@@ -91,10 +92,29 @@
 }
 
 /* === Description === */
+.description {
+  margin-bottom: 18px;
+}
+
 .description p {
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   font-size: var(--font-size-sm);
   line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.showMoreButton {
+  padding: 4px 8px;
+  font-size: var(--font-size-xs);
+  border: none;
+  background: none;
+  color: var(--accent-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.showMoreButton:hover {
   color: var(--text-primary);
 }
 

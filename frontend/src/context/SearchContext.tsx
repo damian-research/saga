@@ -68,13 +68,6 @@ export function SearchProvider({ children }: SearchProviderProps) {
     try {
       const record = await getRecord(Number(segmentId));
       setSelectedRecord(record);
-
-      setResults((prev) => {
-        const exists = prev.some(
-          (r) => r.archDesc?.did?.unitId?.text === segmentId
-        );
-        return exists ? prev : [record, ...prev];
-      });
     } catch (err) {
       setError({
         message: err instanceof Error ? err.message : "Search failed",
