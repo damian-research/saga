@@ -31,11 +31,17 @@ export default function BookmarksTable({
   const hasItems = items.length > 0;
 
   return (
-    <div className={`${styles.panel} ${styles.listPanel}`}>
+    <div
+      className={`${styles.panel} ${styles.listPanel}`}
+      onClick={() => onSelect(null as any)}
+    >
       {loading && <div>Loading…</div>}
 
       <div className={styles.tableWrapper}>
-        <table className={styles.table}>
+        <table
+          className={styles.table}
+          onClick={(e) => e.stopPropagation()}
+        >
           <colgroup>
             <col className={styles["col-name"]} />
             <col className={styles["col-title"]} />
@@ -79,47 +85,44 @@ export default function BookmarksTable({
                   <div className={styles.cellWithActions}>
                     <span>{b.customName}</span>
 
-                    {b.id === selectedId && (
-                      <div className={styles.rowActions}>
-                        <button
-                          className={styles.rowActionButton}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onView(b);
-                          }}
-                          title="View details"
-                        >
-                          👁
-                        </button>
-                        <button
-                          className={styles.rowActionButton}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEdit(b);
-                          }}
-                          title="Edit"
-                        >
-                          ✎
-                        </button>
-
-                        <button
-                          className={`${styles.rowActionButton} ${styles.rowActionButtonDanger}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (
-                              confirm(
-                                `Remove bookmark "${b.customName || b.title}"?`
-                              )
-                            ) {
-                              onRemove(b.id);
-                            }
-                          }}
-                          title="Remove"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    )}
+                    <div className={styles.rowActions}>
+                      <button
+                        className={styles.rowActionButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onView(b);
+                        }}
+                        title="View details"
+                      >
+                        V
+                      </button>
+                      <button
+                        className={styles.rowActionButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(b);
+                        }}
+                        title="Edit"
+                      >
+                        E
+                      </button>
+                      <button
+                        className={`${styles.rowActionButton} ${styles.rowActionButtonDanger}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (
+                            confirm(
+                              `Remove bookmark "${b.customName || b.title}"?`
+                            )
+                          ) {
+                            onRemove(b.id);
+                          }
+                        }}
+                        title="Remove"
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 </td>
 

@@ -5,6 +5,7 @@ import { getLevelLabel, type Bookmark } from "../../api/models/";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 import { useSearch } from "../../context/SearchContext";
 import { SearchDetails } from "../../components/search";
+import { Loader } from "../../components/loaders/Loader";
 import {
   BookmarksTable,
   TagManager,
@@ -223,6 +224,7 @@ export default function BookmarksLayout({
 
   return (
     <div className={styles.container}>
+      {searchLoading && <Loader fullscreen />}
       {/* ===== HEADER ===== */}
       <div className={styles.panel}>
         <div className={styles.headerRow}>

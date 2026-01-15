@@ -194,6 +194,8 @@
   display: flex;
   gap: var(--spacing-xs);
   flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .rowActionButton {
@@ -226,4 +228,14 @@
 .rowActionButtonDanger:hover {
   background-color: rgba(239, 68, 68, 0.1);
   border-color: #ef4444;
+}
+
+.table tbody tr:hover .rowActions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.table tbody tr.selected .rowActions {
+  opacity: 1;
+  pointer-events: auto;
 }
