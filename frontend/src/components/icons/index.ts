@@ -11,6 +11,7 @@ export {
   Share,
   Settings,
   XCircle,
+  Search,
   ChevronDown,
   ChevronUp,
   Globe,

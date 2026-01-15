@@ -1,5 +1,6 @@
 // SearchPanel.tsx
 import { useState } from "react";
+import { Search, XCircle } from "../../components/icons";
 import styles from "./SearchPanel.module.css";
 import type { SearchFormState } from ".";
 import { useSearch } from "../../context/SearchContext";
@@ -77,6 +78,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           value={form.q}
           onChange={(e) => update("q", e.target.value)}
           autoFocus
+          onFocus={(e) => e.target.select()}
         />
       </label>
 
@@ -112,6 +114,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           placeholder="title contains"
           value={form.title ?? ""}
           onChange={(e) => update("title", e.target.value)}
+          onFocus={(e) => e.target.select()}
         />
       </label>
 
@@ -122,6 +125,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           placeholder="authority heading"
           value={form.personOrOrg ?? ""}
           onChange={(e) => update("personOrOrg", e.target.value)}
+          onFocus={(e) => e.target.select()}
         />
       </label>
 
@@ -132,6 +136,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           placeholder="e.g. description"
           value={form.dataSource ?? ""}
           onChange={(e) => update("dataSource", e.target.value)}
+          onFocus={(e) => e.target.select()}
         />
       </label>
 
@@ -179,6 +184,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           placeholder="single or CSV"
           value={form.naId ?? ""}
           onChange={(e) => update("naId", e.target.value)}
+          onFocus={(e) => e.target.select()}
         />
       </label>
 
@@ -203,15 +209,14 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
       </label>
 
       <div className={styles.actions}>
-        {hasAnySearchValue(form) && (
-          <button
-            type="button"
-            className={styles.clearButton}
-            onClick={clearForm}
-          >
-            Clear
-          </button>
-        )}
+        <button
+          type="button"
+          className={styles.clearButton}
+          onClick={clearForm}
+          disabled={!hasAnySearchValue(form)}
+        >
+          <XCircle size={20} strokeWidth={2} />
+        </button>
 
         <button
           type="button"
@@ -219,7 +224,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           onClick={submit}
           disabled={!hasAnySearchValue(form)}
         >
-          Search
+          <Search size={20} strokeWidth={2} />
         </button>
       </div>
     </div>

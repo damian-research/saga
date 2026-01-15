@@ -95,6 +95,9 @@
   color: var(--text-primary);
   cursor: pointer;
   transition: background-color var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button:hover:not(:disabled),

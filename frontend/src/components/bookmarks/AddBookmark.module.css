@@ -211,7 +211,7 @@
 }
 
 .actions button:first-child:hover:not(:disabled) {
-  background: var(--accent-hover);
+  background: var(--border-secondary);
 }
 
 .actions button:first-child:disabled {

@@ -1,5 +1,12 @@
 // BookmarksLayout.tsx
-import { Plus, Share, FolderTree, Tags, XCircle } from "../../components/icons";
+import {
+  Plus,
+  Share,
+  FolderTree,
+  Tags,
+  XCircle,
+  X,
+} from "../../components/icons";
 import { useContext, useMemo, useState } from "react";
 import styles from "./BookmarksLayout.module.css";
 import { getLevelLabel, type Bookmark } from "../../api/models/";
@@ -456,7 +463,7 @@ export default function BookmarksLayout({
               setDetailsHeader(null);
             }}
           >
-            ×
+            <X size={20} />
           </button>
         </div>
 
