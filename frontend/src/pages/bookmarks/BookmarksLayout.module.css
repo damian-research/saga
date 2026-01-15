@@ -307,22 +307,22 @@
   white-space: nowrap;
 }
 
-.levelRecordGroup {
+.levelrecordGroup {
   background-color: var(--level-recordGroup-bg);
   color: var(--level-recordGroup-text);
 }
 
-.levelCollection {
+.levelcollection {
   background-color: var(--level-collection-bg);
   color: var(--level-collection-text);
 }
 
-.levelSeries {
+.levelseries {
   background-color: var(--level-series-bg);
   color: var(--level-series-text);
 }
 
-.levelFileUnit {
+.levelfileUnit {
   background-color: var(--level-fileUnit-bg);
   color: var(--level-fileUnit-text);
 }

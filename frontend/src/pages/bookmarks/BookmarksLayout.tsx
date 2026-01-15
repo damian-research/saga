@@ -6,11 +6,7 @@ import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 import CategoryTabs from "./CategoryTabs";
 import TagManager from "../../components/bookmarks/TagManager";
 import CategoryManager from "../../components/bookmarks/CategoryManager";
-import {
-  getLevelLabel,
-  getLevelClass,
-  type LevelOfDescription,
-} from "../../api/models/archive.types";
+import { getLevelLabel } from "../../api/models/archive.types";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -458,11 +454,7 @@ export default function BookmarksLayout({
                     {b.ead3?.level && (
                       <span
                         className={`${styles.levelBadge} ${
-                          styles[
-                            `level${b.ead3.level[0].toUpperCase()}${b.ead3.level.slice(
-                              1
-                            )}`
-                          ]
+                          styles[`level${b.ead3.level}`]
                         }`}
                       >
                         {getLevelLabel(b.ead3.level)}
