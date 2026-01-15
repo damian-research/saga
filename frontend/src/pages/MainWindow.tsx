@@ -1,9 +1,9 @@
 // MainWindow.tsx - zaktualizowane importy
 import { useState } from "react";
-import Header from "../components/layout/Header/Header";
+import { Header } from "../components/layout";
 import { SearchTab } from "./search";
 import { BookmarksTab } from "./bookmarks";
-import AddBookmark from "../components/bookmarks/AddBookmark";
+import { AddBookmark } from "../components/bookmarks";
 import { BookmarkContext } from "../context/BookmarkContext";
 import type { OpenAddBookmarkPayload } from "../context/BookmarkContext";
 import TagProvider from "../api/utils/TagProvider";

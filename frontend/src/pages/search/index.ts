@@ -2,9 +2,6 @@
 export { default as SearchTab } from "./SearchTab";
 export { default as SearchLayout } from "./SearchLayout";
 
-// Types
-export type { SearchFormState } from "../../components/search/SearchPanel";
-
 // Services (re-export for convenience)
 export {
   searchRecords,

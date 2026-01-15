@@ -339,7 +339,7 @@ export default function BookmarksLayout({
         onEdit={(b) => ctx.openBookmarkWindow({ mode: "edit", bookmark: b })}
         onRemove={(id) => {
           onRemove(id);
-                                setSelectedId(null);
+          setSelectedId(null);
         }}
         onDragStart={setDragBookmarkId}
       />

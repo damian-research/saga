@@ -6,7 +6,7 @@ import { useSearch } from "../../context/SearchContext";
 import { parseListItem } from "../../api/utils/recordParser";
 import styles from "./SearchListItem.module.css";
 import PathShell from "./PathShell";
-import BookmarkStar from "../bookmarks/BookmarkStar";
+import { BookmarkStar } from "../bookmarks";
 
 interface SearchListItemProps {
   record: Ead3Response;
