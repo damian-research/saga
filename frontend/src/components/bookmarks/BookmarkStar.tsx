@@ -1,7 +1,9 @@
+// BookmarkStar
 import { useContext } from "react";
 import type { Ead3Response } from "../search";
 import { BookmarkContext } from "../../context/BookmarkContext";
 import styles from "./BookmarkStar.module.css";
+import { Bookmark } from "../../components/icons";
 
 interface Props {
   record: Ead3Response;
@@ -14,7 +16,7 @@ export default function BookmarkStar({ record, isSaved = false }: Props) {
 
   return (
     <button
-      className={styles.star}
+      className={isSaved ? styles.starSaved : styles.star}
       title={isSaved ? "Saved" : "Save to Bookmarks"}
       onClick={(e) => {
         e.stopPropagation();
@@ -24,7 +26,7 @@ export default function BookmarkStar({ record, isSaved = false }: Props) {
         });
       }}
     >
-      {isSaved ? "★" : "☆"}
+      {isSaved ? <Bookmark size={20} /> : <Bookmark size={18} />}
     </button>
   );
 }

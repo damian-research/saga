@@ -458,7 +458,7 @@ export default function BookmarksLayout({
 
         {detailsOpen && !searchLoading && selectedRecord && (
           <div className={styles.detailsContent}>
-            <SearchDetails setBusy={() => {}} />
+            <SearchDetails setBusy={() => {}} showBookmarkAction={false} />
           </div>
         )}
       </div>

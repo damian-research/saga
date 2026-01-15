@@ -6,7 +6,6 @@ import { useSearch } from "../../context/SearchContext";
 import { parseListItem } from "../../api/utils/recordParser";
 import styles from "./SearchListItem.module.css";
 import PathShell from "./PathShell";
-import { BookmarkStar } from "../bookmarks";
 
 interface SearchListItemProps {
   record: Ead3Response;
@@ -28,10 +27,6 @@ function SearchListItemComponent({ record, isSelected }: SearchListItemProps) {
 
       <div className={styles.titleRow}>
         <div className={styles.detailsTitle}>{item.title}</div>
-
-        <div className={styles.actions}>
-          <BookmarkStar record={record} />
-        </div>
       </div>
 
       <div className={styles.meta}>

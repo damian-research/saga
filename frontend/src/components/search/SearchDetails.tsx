@@ -4,15 +4,20 @@ import { Eye, ScanSearch, Globe, Download } from "../../components/icons";
 import { useSearch } from "../../context/SearchContext";
 import { parseRecordDetails } from "../../api/utils/recordParser";
 import { getLevelLabel } from "../../api/models/archive.types";
+import { BookmarkStar } from "../bookmarks";
 import styles from "./SearchDetails.module.css";
 import PreviewViewer from "./PreviewViewer";
 import { useDownloadObjects } from "../../api/hooks/useDownloadObjects";
 
 interface SearchDetailsProps {
   setBusy: (value: boolean) => void;
+  showBookmarkAction?: boolean;
 }
 
-export default function SearchDetails({ setBusy }: SearchDetailsProps) {
+export default function SearchDetails({
+  setBusy,
+  showBookmarkAction = true,
+}: SearchDetailsProps) {
   const { selectedRecord, searchWithin } = useSearch();
   type RecordDetails = ReturnType<typeof parseRecordDetails>;
   type DigitalObjects = RecordDetails["digitalObjects"];
@@ -109,6 +114,7 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
         >
           <Globe size={20} strokeWidth={2} />
         </button>
+        {showBookmarkAction && <BookmarkStar record={selectedRecord} />}
       </div>
       {/* DESCRIPTION */}
       {details.description && (

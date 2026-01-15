@@ -19,6 +19,7 @@ export {
   ChevronRight,
   ChevronLeft,
   X,
+  Bookmark,
 } from "lucide-react";
 
 // components/icons/constants.ts

@@ -1,13 +1,21 @@
 .star {
-  background: none;
-  border: none;
+  padding: 6px 12px;
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background-color: var(--bg-secondary);
   cursor: pointer;
-  padding: 2px;
-  font-size: inherit;
-  color: inherit;
-  transition: transform var(--transition-fast);
+  transition: background-color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
 }
 
 .star:hover {
-  transform: scale(1.2);
+  background-color: var(--bg-hover);
+}
+
+.starSaved {
+  color: var(--accent-primary-ok);
 }
