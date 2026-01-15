@@ -1,3 +1,4 @@
+// queryBuilder.ts
 export interface NaraQueryInput {
   q?: string;
   naId?: string;
@@ -9,6 +10,7 @@ export interface NaraQueryInput {
   dataSource?: string;
   title?: string;
   onlineAvailable?: boolean;
+  ancestorNaId?: string;
 }
 export function buildNaraQ(form: NaraQueryInput): string {
   return form.q?.trim() || "*";
@@ -51,6 +53,10 @@ export function buildNaraParams(form: NaraQueryInput): URLSearchParams {
 
   if (form.onlineAvailable === true) {
     params.set("availableOnline", "true");
+  }
+
+  if (form.ancestorNaId) {
+    params.set("ancestorNaId", form.ancestorNaId);
   }
 
   return params;

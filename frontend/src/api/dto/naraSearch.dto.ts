@@ -5,4 +5,6 @@ export interface NaraSearchParams {
   q?: string;
   limit?: number;
   onlineAvailable?: boolean;
+  ancestorNaId?: string;
+  firstChildOnly?: boolean;
 }

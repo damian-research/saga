@@ -148,3 +148,47 @@
   background-color: var(--bg-secondary);
   color: var(--text-primary);
 }
+
+.archiveSelector {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-secondary);
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: var(--font-size-sm);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  bottom: -2px;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.tabActive {
+  color: var(--accent-primary);
+  font-weight: var(--font-weight-bold);
+  border-bottom-color: var(--accent-primary);
+  background: transparent;
+}

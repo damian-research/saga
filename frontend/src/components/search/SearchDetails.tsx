@@ -31,9 +31,10 @@ export default function SearchDetails({
   });
 
   async function handleSearchWithin() {
+    if (!selectedRecord) return;
     setBusy(true);
     try {
-      await searchWithin(details.recordId);
+      await searchWithin(selectedRecord);
     } finally {
       setBusy(false);
     }
@@ -142,7 +143,6 @@ export default function SearchDetails({
             {details.objectSummary.map((item, idx) => (
               <li key={idx} className={styles.objectSummaryItem}>
                 <span className={styles.objectType}>{item.type}</span>
-                <span className={styles.objectCount}> {item.count}</span>
                 {item.count === 1 && (
                   <button
                     className={styles.viewButton}
@@ -160,6 +160,7 @@ export default function SearchDetails({
                     <Eye size={18} strokeWidth={2} />
                   </button>
                 )}
+                <span className={styles.objectCount}> {item.count}</span>
               </li>
             ))}
           </ul>

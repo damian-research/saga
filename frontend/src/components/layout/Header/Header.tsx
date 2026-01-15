@@ -64,16 +64,16 @@ export default function Header({
           }`}
           onClick={() => onTabChange("search")}
         >
-          NARA
+          Search
         </button>
-        <button
+        {/* <button
           className={`${styles.tabButton} ${
             activeTab === "uk" ? styles.active : ""
           }`}
           onClick={() => onTabChange("uk")}
         >
           UK NA
-        </button>
+        </button> */}
       </nav>
 
       <div className={styles.actions} ref={containerRef}>

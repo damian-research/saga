@@ -13,5 +13,6 @@ export interface SearchFormState {
   recordGroupNumber?: string;
   microfilmId?: string;
   localId?: string;
-  parentId?: string;
+  ancestorNaId?: string;
+  firstChildOnly?: boolean;
 }

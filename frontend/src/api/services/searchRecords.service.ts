@@ -13,10 +13,13 @@ export async function searchRecords(
   const params = new URLSearchParams();
   const paramsInputSafe = paramsInput;
 
+  const hasAncestor = Boolean(paramsInputSafe.ancestorNaId?.trim());
+
   const hasControl =
-    Boolean(paramsInputSafe.naId?.trim()) ||
-    Boolean(paramsInputSafe.localId?.trim()) ||
-    Boolean(paramsInputSafe.microfilmId?.trim());
+    !hasAncestor &&
+    (Boolean(paramsInputSafe.naId?.trim()) ||
+      Boolean(paramsInputSafe.localId?.trim()) ||
+      Boolean(paramsInputSafe.microfilmId?.trim()));
 
   if (hasControl) {
     const raw =
