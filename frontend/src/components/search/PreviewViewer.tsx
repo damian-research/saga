@@ -27,9 +27,15 @@ export default function PreviewViewer({
   const [isPanning, setIsPanning] = useState(false);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [start, setStart] = useState({ x: 0, y: 0 });
+
   const resetZoom = () => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
+  };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    resetZoom();
   };
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -204,6 +210,7 @@ export default function PreviewViewer({
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
+            onDoubleClick={handleDoubleClick}
           >
             {object.href.toLowerCase().endsWith(".pdf") ? (
               <div
