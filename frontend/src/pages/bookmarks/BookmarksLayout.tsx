@@ -1,12 +1,14 @@
 // BookmarksLayout.tsx
 import { useContext, useMemo, useState } from "react";
 import styles from "./BookmarksLayout.module.css";
-import type { Bookmark } from "../../api/models/bookmarks.types";
+import { getLevelLabel, type Bookmark } from "../../api/models/";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
-import CategoryTabs from "./CategoryTabs";
-import TagManager from "../../components/bookmarks/TagManager";
-import CategoryManager from "../../components/bookmarks/CategoryManager";
-import { getLevelLabel } from "../../api/models/archive.types";
+import {
+  BookmarksTable,
+  TagManager,
+  CategoryManager,
+  CategoryTabs,
+} from "../../components/bookmarks";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -327,187 +329,20 @@ export default function BookmarksLayout({
       />
 
       {/* ===== BOOKMARK LIST ===== */}
-      <div className={`${styles.panel} ${styles.listPanel}`}>
-        {loading && <div>Loading…</div>}
-
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <colgroup>
-              <col className={styles["col-name"]} />
-              <col className={styles["col-title"]} />
-              <col className={styles["col-level"]} />
-              <col className={styles["col-type"]} />
-              <col className={styles["col-archive"]} />
-              <col className={styles["col-tags"]} />
-              <col className={styles["col-online"]} />
-              <col className={styles["col-added"]} />
-            </colgroup>
-
-            <thead>
-              <tr>
-                <th
-                  className={styles.sortable}
-                  onClick={() => handleSort("name")}
-                >
-                  Name{" "}
-                  {sortField === "name" &&
-                    (sortDirection === "asc" ? "↑" : "↓")}
-                </th>
-                <th
-                  className={styles.sortable}
-                  onClick={() => handleSort("title")}
-                >
-                  Title{" "}
-                  {sortField === "title" &&
-                    (sortDirection === "asc" ? "↑" : "↓")}
-                </th>
-                <th
-                  className={styles.sortable}
-                  onClick={() => handleSort("level")}
-                >
-                  Level{" "}
-                  {sortField === "level" &&
-                    (sortDirection === "asc" ? "↑" : "↓")}
-                </th>
-                <th>Type</th>
-                <th
-                  className={styles.sortable}
-                  onClick={() => handleSort("archive")}
-                >
-                  Archive{" "}
-                  {sortField === "archive" &&
-                    (sortDirection === "asc" ? "↑" : "↓")}
-                </th>
-                <th>Tags</th>
-                <th>Online</th>
-                <th
-                  className={styles.sortable}
-                  onClick={() => handleSort("added")}
-                >
-                  Added{" "}
-                  {sortField === "added" &&
-                    (sortDirection === "asc" ? "↑" : "↓")}
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {visible.map((b) => (
-                <tr
-                  key={b.id}
-                  draggable
-                  onDragStart={() => setDragBookmarkId(b.id)}
-                  onClick={() => setSelectedId(b.id)}
-                  onDoubleClick={() => onOpen(b)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    setSelectedId(b.id);
-                  }}
-                  className={b.id === selectedId ? styles.selected : ""}
-                >
-                  {/* CUSTOM NAME */}
-                  <td className={styles.ellipsis}>
-                    <div className={styles.cellWithActions}>
-                      <span>{b.customName}</span>
-                      {b.id === selectedId && (
-                        <div className={styles.rowActions}>
-                          <button
-                            className={styles.rowActionButton}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              ctx.openBookmarkWindow({
-                                mode: "edit",
-                                bookmark: b,
-                              });
-                            }}
-                            title="Edit"
-                          >
-                            ✎
-                          </button>
-                          <button
-                            className={`${styles.rowActionButton} ${styles.rowActionButtonDanger}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (
-                                confirm(
-                                  `Remove bookmark "${
-                                    b.customName || b.title
-                                  }"?`
-                                )
-                              ) {
-                                onRemove(b.id);
+      <BookmarksTable
+        items={visible}
+        loading={loading}
+        selectedId={selectedId}
+        tagMap={tagMap}
+        onSelect={setSelectedId}
+        onOpen={onOpen}
+        onEdit={(b) => ctx.openBookmarkWindow({ mode: "edit", bookmark: b })}
+        onRemove={(id) => {
+          onRemove(id);
                                 setSelectedId(null);
-                              }
-                            }}
-                            title="Remove"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  {/* TITLE */}
-                  <td className={styles.ellipsis}>{b.title}</td>
-                  {/* LEVEL */}
-                  <td>
-                    {b.ead3?.level && (
-                      <span
-                        className={`${styles.levelBadge} ${
-                          styles[`level${b.ead3.level}`]
-                        }`}
-                      >
-                        {getLevelLabel(b.ead3.level)}
-                      </span>
-                    )}
-                    {!b.ead3?.level && "—"}
-                  </td>
-                  {/* TYPE */}
-                  <td>{b.ead3?.localType ?? "—"}</td>
-                  {/* ARCHIVE */}
-                  <td>{b.archive}</td>
-
-                  {/* TAGS */}
-                  <td className={styles.tagsCell}>
-                    {b.tags?.length ? (
-                      <div
-                        className={styles.tagList}
-                        title={b.tags.map((t) => tagMap.get(t) ?? t).join(", ")}
-                      >
-                        {b.tags.slice(0, 3).map((t) => (
-                          <span key={t} className={styles.tag}>
-                            {tagMap.get(t) ?? t}
-                          </span>
-                        ))}
-                        {b.tags.length > 3 && (
-                          <span className={styles.tagMore}>
-                            +{b.tags.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-
-                  {/* ONLINE */}
-                  <td className={styles.centerCell}>
-                    {b.ead3?.digitalObjectCount && b.ead3.digitalObjectCount > 0
-                      ? "✓"
-                      : "—"}
-                  </td>
-
-                  <td>{b.createdAt.slice(0, 10)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {visible.length === 0 && !loading && (
-          <div className={styles.emptyState}>No bookmarks found</div>
-        )}
-      </div>
+        }}
+        onDragStart={setDragBookmarkId}
+      />
 
       {/* ===== MODALS ===== */}
       {showTagManager && (
