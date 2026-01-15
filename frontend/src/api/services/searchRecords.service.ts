@@ -72,6 +72,23 @@ export async function getRecord(naId: number): Promise<Ead3Response> {
 }
 
 // ============================================================================
+// EAD3 ONLY – GET CHILDREN
+// ============================================================================
+
+export async function searchChildren(
+  parentId: string,
+  limit: number = 50
+): Promise<Ead3Response[]> {
+  const res = await fetch(
+    `${API_BASE_URL}/nara/children/${parentId}?limit=${limit}`
+  );
+  if (!res.ok) {
+    throw new Error("Failed to load children");
+  }
+  return res.json();
+}
+
+// ============================================================================
 // DOWNLOAD (NARA-SPECIFIC, OK)
 // ============================================================================
 

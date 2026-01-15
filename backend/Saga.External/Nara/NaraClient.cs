@@ -52,6 +52,24 @@ public sealed class NaraClientWithMapper : INaraClient
         return ead;
     }
 
+    public async Task<List<Ead>> GetChildrenAndMapToEad3Async(long parentId, int limit)
+    {
+        var url = $"records/parentNaId/{parentId}?limit={limit}";
+        // var url = $"records/search?q=*&controlGroup={parentId}&limit={limit}";
+
+        var json = await GetJsonResponseAsync(url);
+
+        var naraResponse = JsonConverter.ConvertToNara(json);
+
+        var eads = _mapper.MapMultipleToEad3(naraResponse);
+
+        // Debug logs
+        var naraResponseJson = JsonSerializer.Serialize(naraResponse, new JsonSerializerOptions { WriteIndented = true });
+        var eadJson = JsonSerializer.Serialize(eads, new JsonSerializerOptions { WriteIndented = true });
+
+        return [.. eads];
+    }
+
     private async Task<string> GetJsonResponseAsync(string queryOrUrl)
     {
         var url = queryOrUrl.StartsWith("records/")

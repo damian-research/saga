@@ -12,7 +12,7 @@ interface SearchDetailsProps {
 }
 
 export default function SearchDetails({ setBusy }: SearchDetailsProps) {
-  const { selectedRecord } = useSearch();
+  const { selectedRecord, searchWithin } = useSearch();
   type RecordDetails = ReturnType<typeof parseRecordDetails>;
   type DigitalObjects = RecordDetails["digitalObjects"];
   if (!selectedRecord) {
@@ -23,6 +23,15 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
     recordId: details.recordId,
     setBusy,
   });
+
+  async function handleSearchWithin() {
+    setBusy(true);
+    try {
+      await searchWithin(details.recordId);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   // DESCRIPTION
   const [showFullDesc, setShowFullDesc] = useState(false);
@@ -60,7 +69,7 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
           <span className={styles.value}>{getLevelLabel(details.level)}</span>
         </div>
       </div>
-
+      {/* BUTTONS */}
       <div className={styles.actions}>
         {details.digitalObjects.length > 0 && (
           <button className={styles.actionButton} onClick={handlePreview}>
@@ -77,6 +86,12 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
           </button>
         )}
 
+        {details.level !== "item" && (
+          <button className={styles.actionButton} onClick={handleSearchWithin}>
+            Search within
+          </button>
+        )}
+
         <button
           className={styles.actionButton}
           onClick={() => window.open(details.openWebUrl, "_blank")}
@@ -84,7 +99,7 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
           Open in Web
         </button>
       </div>
-
+      {/* DESCRIPTION */}
       {details.description && (
         <div className={styles.description}>
           <h3 className={styles.sectionTitle}>Description</h3>
@@ -132,14 +147,14 @@ export default function SearchDetails({ setBusy }: SearchDetailsProps) {
           </ul>
         </div>
       )}
-
+      {/* ROLLS */}
       {details.microfilm && (
         <div className={styles.microfilm}>
           <h3 className={styles.sectionTitle}>Microfilm</h3>
           <p>{details.microfilm}</p>
         </div>
       )}
-
+      {/* RESTRICTIONS */}
       {(details.accessRestriction || details.useRestriction) && (
         <div
           className={`${styles.restrictions} ${

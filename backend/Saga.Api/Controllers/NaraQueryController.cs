@@ -48,4 +48,11 @@ public class NaraQueryController(INaraClient naraClient, DownloadService downloa
             directory = targetDir
         });
     }
+
+    [HttpGet("children/{parentId:long}")]
+    public async Task<IActionResult> GetChildren(long parentId, [FromQuery] int limit = 50)
+    {
+        var results = await _naraClient.GetChildrenAndMapToEad3Async(parentId, limit);
+        return Ok(results);
+    }
 }

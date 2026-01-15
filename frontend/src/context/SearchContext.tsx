@@ -5,6 +5,7 @@ import type { SearchFormState } from "../components/search";
 import {
   searchRecords,
   getRecord,
+  searchChildren,
 } from "../api/services/searchRecords.service";
 
 interface SearchError {
@@ -23,6 +24,7 @@ interface SearchContextValue {
   search: (form: SearchFormState) => Promise<void>;
   selectRecord: (record: Ead3Response) => void;
   selectByPathSegment: (segmentId: string) => Promise<void>;
+  searchWithin: (parentId: string) => Promise<void>;
   clearError: () => void;
   clearResults: () => void;
 }
@@ -78,6 +80,25 @@ export function SearchProvider({ children }: SearchProviderProps) {
     }
   }
 
+  async function searchWithin(parentId: string) {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await searchChildren(parentId, 50);
+      setResults(data);
+      setSelectedRecord(null);
+    } catch (err) {
+      setError({
+        message: err instanceof Error ? err.message : "Search failed",
+        type: err instanceof TypeError ? "network" : "unknown",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Dodaj do interface i return value
+
   function clearError() {
     setError(null);
   }
@@ -97,6 +118,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
         search,
         selectRecord,
         selectByPathSegment,
+        searchWithin,
         clearError,
         clearResults,
       }}

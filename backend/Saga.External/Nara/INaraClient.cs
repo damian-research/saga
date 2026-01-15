@@ -7,4 +7,7 @@ public interface INaraClient
 
     // FULL
     Task<Ead> GetFullAndMapToEad3Async(long naId);
+
+    // CHILDREN
+    Task<List<Ead>> GetChildrenAndMapToEad3Async(long parentId, int limit);
 }
