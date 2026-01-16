@@ -13,8 +13,9 @@ export default function TagManager({ onClose }: Props) {
   const tagCtx = useContext(TagContext);
   if (!tagCtx) throw new Error("TagContext missing");
 
-  const { tags, renameTag, removeTag, ensureTags } = tagCtx;
+  const [removeId, setRemoveId] = useState<string | null>(null);
 
+  const { tags, renameTag, removeTag, ensureTags } = tagCtx;
   const [renameId, setRenameId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
 
@@ -69,19 +70,13 @@ export default function TagManager({ onClose }: Props) {
   }
 
   // ===== REMOVE =====
-  function submitRemove(tagId: string) {
+  function confirmRemove(tagId: string) {
     const tag = tagById.get(tagId);
     if (!tag) return;
 
-    if (
-      !confirm(
-        `Remove tag "${tag.label}"?\nIt will be removed from all bookmarks.`
-      )
-    )
-      return;
-
     removeTagEverywhere(tag.name);
     removeTag(tagId);
+    setRemoveId(null);
   }
 
   return (
@@ -129,35 +124,59 @@ export default function TagManager({ onClose }: Props) {
               {/* ACTIONS */}
               <div className={styles.actions}>
                 {renameId === t.id ? (
+                  /* ===== RENAME MODE ===== */
                   <>
                     <button title="Save changes" onClick={submitRename}>
-                      {" "}
                       <Save size={16} />
                     </button>
                     <button title="Cancel" onClick={() => setRenameId(null)}>
-                      {" "}
+                      <X size={16} />
+                    </button>
+                  </>
+                ) : removeId === t.id ? (
+                  /* ===== REMOVE CONFIRM MODE ===== */
+                  <>
+                    <button
+                      className={styles.danger}
+                      title="Confirm remove"
+                      onClick={() => confirmRemove(t.id)}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                    <button title="Cancel" onClick={() => setRemoveId(null)}>
                       <X size={16} />
                     </button>
                   </>
                 ) : (
+                  /* ===== DEFAULT MODE ===== */
                   <>
                     <button
                       onClick={() => {
                         setRenameId(t.id);
                         setRenameValue(t.label);
+                        setRemoveId(null);
                       }}
                       title="Rename"
                     >
                       <Pencil size={16} />
                     </button>
 
-                    <button onClick={() => setMergeFromId(t.id)} title="Merge">
+                    <button
+                      onClick={() => {
+                        setMergeFromId(t.id);
+                        setRemoveId(null);
+                      }}
+                      title="Merge"
+                    >
                       <Merge size={16} />
                     </button>
 
                     <button
                       className={styles.danger}
-                      onClick={() => submitRemove(t.id)}
+                      onClick={() => {
+                        setRemoveId(t.id);
+                        setRenameId(null);
+                      }}
                       title="Remove"
                     >
                       <Trash2 size={16} />

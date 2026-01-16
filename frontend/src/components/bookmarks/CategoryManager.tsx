@@ -14,6 +14,7 @@ export default function CategoryManager({ onClose }: Props) {
 
   const { categories, addCategory, renameCategory, removeCategory } = ctx;
 
+  const [removeId, setRemoveId] = useState<string | null>(null);
   const [renameId, setRenameId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const [newCategoryInput, setNewCategoryInput] = useState("");
@@ -44,23 +45,14 @@ export default function CategoryManager({ onClose }: Props) {
   }
 
   // ===== REMOVE =====
-  function submitRemove(categoryId: string) {
+  function confirmRemove(categoryId: string) {
     const category = categories.find((c) => c.id === categoryId);
     if (!category) return;
 
-    if (category.id === "uncategorized") {
-      alert("Cannot remove default category");
-      return;
-    }
-
-    if (
-      !confirm(
-        `Remove category "${category.name}"?\nBookmarks will be moved to Uncategorized.`
-      )
-    )
-      return;
+    if (category.id === "uncategorized") return;
 
     removeCategory(categoryId);
+    setRemoveId(null);
   }
 
   return (
@@ -118,21 +110,37 @@ export default function CategoryManager({ onClose }: Props) {
               {/* ACTIONS */}
               <div className={styles.actions}>
                 {renameId === c.id ? (
+                  /* ===== RENAME MODE ===== */
                   <>
                     <button title="Save changes" onClick={submitRename}>
-                      {" "}
                       <Save size={16} />
                     </button>
                     <button title="Cancel" onClick={() => setRenameId(null)}>
                       <X size={16} />
                     </button>
                   </>
+                ) : removeId === c.id ? (
+                  /* ===== REMOVE CONFIRM MODE ===== */
+                  <>
+                    <button
+                      className={styles.danger}
+                      title="Confirm remove"
+                      onClick={() => confirmRemove(c.id)}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                    <button title="Cancel" onClick={() => setRemoveId(null)}>
+                      <X size={16} />
+                    </button>
+                  </>
                 ) : (
+                  /* ===== DEFAULT MODE ===== */
                   <>
                     <button
                       onClick={() => {
                         setRenameId(c.id);
                         setRenameValue(c.name);
+                        setRemoveId(null);
                       }}
                       disabled={c.id === "uncategorized"}
                       title="Rename"
@@ -142,7 +150,10 @@ export default function CategoryManager({ onClose }: Props) {
 
                     <button
                       className={styles.danger}
-                      onClick={() => submitRemove(c.id)}
+                      onClick={() => {
+                        setRemoveId(c.id);
+                        setRenameId(null);
+                      }}
                       disabled={c.id === "uncategorized"}
                       title="Remove"
                     >

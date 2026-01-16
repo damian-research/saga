@@ -254,3 +254,8 @@
   background: var(--bg-hover);
   border-color: var(--border-primary);
 }
+
+.confirmAnchor {
+  position: relative;
+  display: inline-block;
+}
