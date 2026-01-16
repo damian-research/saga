@@ -294,6 +294,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
             >
               <input
                 type="text"
+                placeholder="single or CSV"
                 value={form.naId ?? ""}
                 onChange={(e) => update("naId", e.target.value)}
                 onFocus={(e) => e.target.select()}
@@ -310,6 +311,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
             >
               <input
                 type="text"
+                placeholder="M234, T455"
                 value={form.microfilmId ?? ""}
                 onChange={(e) => update("microfilmId", e.target.value)}
                 onFocus={(e) => e.target.select()}
@@ -326,6 +328,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
             >
               <input
                 type="text"
+                placeholder="M2-3-4, T-45-5"
                 value={form.localId ?? ""}
                 onChange={(e) => update("localId", e.target.value)}
                 onFocus={(e) => e.target.select()}
@@ -335,7 +338,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
         </>
       )}
 
-      {/* TAB 2: Search Within (identical for now) */}
+      {/* TAB 2: Search Within */}
       {mode === "within" && (
         <>
           <label className={styles.field}>
