@@ -175,3 +175,14 @@
 .dark-mode .panel input:not([readonly]) {
   border-color: var(--accent-primary);
 }
+
+.settingsFooter {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

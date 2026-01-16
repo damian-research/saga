@@ -164,6 +164,13 @@ export default function SettingsMenu({
           </div>
         </>
       )}
+      <div className={styles.settingsFooter}>
+        <div>Project Saga - Damian Kurgan</div>
+        <div>
+          Contact: <a href="mailto:saga.dk@pm.me">saga.dk@pm.me</a>
+        </div>
+        <div>Version {__APP_VERSION__}</div>
+      </div>
     </div>
   );
 }
