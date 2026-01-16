@@ -19,20 +19,27 @@ export default function SearchDetails({
   setBusy,
   showBookmarkAction = true,
 }: SearchDetailsProps) {
-  const { selectedRecord, searchWithin } = useSearch();
-  type RecordDetails = ReturnType<typeof parseRecordDetails>;
+  const { selectedRecord, searchWithin, switchToSearchTab } = useSearch();
   type DigitalObjects = RecordDetails["digitalObjects"];
+  type RecordDetails = ReturnType<typeof parseRecordDetails>;
+
+  const [downloadConfirmOpen, setDownloadConfirmOpen] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState<DigitalObjects>([]);
+  const [showFullDesc, setShowFullDesc] = useState(false);
+  const [activeObjects, setActiveObjects] = useState<DigitalObjects | null>(
+    null
+  );
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+
+  const { download } = useDownloadObjects({
+    recordId: selectedRecord?.archDesc?.did?.unitId?.text ?? "",
+    setBusy,
+  });
+
   if (!selectedRecord) {
     return <div className={styles.empty}>Select a record to view details</div>;
   }
   const details = parseRecordDetails(selectedRecord);
-
-  const [downloadConfirmOpen, setDownloadConfirmOpen] = useState(false);
-  const [pendingDownload, setPendingDownload] = useState<DigitalObjects>([]);
-  const { download } = useDownloadObjects({
-    recordId: details.recordId,
-    setBusy,
-  });
 
   function handleDownload(objects: DigitalObjects) {
     if (objects.length > 30) {
@@ -47,6 +54,7 @@ export default function SearchDetails({
     if (!selectedRecord) return;
     setBusy(true);
     try {
+      switchToSearchTab();
       await searchWithin(selectedRecord);
     } finally {
       setBusy(false);
@@ -54,15 +62,9 @@ export default function SearchDetails({
   }
 
   // DESCRIPTION
-  const [showFullDesc, setShowFullDesc] = useState(false);
   const MAX_DESC_LENGTH = 300;
   const truncatedDesc = details.description?.slice(0, MAX_DESC_LENGTH);
   const needsTruncate = (details.description?.length ?? 0) > MAX_DESC_LENGTH;
-
-  const [activeObjects, setActiveObjects] = useState<DigitalObjects | null>(
-    null
-  );
-  const [activeIndex, setActiveIndex] = useState<number>(0);
 
   // PREVIEW
   async function handlePreview() {

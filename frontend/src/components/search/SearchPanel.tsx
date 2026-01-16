@@ -38,17 +38,16 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
   useEffect(() => {
     if (activeFilter?.type === "within") {
       setMode("within");
-      const ancestorNaId = activeFilter.record?.archDesc.did.unitId.text; //archDesc?.did?.unitId?.text;
-      const onlineAvailable = false;
-      const firstChildOnly = true;
-      if (ancestorNaId) {
-        setForm((prev) => ({
-          ...prev,
-          ancestorNaId,
-          onlineAvailable,
-          firstChildOnly,
-        }));
-      }
+
+      const ancestorNaId =
+        activeFilter.record?.archDesc?.did?.unitId?.text ?? "";
+
+      setWithinForm((prev) => ({
+        ...prev,
+        ancestorNaId,
+        onlineAvailable: false,
+        firstChildOnly: true,
+      }));
     }
   }, [activeFilter, setWithinForm]);
 

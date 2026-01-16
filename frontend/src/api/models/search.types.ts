@@ -17,4 +17,4 @@ export interface SearchFormState {
   firstChildOnly?: boolean;
 }
 
-export type SearchTabId = "search" | "bookmarks";
+export type SagaTabId = "search" | "bookmarks";

@@ -3,20 +3,22 @@ import { useState, useRef, useEffect } from "react";
 import SettingsMenu from "./SettingsMenu";
 import styles from "./Header.module.css";
 import { Settings } from "../../icons/index";
-import { type SearchTabId } from "../../../api/models/search.types";
+import { type SagaTabId } from "../../../api/models/search.types";
 
 interface HeaderProps {
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
-  activeTab: SearchTabId;
-  onTabChange: (tab: SearchTabId) => void;
+  activeTab: SagaTabId;
+  onSearchTab: () => void;
+  onBookmarksTab: () => void;
 }
 
 export default function Header({
   isDarkMode,
   onToggleDarkMode,
   activeTab,
-  onTabChange,
+  onSearchTab,
+  onBookmarksTab,
 }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -56,7 +58,7 @@ export default function Header({
           className={`${styles.tabButton} ${
             activeTab === "bookmarks" ? styles.active : ""
           }`}
-          onClick={() => onTabChange("bookmarks")}
+          onClick={onBookmarksTab}
         >
           Bookmarks
         </button>
@@ -64,7 +66,7 @@ export default function Header({
           className={`${styles.tabButton} ${
             activeTab === "search" ? styles.active : ""
           }`}
-          onClick={() => onTabChange("search")}
+          onClick={onSearchTab}
         >
           Search
         </button>

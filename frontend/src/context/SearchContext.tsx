@@ -1,7 +1,7 @@
 // context/SearchContext.tsx
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Ead3Response } from "../api/models/ead3.types";
-import type { SearchFormState } from "../api/models/search.types";
+import type { SearchFormState, SagaTabId } from "../api/models/search.types";
 import {
   searchRecords,
   getRecord,
@@ -26,6 +26,9 @@ interface SearchContextValue {
   loading: boolean;
   error: SearchError | null;
   activeFilter: ActiveFilter | null;
+  activeTab: SagaTabId;
+  switchToSearchTab: () => void;
+  switchToBookmarksTab: () => void;
 
   // Actions
   search: (form: SearchFormState) => Promise<void>;
@@ -56,6 +59,16 @@ export function SearchProvider({ children }: SearchProviderProps) {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<SearchError | null>(null);
+
+  const [activeTab, setActiveTab] = useState<SagaTabId>("search");
+
+  function switchToSearchTab() {
+    setActiveTab("search");
+  }
+
+  function switchToBookmarksTab() {
+    setActiveTab("bookmarks");
+  }
 
   // Separate form states
   const [searchForm, setSearchForm] = useState<SearchFormState>({
@@ -179,6 +192,9 @@ export function SearchProvider({ children }: SearchProviderProps) {
         loading,
         error,
         activeFilter,
+        activeTab,
+        switchToSearchTab,
+        switchToBookmarksTab,
         search,
         selectRecord,
         selectByPathSegment,
