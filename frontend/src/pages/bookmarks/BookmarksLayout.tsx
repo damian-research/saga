@@ -7,7 +7,7 @@ import {
   XCircle,
   X,
 } from "../../components/icons";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useState, useRef } from "react";
 import styles from "./BookmarksLayout.module.css";
 import { getLevelLabel, type Bookmark } from "../../api/models/";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
@@ -20,6 +20,7 @@ import {
   CategoryManager,
   CategoryTabs,
 } from "../../components/bookmarks";
+import { ConfirmPopover } from "../../components/popover/confirmPopover";
 
 interface Props {
   bookmarks: Bookmark[];
@@ -49,7 +50,9 @@ export default function BookmarksLayout({
   const ctx = useContext(BookmarkContext);
   if (!ctx) throw new Error("BookmarkContext missing");
   const { categories, updateBookmarkCategory } = ctx;
+  const removeButtonRef = useRef<HTMLButtonElement>(null);
 
+  const [exportConfirmOpen, setExportConfirmOpen] = useState(false);
   const [activeCategoryId, setActiveCategoryId] = useState("__all__");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showTagManager, setShowTagManager] = useState(false);
@@ -345,21 +348,24 @@ export default function BookmarksLayout({
                 <FolderTree size={18} />
               </button>
 
-              <button
-                className={styles.actionButton}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      `Export ${visible.length} bookmarks to a file?`
-                    )
-                  ) {
-                    onExport(visible);
-                  }
-                }}
-                title="Export all bookmarks to JSON"
-              >
-                <Share size={18} />
-              </button>
+              <div className={styles.confirmAnchor}>
+                <button
+                  ref={removeButtonRef}
+                  className={styles.actionButton}
+                  onClick={() => setExportConfirmOpen(true)}
+                  title="Export all bookmarks to JSON"
+                >
+                  <Share size={18} />
+                </button>
+
+                <ConfirmPopover
+                  open={exportConfirmOpen}
+                  text={`Export ${visible.length} bookmarks to a file?`}
+                  onConfirm={() => onExport(visible)}
+                  onCancel={() => setExportConfirmOpen(false)}
+                  anchorRef={removeButtonRef}
+                />
+              </div>
             </div>
           </div>
         </div>

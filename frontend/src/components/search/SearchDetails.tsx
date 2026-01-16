@@ -1,5 +1,5 @@
 // SearchDetails.tsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Eye, ScanSearch, Globe, Download } from "../../components/icons";
 import { useSearch } from "../../context/SearchContext";
 import { parseRecordDetails } from "../../api/utils/recordParser";
@@ -8,6 +8,7 @@ import { BookmarkStar } from "../bookmarks";
 import styles from "./SearchDetails.module.css";
 import PreviewViewer from "./PreviewViewer";
 import { useDownloadObjects } from "../../api/hooks/useDownloadObjects";
+import { ConfirmPopover } from "../../components/popover/confirmPopover";
 
 interface SearchDetailsProps {
   setBusy: (value: boolean) => void;
@@ -25,10 +26,23 @@ export default function SearchDetails({
     return <div className={styles.empty}>Select a record to view details</div>;
   }
   const details = parseRecordDetails(selectedRecord);
+  const removeButtonRef = useRef<HTMLButtonElement>(null);
+
+  const [downloadConfirmOpen, setDownloadConfirmOpen] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState<DigitalObjects>([]);
   const { download } = useDownloadObjects({
     recordId: details.recordId,
     setBusy,
   });
+
+  function handleDownload(objects: DigitalObjects) {
+    if (objects.length > 30) {
+      setPendingDownload(objects);
+      setDownloadConfirmOpen(true);
+    } else {
+      download(objects);
+    }
+  }
 
   async function handleSearchWithin() {
     if (!selectedRecord) return;
@@ -90,13 +104,24 @@ export default function SearchDetails({
 
         {details.digitalObjects.length > 0 && (
           <button
+            ref={removeButtonRef}
             className={styles.actionButton}
-            onClick={() => download(details.digitalObjects)}
+            onClick={() => handleDownload(details.digitalObjects)}
             title="Download ALL documents within this unit"
           >
             <Download size={20} strokeWidth={2} />
           </button>
         )}
+        <ConfirmPopover
+          open={downloadConfirmOpen}
+          text={`You are about to download ${pendingDownload.length} files.\nThis may take some time and put load on the server.\n\nContinue?`}
+          onConfirm={() => {
+            download(pendingDownload);
+            setDownloadConfirmOpen(false);
+          }}
+          onCancel={() => setDownloadConfirmOpen(false)}
+          anchorRef={removeButtonRef}
+        />
 
         {details.level !== "item" && details.level !== "fileUnit" && (
           <button
@@ -117,6 +142,7 @@ export default function SearchDetails({
         </button>
         {showBookmarkAction && <BookmarkStar record={selectedRecord} />}
       </div>
+
       {/* DESCRIPTION */}
       {details.description && (
         <div className={styles.description}>

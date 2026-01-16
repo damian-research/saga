@@ -14,18 +14,10 @@ export function useDownloadObjects({ recordId, setBusy }: Options) {
   const download = useCallback(
     async (items: DownloadItem[]) => {
       const objects = items.filter((o) => o.href);
-      const count = objects.length;
-
-      if (count === 0) return;
-
-      if (count > 30) {
-        const confirmed = window.confirm(
-          `You are about to download ${count} files.\n\nThis may take some time and put load on the server.\n\nDo you want to continue?`
-        );
-        if (!confirmed) return;
-      }
+      if (objects.length === 0) return;
 
       setBusy?.(true);
+
       try {
         const delay = (ms: number) =>
           new Promise((resolve) => setTimeout(resolve, ms));
