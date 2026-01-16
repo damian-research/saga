@@ -347,7 +347,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
             >
               <input
                 type="text"
-                placeholder="single or CSV"
+                placeholder="single"
                 value={form.ancestorNaId ?? ""}
                 onChange={(e) => update("ancestorNaId", e.target.value)}
                 autoFocus

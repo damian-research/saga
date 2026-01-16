@@ -202,9 +202,11 @@
 
 .inputWrap {
   position: relative;
+  width: 100%;
 }
 
-.inputWrap input .inputWrap select {
+.inputWrap input,
+.inputWrap select {
   width: 100%;
   /* padding-right: 28px; */
 }
