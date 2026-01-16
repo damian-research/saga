@@ -1,3 +1,4 @@
+/* BookmarkStar */
 .star {
   padding: 6px 12px;
   font-size: var(--font-size-xs);
@@ -12,10 +13,11 @@
   color: var(--text-primary);
 }
 
-.star:hover {
+.star:hover .starSaved:hover {
   background-color: var(--bg-hover);
 }
 
 .starSaved {
+  border: 1px solid var(--accent-primary-ok);
   color: var(--accent-primary-ok);
 }

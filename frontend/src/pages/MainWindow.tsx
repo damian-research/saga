@@ -38,6 +38,7 @@ export default function MainWindow() {
       <BookmarkContext.Provider
         value={{
           openBookmarkWindow: setBookmarkModal,
+          bookmarks: bookmarkOps.bookmarks,
           ...categoryOps,
           updateBookmarkCategory: bookmarkOps.updateCategory,
           updateBookmarks: bookmarkOps.updateMany,

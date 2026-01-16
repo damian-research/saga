@@ -18,6 +18,7 @@ export interface OpenAddBookmarkPayload {
 // ===== BOOKMARK CONTEXT =====
 export interface BookmarkActions {
   openBookmarkWindow(payload: OpenAddBookmarkPayload): void;
+  bookmarks: Bookmark[];
   categories: BookmarkCategory[];
   addCategory(name: string): void;
   renameCategory(id: string, name: string): void;
