@@ -9,11 +9,10 @@ import {
   ChevronUp,
   X,
 } from "../../components/icons";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import styles from "./BookmarksTable.module.css";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import { getLevelLabel } from "../../api/models/archive.types";
-import { ConfirmPopover } from "../../components/popover/confirmPopover";
 
 interface Props {
   items: Bookmark[];
@@ -33,7 +32,6 @@ interface Props {
     field: "name" | "title" | "level" | "archive" | "added" | "online" | "type"
   ) => void;
   onSelect: (id: string | null) => void;
-  onOpen: (b: Bookmark) => void;
   onEdit: (b: Bookmark) => void;
   onRemove: (id: string) => void;
   onView: (b: Bookmark) => void;
@@ -49,7 +47,6 @@ export default function BookmarksTable({
   sortDirection,
   onSort,
   onSelect,
-  onOpen,
   onEdit,
   onRemove,
   onView,
@@ -143,7 +140,6 @@ export default function BookmarksTable({
                 draggable
                 onDragStart={() => onDragStart(b.id)}
                 onClick={() => onSelect(b.id)}
-                onDoubleClick={() => onOpen(b)}
                 onContextMenu={(e) => {
                   e.preventDefault();
                   onSelect(b.id);

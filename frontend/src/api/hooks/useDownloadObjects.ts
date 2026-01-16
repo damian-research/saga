@@ -41,7 +41,7 @@ export function useDownloadObjects({ recordId, setBusy }: Options) {
             URL.revokeObjectURL(url);
             await delay(300);
           } catch (e) {
-            console.error("Download failed", e);
+            // console.error("Download failed", e);
             window.open(object.href!, "_blank");
           }
         }

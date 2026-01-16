@@ -14,7 +14,7 @@ export function loadBookmarks(): Bookmark[] {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
   } catch (err) {
-    console.warn("[bookmarks] failed to load, returning empty set", err);
+    // console.warn("[bookmarks] failed to load, returning empty set", err);
     return [];
   }
 }

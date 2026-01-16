@@ -1,6 +1,6 @@
 // SearchPanel.tsx
 import { useEffect, useState } from "react";
-import { Search, XCircle, X } from "../../components/icons";
+import { Search, XCircle } from "../../components/icons";
 import styles from "./SearchPanel.module.css";
 import { useSearch } from "../../context/SearchContext";
 import { LEVELS, LEVEL_LABELS } from "../../api/models/archive.types";
@@ -14,7 +14,6 @@ type SearchMode = "search" | "within";
 
 export default function SearchPanel({ setBusy }: SearchPanelProps) {
   const {
-    search,
     clearResults,
     searchForm,
     setSearchForm,

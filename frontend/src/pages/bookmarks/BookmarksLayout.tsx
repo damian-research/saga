@@ -25,7 +25,6 @@ import { ConfirmPopover } from "../../components/popover/confirmPopover";
 interface Props {
   bookmarks: Bookmark[];
   loading: boolean;
-  onOpen: (b: Bookmark) => void;
   onRemove: (id: string) => void;
   onExport: (list: Bookmark[]) => void;
 }
@@ -43,7 +42,6 @@ type SortDirection = "asc" | "desc";
 export default function BookmarksLayout({
   bookmarks,
   loading,
-  onOpen,
   onRemove,
   onExport,
 }: Props) {
@@ -413,7 +411,6 @@ export default function BookmarksLayout({
         sortDirection={sortDirection}
         onSort={handleSort}
         onSelect={setSelectedId}
-        onOpen={onOpen}
         onEdit={(b) => ctx.openBookmarkWindow({ mode: "edit", bookmark: b })}
         onRemove={(id) => {
           onRemove(id);
@@ -475,9 +472,7 @@ export default function BookmarksLayout({
         )}
 
         {detailsOpen && !searchLoading && selectedRecord && (
-          <div className={styles.detailsContent}>
-            <SearchDetails setBusy={() => {}} showBookmarkAction={false} />
-          </div>
+          <SearchDetails setBusy={() => {}} showBookmarkAction={false} />
         )}
       </div>
     </div>

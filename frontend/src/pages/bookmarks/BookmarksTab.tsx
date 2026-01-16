@@ -16,9 +16,7 @@ export default function BookmarksTab({
   loading,
   onRemoveBookmark,
 }: Props) {
-  function openBookmark(b: Bookmark) {
-    console.log("Open bookmark:", b);
-  }
+  // function openBookmark(b: Bookmark) {}
 
   function exportBookmarks(list: Bookmark[]) {
     const blob = new Blob([JSON.stringify(list, null, 2)], {
@@ -38,7 +36,6 @@ export default function BookmarksTab({
         <BookmarksLayout
           bookmarks={bookmarks}
           loading={loading}
-          onOpen={openBookmark}
           onRemove={onRemoveBookmark}
           onExport={exportBookmarks}
         />

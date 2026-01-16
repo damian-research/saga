@@ -306,10 +306,6 @@
   background: var(--bg-hover);
 }
 
-.detailsContent {
-  /* padding-top: var(--spacing-md); */
-}
-
 .detailsCloseOverlay {
   position: absolute;
   top: 18px;
