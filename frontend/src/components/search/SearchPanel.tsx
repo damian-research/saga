@@ -135,25 +135,39 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
       {/* TAB 1: Search */}
       {mode === "search" && (
         <>
-          <label>
+          <label className={styles.field}>
             Query
-            <input
-              type="text"
-              value={form.q}
-              onChange={(e) => update("q", e.target.value)}
-              autoFocus
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.q) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                value={form.q}
+                onChange={(e) => update("q", e.target.value)}
+                autoFocus
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             Limit
-            <input
-              type="number"
-              min={1}
-              max={100}
-              value={form.limit}
-              onChange={(e) => update("limit", Number(e.target.value))}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                form.limit > 0 ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={form.limit}
+                onChange={(e) => update("limit", Number(e.target.value))}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
           <div className={styles.checkboxRow}>
@@ -170,101 +184,153 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           <div className={styles.divider} />
           <div className={styles.subtitle}>Text & Authority</div>
 
-          <label>
+          <label className={styles.field}>
             Title
-            <input
-              type="text"
-              placeholder="title contains"
-              value={form.title ?? ""}
-              onChange={(e) => update("title", e.target.value)}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.title) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                placeholder="title contains"
+                value={form.title ?? ""}
+                onChange={(e) => update("title", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             Person / Organization
-            <input
-              type="text"
-              placeholder="authority heading"
-              value={form.personOrOrg ?? ""}
-              onChange={(e) => update("personOrOrg", e.target.value)}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.personOrOrg) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                placeholder="authority heading"
+                value={form.personOrOrg ?? ""}
+                onChange={(e) => update("personOrOrg", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             Data Source
-            <input
-              type="text"
-              placeholder="e.g. description"
-              value={form.dataSource ?? ""}
-              onChange={(e) => update("dataSource", e.target.value)}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.dataSource) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                placeholder="e.g. description"
+                value={form.dataSource ?? ""}
+                onChange={(e) => update("dataSource", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
           <div className={styles.divider} />
           <div className={styles.subtitle}>Structure</div>
 
-          <label>
+          <label className={styles.field}>
             Level
-            <select
-              value={form.levelOfDescription ?? ""}
-              onChange={(e) =>
-                update(
-                  "levelOfDescription",
-                  (e.target.value ||
-                    undefined) as SearchFormState["levelOfDescription"]
-                )
-              }
+            <div
+              className={`${styles.inputWrap} ${
+                form.levelOfDescription ? styles.filled : ""
+              }`}
             >
-              <option value="">Any</option>
-              {LEVELS.map((level) => (
-                <option key={level} value={level}>
-                  {LEVEL_LABELS[level]}
-                </option>
-              ))}
-            </select>
+              <select
+                value={form.levelOfDescription ?? ""}
+                onChange={(e) =>
+                  update(
+                    "levelOfDescription",
+                    (e.target.value ||
+                      undefined) as SearchFormState["levelOfDescription"]
+                  )
+                }
+              >
+                <option value="">Any</option>
+                {LEVELS.map((level) => (
+                  <option key={level} value={level}>
+                    {LEVEL_LABELS[level]}
+                  </option>
+                ))}
+              </select>
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             RG #
-            <input
-              type="text"
-              placeholder="e.g. 11, 59"
-              value={form.recordGroupNumber ?? ""}
-              onChange={(e) => update("recordGroupNumber", e.target.value)}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.recordGroupNumber) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                placeholder="e.g. 11, 59"
+                value={form.recordGroupNumber ?? ""}
+                onChange={(e) => update("recordGroupNumber", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
           <div className={styles.divider} />
           <div className={styles.subtitle}>Identifiers</div>
 
-          <label>
+          <label className={styles.field}>
             NAID
-            <input
-              type="text"
-              placeholder="single or CSV"
-              value={form.naId ?? ""}
-              onChange={(e) => update("naId", e.target.value)}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.naId) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                value={form.naId ?? ""}
+                onChange={(e) => update("naId", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             Microfilm ID
-            <input
-              type="text"
-              placeholder="M234, T455"
-              value={form.microfilmId ?? ""}
-              onChange={(e) => update("microfilmId", e.target.value)}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.microfilmId) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                value={form.microfilmId ?? ""}
+                onChange={(e) => update("microfilmId", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             Local ID
-            <input
-              type="text"
-              placeholder="M2-3-4, T-45-5"
-              value={form.localId ?? ""}
-              onChange={(e) => update("localId", e.target.value)}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.localId) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                value={form.localId ?? ""}
+                onChange={(e) => update("localId", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
         </>
       )}
@@ -272,36 +338,56 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
       {/* TAB 2: Search Within (identical for now) */}
       {mode === "within" && (
         <>
-          <label>
+          <label className={styles.field}>
             Parent NAID
-            <input
-              type="text"
-              placeholder="single or CSV"
-              value={form.ancestorNaId ?? ""}
-              onChange={(e) => update("ancestorNaId", e.target.value)}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.ancestorNaId) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                placeholder="single or CSV"
+                value={form.ancestorNaId ?? ""}
+                onChange={(e) => update("ancestorNaId", e.target.value)}
+                autoFocus
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             Query
-            <input
-              type="text"
-              value={form.q}
-              onChange={(e) => update("q", e.target.value)}
-              autoFocus
-              onFocus={(e) => e.target.select()}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.q) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                value={form.q}
+                onChange={(e) => update("q", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             Limit
-            <input
-              type="number"
-              min={1}
-              max={100}
-              value={form.limit}
-              onChange={(e) => update("limit", Number(e.target.value))}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                form.limit > 0 ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={form.limit}
+                onChange={(e) => update("limit", Number(e.target.value))}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
           <div className={styles.checkboxRow}>
@@ -329,61 +415,85 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
           <div className={styles.divider} />
           <div className={styles.subtitle}>Text & Authority</div>
 
-          <label>
+          <label className={styles.field}>
             Title
-            <input
-              type="text"
-              placeholder="title contains"
-              value={form.title ?? ""}
-              onChange={(e) => update("title", e.target.value)}
-              onFocus={(e) => e.target.select()}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.title) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                placeholder="title contains"
+                value={form.title ?? ""}
+                onChange={(e) => update("title", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             Person / Organization
-            <input
-              type="text"
-              placeholder="authority heading"
-              value={form.personOrOrg ?? ""}
-              onChange={(e) => update("personOrOrg", e.target.value)}
-              onFocus={(e) => e.target.select()}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.personOrOrg) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                placeholder="authority heading"
+                value={form.personOrOrg ?? ""}
+                onChange={(e) => update("personOrOrg", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
-          <label>
+          <label className={styles.field}>
             Data Source
-            <input
-              type="text"
-              placeholder="e.g. description"
-              value={form.dataSource ?? ""}
-              onChange={(e) => update("dataSource", e.target.value)}
-              onFocus={(e) => e.target.select()}
-            />
+            <div
+              className={`${styles.inputWrap} ${
+                isFilled(form.dataSource) ? styles.filled : ""
+              }`}
+            >
+              <input
+                type="text"
+                placeholder="e.g. description"
+                value={form.dataSource ?? ""}
+                onChange={(e) => update("dataSource", e.target.value)}
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
           </label>
 
           <div className={styles.divider} />
           <div className={styles.subtitle}>Structure</div>
 
-          <label>
+          <label className={styles.field}>
             Level
-            <select
-              value={form.levelOfDescription ?? ""}
-              onChange={(e) =>
-                update(
-                  "levelOfDescription",
-                  (e.target.value ||
-                    undefined) as SearchFormState["levelOfDescription"]
-                )
-              }
+            <div
+              className={`${styles.inputWrap} ${
+                form.levelOfDescription ? styles.filled : ""
+              }`}
             >
-              <option value="">Any</option>
-              {LEVELS.map((level) => (
-                <option key={level} value={level}>
-                  {LEVEL_LABELS[level]}
-                </option>
-              ))}
-            </select>
+              <select
+                value={form.levelOfDescription ?? ""}
+                onChange={(e) =>
+                  update(
+                    "levelOfDescription",
+                    (e.target.value ||
+                      undefined) as SearchFormState["levelOfDescription"]
+                  )
+                }
+              >
+                <option value="">Any</option>
+                {LEVELS.map((level) => (
+                  <option key={level} value={level}>
+                    {LEVEL_LABELS[level]}
+                  </option>
+                ))}
+              </select>
+            </div>
           </label>
         </>
       )}
