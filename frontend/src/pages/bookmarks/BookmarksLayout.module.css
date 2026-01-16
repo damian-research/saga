@@ -343,3 +343,7 @@
   position: relative;
   display: inline-block;
 }
+
+.confirmAnchor {
+  position: relative;
+}

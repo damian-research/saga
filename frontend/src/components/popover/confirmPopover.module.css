@@ -1,21 +1,23 @@
 .backdrop {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 999998 !important;
-  background: transparent !important;
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: transparent;
 }
 
 .popover {
-  position: fixed !important;
-  z-index: 999999 !important;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 9999;
+
   background: var(--bg-primary);
   border: 1px solid var(--border-secondary);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
   min-width: 220px;
-  max-width: 300px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  pointer-events: all !important;
+  max-width: 320px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .text {

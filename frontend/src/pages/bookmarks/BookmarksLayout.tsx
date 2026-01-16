@@ -7,7 +7,7 @@ import {
   XCircle,
   X,
 } from "../../components/icons";
-import { useContext, useMemo, useState, useRef } from "react";
+import { useContext, useMemo, useState } from "react";
 import styles from "./BookmarksLayout.module.css";
 import { getLevelLabel, type Bookmark } from "../../api/models/";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
@@ -50,7 +50,6 @@ export default function BookmarksLayout({
   const ctx = useContext(BookmarkContext);
   if (!ctx) throw new Error("BookmarkContext missing");
   const { categories, updateBookmarkCategory } = ctx;
-  const removeButtonRef = useRef<HTMLButtonElement>(null);
 
   const [exportConfirmOpen, setExportConfirmOpen] = useState(false);
   const [activeCategoryId, setActiveCategoryId] = useState("__all__");
@@ -350,7 +349,6 @@ export default function BookmarksLayout({
 
               <div className={styles.confirmAnchor}>
                 <button
-                  ref={removeButtonRef}
                   className={styles.actionButton}
                   onClick={() => setExportConfirmOpen(true)}
                   title="Export all bookmarks to JSON"
@@ -363,7 +361,6 @@ export default function BookmarksLayout({
                   text={`Export ${visible.length} bookmarks to a file?`}
                   onConfirm={() => onExport(visible)}
                   onCancel={() => setExportConfirmOpen(false)}
-                  anchorRef={removeButtonRef}
                 />
               </div>
             </div>

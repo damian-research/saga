@@ -1,5 +1,5 @@
 // SearchDetails.tsx
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Eye, ScanSearch, Globe, Download } from "../../components/icons";
 import { useSearch } from "../../context/SearchContext";
 import { parseRecordDetails } from "../../api/utils/recordParser";
@@ -26,7 +26,6 @@ export default function SearchDetails({
     return <div className={styles.empty}>Select a record to view details</div>;
   }
   const details = parseRecordDetails(selectedRecord);
-  const removeButtonRef = useRef<HTMLButtonElement>(null);
 
   const [downloadConfirmOpen, setDownloadConfirmOpen] = useState(false);
   const [pendingDownload, setPendingDownload] = useState<DigitalObjects>([]);
@@ -78,176 +77,173 @@ export default function SearchDetails({
 
   return (
     <div className={styles.panel}>
-      <h2 className={styles.title}>{details.title}</h2>
+      <div className={styles.panelInner}>
+        <h2 className={styles.title}>{details.title}</h2>
 
-      <div className={styles.metadata}>
-        <div className={styles.metadataRow}>
-          <span className={styles.label}>ID:</span>
-          <span className={styles.value}>{details.recordId}</span>
+        <div className={styles.metadata}>
+          <div className={styles.metadataRow}>
+            <span className={styles.label}>ID:</span>
+            <span className={styles.value}>{details.recordId}</span>
+          </div>
+          <div className={styles.metadataRow}>
+            <span className={styles.label}>Type:</span>
+            <span className={styles.value}>{getLevelLabel(details.level)}</span>
+          </div>
         </div>
-        <div className={styles.metadataRow}>
-          <span className={styles.label}>Type:</span>
-          <span className={styles.value}>{getLevelLabel(details.level)}</span>
-        </div>
-      </div>
-      {/* BUTTONS */}
-      <div className={styles.actions}>
-        {details.digitalObjects.length > 0 && (
+        {/* BUTTONS */}
+        <div className={styles.actions}>
+          {details.digitalObjects.length > 0 && (
+            <button
+              className={styles.actionButton}
+              onClick={handlePreview}
+              title="Preview documents"
+            >
+              <Eye size={20} strokeWidth={2} />
+            </button>
+          )}
           <button
-            className={styles.actionButton}
-            onClick={handlePreview}
-            title="Preview documents"
-          >
-            <Eye size={20} strokeWidth={2} />
-          </button>
-        )}
-
-        {details.digitalObjects.length > 0 && (
-          <button
-            ref={removeButtonRef}
             className={styles.actionButton}
             onClick={() => handleDownload(details.digitalObjects)}
             title="Download ALL documents within this unit"
           >
             <Download size={20} strokeWidth={2} />
           </button>
-        )}
-        <ConfirmPopover
-          open={downloadConfirmOpen}
-          text={`You are about to download ${pendingDownload.length} files.\nThis may take some time and put load on the server.\n\nContinue?`}
-          onConfirm={() => {
-            download(pendingDownload);
-            setDownloadConfirmOpen(false);
-          }}
-          onCancel={() => setDownloadConfirmOpen(false)}
-          anchorRef={removeButtonRef}
-        />
-
-        {details.level !== "item" && details.level !== "fileUnit" && (
-          <button
-            className={styles.actionButton}
-            onClick={handleSearchWithin}
-            title="Run search within this unit"
-          >
-            <ScanSearch size={20} strokeWidth={2} />
-          </button>
-        )}
-
-        <button
-          className={styles.actionButton}
-          onClick={() => window.open(details.openWebUrl, "_blank")}
-          title="Open NARA website catalog"
-        >
-          <Globe size={20} strokeWidth={2} />
-        </button>
-        {showBookmarkAction && <BookmarkStar record={selectedRecord} />}
-      </div>
-
-      {/* DESCRIPTION */}
-      {details.description && (
-        <div className={styles.description}>
-          <h3 className={styles.sectionTitle}>Description</h3>
-          <p>
-            {showFullDesc ? details.description : truncatedDesc}
-            {needsTruncate && !showFullDesc && "..."}
-          </p>
-          {needsTruncate && (
+          <ConfirmPopover
+            open={downloadConfirmOpen}
+            text={`You are about to download ${pendingDownload.length} files.\nThis may take some time and put load on the server.\n\nContinue?`}
+            onConfirm={() => {
+              download(pendingDownload);
+              setDownloadConfirmOpen(false);
+            }}
+            onCancel={() => setDownloadConfirmOpen(false)}
+          />
+          {details.level !== "item" && details.level !== "fileUnit" && (
             <button
-              className={styles.showMoreButton}
-              onClick={() => setShowFullDesc(!showFullDesc)}
+              className={styles.actionButton}
+              onClick={handleSearchWithin}
+              title="Run search within this unit"
             >
-              {showFullDesc ? "Show less" : "Show more"}
+              <ScanSearch size={20} strokeWidth={2} />
             </button>
           )}
+          <button
+            className={styles.actionButton}
+            onClick={() => window.open(details.openWebUrl, "_blank")}
+            title="Open NARA website catalog"
+          >
+            <Globe size={20} strokeWidth={2} />
+          </button>
+          {showBookmarkAction && <BookmarkStar record={selectedRecord} />}
         </div>
-      )}
 
-      {details.objectSummary.length > 0 && (
-        <div className={styles.onlineObjects}>
-          <h3 className={styles.sectionTitle}>Online objects</h3>
-          <ul className={styles.objectSummaryList}>
-            {details.objectSummary.map((item, idx) => (
-              <li key={idx} className={styles.objectSummaryItem}>
-                <span className={styles.objectType}>{item.type}</span>
-                {item.count === 1 && (
-                  <button
-                    className={styles.viewButton}
-                    onClick={() => {
-                      const found = details.digitalObjects.find(
-                        (dao) => (dao.localType || dao.daoType) === item.type
-                      );
-                      if (found) {
-                        setActiveObjects([found]);
-                        setActiveIndex(0);
-                      }
-                    }}
-                    title="Preview document"
-                  >
-                    <Eye size={18} strokeWidth={2} />
-                  </button>
-                )}
-                <span className={styles.objectCount}> {item.count}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {/* ROLLS */}
-      {details.microfilm && (
-        <div className={styles.microfilm}>
-          <h3 className={styles.sectionTitle}>Microfilm</h3>
-          <p>{details.microfilm}</p>
-        </div>
-      )}
-      {/* RESTRICTIONS */}
-      {(details.accessRestriction || details.useRestriction) && (
-        <div
-          className={`${styles.restrictions} ${
-            details.isRestricted
-              ? styles.restrictionsErr
-              : styles.restrictionsOk
-          }`}
-        >
-          <h3 className={styles.sectionTitle}>Access and Use Restrictions</h3>
+        {/* DESCRIPTION */}
+        {details.description && (
+          <div className={styles.description}>
+            <h3 className={styles.sectionTitle}>Description</h3>
+            <p>
+              {showFullDesc ? details.description : truncatedDesc}
+              {needsTruncate && !showFullDesc && "..."}
+            </p>
+            {needsTruncate && (
+              <button
+                className={styles.showMoreButton}
+                onClick={() => setShowFullDesc(!showFullDesc)}
+              >
+                {showFullDesc ? "Show less" : "Show more"}
+              </button>
+            )}
+          </div>
+        )}
 
-          {details.accessRestriction && (
-            <div className={styles.restrictionRow}>
-              <span className={styles.label}>Access:</span>
-              <span className={styles.value}>{details.accessRestriction}</span>
-            </div>
-          )}
+        {details.objectSummary.length > 0 && (
+          <div className={styles.onlineObjects}>
+            <h3 className={styles.sectionTitle}>Online objects</h3>
+            <ul className={styles.objectSummaryList}>
+              {details.objectSummary.map((item, idx) => (
+                <li key={idx} className={styles.objectSummaryItem}>
+                  <span className={styles.objectType}>{item.type}</span>
+                  {item.count === 1 && (
+                    <button
+                      className={styles.viewButton}
+                      onClick={() => {
+                        const found = details.digitalObjects.find(
+                          (dao) => (dao.localType || dao.daoType) === item.type
+                        );
+                        if (found) {
+                          setActiveObjects([found]);
+                          setActiveIndex(0);
+                        }
+                      }}
+                      title="Preview document"
+                    >
+                      <Eye size={18} strokeWidth={2} />
+                    </button>
+                  )}
+                  <span className={styles.objectCount}> {item.count}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {/* ROLLS */}
+        {details.microfilm && (
+          <div className={styles.microfilm}>
+            <h3 className={styles.sectionTitle}>Microfilm</h3>
+            <p>{details.microfilm}</p>
+          </div>
+        )}
+        {/* RESTRICTIONS */}
+        {(details.accessRestriction || details.useRestriction) && (
+          <div
+            className={`${styles.restrictions} ${
+              details.isRestricted
+                ? styles.restrictionsErr
+                : styles.restrictionsOk
+            }`}
+          >
+            <h3 className={styles.sectionTitle}>Access and Use Restrictions</h3>
 
-          {details.useRestriction && (
-            <div className={styles.restrictionRow}>
-              <span className={styles.label}>Use:</span>
-              <span className={styles.value}>{details.useRestriction}</span>
-              {details.useRestrictionDetails && (
-                <span
-                  className={styles.tooltip}
-                  title={details.useRestrictionDetails}
-                >
-                  ⓘ
+            {details.accessRestriction && (
+              <div className={styles.restrictionRow}>
+                <span className={styles.label}>Access:</span>
+                <span className={styles.value}>
+                  {details.accessRestriction}
                 </span>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+              </div>
+            )}
 
-      {activeObjects && activeObjects[activeIndex] && (
-        <PreviewViewer
-          recordId={details.recordId}
-          object={activeObjects[activeIndex]}
-          objects={activeObjects}
-          onClose={() => setActiveObjects(null)}
-          onNext={() => setActiveIndex((i) => (i + 1) % activeObjects.length)}
-          onPrev={() =>
-            setActiveIndex(
-              (i) => (i - 1 + activeObjects.length) % activeObjects.length
-            )
-          }
-        />
-      )}
+            {details.useRestriction && (
+              <div className={styles.restrictionRow}>
+                <span className={styles.label}>Use:</span>
+                <span className={styles.value}>{details.useRestriction}</span>
+                {details.useRestrictionDetails && (
+                  <span
+                    className={styles.tooltip}
+                    title={details.useRestrictionDetails}
+                  >
+                    ⓘ
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeObjects && activeObjects[activeIndex] && (
+          <PreviewViewer
+            recordId={details.recordId}
+            object={activeObjects[activeIndex]}
+            objects={activeObjects}
+            onClose={() => setActiveObjects(null)}
+            onNext={() => setActiveIndex((i) => (i + 1) % activeObjects.length)}
+            onPrev={() =>
+              setActiveIndex(
+                (i) => (i - 1 + activeObjects.length) % activeObjects.length
+              )
+            }
+          />
+        )}
+      </div>
     </div>
   );
 }

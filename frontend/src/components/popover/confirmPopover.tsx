@@ -1,6 +1,5 @@
 // confirmPopover
 import { useEffect } from "react";
-import { createPortal } from "react-dom";
 import { Check, X } from "../../components/icons";
 import styles from "./ConfirmPopover.module.css";
 
@@ -9,7 +8,6 @@ interface ConfirmPopoverProps {
   text: string;
   onConfirm: () => void;
   onCancel: () => void;
-  anchorRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 export function ConfirmPopover({
@@ -17,7 +15,6 @@ export function ConfirmPopover({
   text,
   onConfirm,
   onCancel,
-  anchorRef,
 }: ConfirmPopoverProps) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -31,21 +28,12 @@ export function ConfirmPopover({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onCancel]);
 
-  if (!open || !anchorRef.current) return null;
+  if (!open) return null;
 
-  const rect = anchorRef.current.getBoundingClientRect();
-
-  const popoverContent = (
+  return (
     <>
       <div className={styles.backdrop} onClick={onCancel} />
-      <div
-        className={styles.popover}
-        style={{
-          position: "fixed",
-          top: `${rect.bottom + 6}px`,
-          right: `${window.innerWidth - rect.right}px`,
-        }}
-      >
+      <div className={styles.popover}>
         <div className={styles.text}>{text}</div>
 
         <div className={styles.actions}>
@@ -65,6 +53,4 @@ export function ConfirmPopover({
       </div>
     </>
   );
-
-  return createPortal(popoverContent, document.body);
 }
