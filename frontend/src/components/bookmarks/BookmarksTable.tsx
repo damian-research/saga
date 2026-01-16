@@ -7,10 +7,13 @@ import {
   CloudOff,
   ChevronDown,
   ChevronUp,
+  X,
 } from "../../components/icons";
+import { useState, useRef } from "react";
 import styles from "./BookmarksTable.module.css";
 import type { Bookmark } from "../../api/models/bookmarks.types";
 import { getLevelLabel } from "../../api/models/archive.types";
+import { ConfirmPopover } from "../../components/popover/confirmPopover";
 
 interface Props {
   items: Bookmark[];
@@ -53,6 +56,7 @@ export default function BookmarksTable({
   onDragStart,
 }: Props) {
   const hasItems = items.length > 0;
+  const [removeId, setRemoveId] = useState<string | null>(null);
 
   function renderSortIcon(field: string) {
     if (sortField !== field) return null;
@@ -152,42 +156,69 @@ export default function BookmarksTable({
                     <span>{b.customName}</span>
 
                     <div className={styles.rowActions}>
-                      <button
-                        className={styles.rowActionButton}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onView(b);
-                        }}
-                        title="View details"
-                      >
-                        <Eye size={14} />
-                      </button>
-                      <button
-                        className={styles.rowActionButton}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEdit(b);
-                        }}
-                        title="Edit"
-                      >
-                        <Pencil size={14} />
-                      </button>
-                      <button
-                        className={`${styles.rowActionButton} ${styles.rowActionButtonDanger}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (
-                            confirm(
-                              `Remove bookmark "${b.customName || b.title}"?`
-                            )
-                          ) {
-                            onRemove(b.id);
-                          }
-                        }}
-                        title="Remove"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      {removeId === b.id ? (
+                        /* ===== REMOVE CONFIRM MODE ===== */
+                        <>
+                          <button
+                            className={`${styles.rowActionButton} ${styles.rowActionButtonDanger}`}
+                            title="Confirm remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onRemove(b.id);
+                              setRemoveId(null);
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+
+                          <button
+                            className={styles.rowActionButton}
+                            title="Cancel"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRemoveId(null);
+                            }}
+                          >
+                            <X size={14} />
+                          </button>
+                        </>
+                      ) : (
+                        /* ===== DEFAULT MODE ===== */
+                        <>
+                          <button
+                            className={styles.rowActionButton}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onView(b);
+                            }}
+                            title="View details"
+                          >
+                            <Eye size={14} />
+                          </button>
+
+                          <button
+                            className={styles.rowActionButton}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit(b);
+                            }}
+                            title="Edit"
+                          >
+                            <Pencil size={14} />
+                          </button>
+
+                          <button
+                            className={`${styles.rowActionButton} ${styles.rowActionButtonDanger}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRemoveId(b.id);
+                            }}
+                            title="Remove"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </td>
