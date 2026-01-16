@@ -1,3 +1,4 @@
+// Header.tsx
 import { useState, useRef, useEffect } from "react";
 import SettingsMenu from "./SettingsMenu";
 import styles from "./Header.module.css";
