@@ -3,12 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import SettingsMenu from "./SettingsMenu";
 import styles from "./Header.module.css";
 import { Settings } from "../../icons/index";
+import { type SearchTabId } from "../../../api/models/search.types";
 
 interface HeaderProps {
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
-  activeTab: "bookmarks" | "search" | "uk";
-  onTabChange: (tab: "bookmarks" | "search" | "uk") => void;
+  activeTab: SearchTabId;
+  onTabChange: (tab: SearchTabId) => void;
 }
 
 export default function Header({

@@ -10,12 +10,11 @@ import type { OpenAddBookmarkPayload } from "../context/BookmarkContext";
 import TagProvider from "../api/utils/TagProvider";
 import { useBookmarks } from "../api/hooks/useBokmarks";
 import { useCategories, DEFAULT_CATEGORY } from "../api/hooks/useCategories";
-
-type TabId = "bookmarks" | "search" | "uk";
+import { type SearchTabId } from "../api/models/search.types";
 
 export default function MainWindow() {
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabId>("bookmarks");
+  const [activeTab, setActiveTab] = useState<SearchTabId>("bookmarks");
   const [bookmarkModal, setBookmarkModal] =
     useState<OpenAddBookmarkPayload | null>(null);
   useEffect(() => {

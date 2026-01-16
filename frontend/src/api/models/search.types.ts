@@ -16,3 +16,5 @@ export interface SearchFormState {
   ancestorNaId?: string;
   firstChildOnly?: boolean;
 }
+
+export type SearchTabId = "search" | "bookmarks";
