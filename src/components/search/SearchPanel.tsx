@@ -1,6 +1,6 @@
 // SearchPanel.tsx
 import { useEffect, useState } from "react";
-import { Search, XCircle } from "../../components/icons";
+import { Search, XCircle } from "../icons";
 import styles from "./SearchPanel.module.css";
 import { useSearch } from "../../context/SearchContext";
 import { LEVELS, LEVEL_LABELS } from "../../api/models/archive.types";
@@ -30,7 +30,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
 
   function update<K extends keyof SearchFormState>(
     key: K,
-    value: SearchFormState[K]
+    value: SearchFormState[K],
   ) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -54,15 +54,15 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
   function hasAnySearchValue(form: SearchFormState): boolean {
     return Boolean(
       form.q?.trim() ||
-        form.title?.trim() ||
-        form.naId?.trim() ||
-        form.personOrOrg?.trim() ||
-        form.dataSource?.trim() ||
-        form.levelOfDescription ||
-        form.recordGroupNumber?.trim() ||
-        form.microfilmId?.trim() ||
-        form.localId?.trim() ||
-        form.ancestorNaId?.trim()
+      form.title?.trim() ||
+      form.naId?.trim() ||
+      form.personOrOrg?.trim() ||
+      form.dataSource?.trim() ||
+      form.levelOfDescription ||
+      form.recordGroupNumber?.trim() ||
+      form.microfilmId?.trim() ||
+      form.localId?.trim() ||
+      form.ancestorNaId?.trim(),
     );
   }
 
@@ -249,7 +249,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
                   update(
                     "levelOfDescription",
                     (e.target.value ||
-                      undefined) as SearchFormState["levelOfDescription"]
+                      undefined) as SearchFormState["levelOfDescription"],
                   )
                 }
               >
@@ -483,7 +483,7 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
                   update(
                     "levelOfDescription",
                     (e.target.value ||
-                      undefined) as SearchFormState["levelOfDescription"]
+                      undefined) as SearchFormState["levelOfDescription"],
                   )
                 }
               >

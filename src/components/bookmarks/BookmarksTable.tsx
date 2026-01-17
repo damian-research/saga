@@ -8,7 +8,7 @@ import {
   ChevronDown,
   ChevronUp,
   X,
-} from "../../components/icons";
+} from "../icons";
 import { useState } from "react";
 import styles from "./BookmarksTable.module.css";
 import type { Bookmark } from "../../api/models/bookmarks.types";
@@ -29,7 +29,7 @@ interface Props {
     | "type";
   sortDirection: "asc" | "desc";
   onSort: (
-    field: "name" | "title" | "level" | "archive" | "added" | "online" | "type"
+    field: "name" | "title" | "level" | "archive" | "added" | "online" | "type",
   ) => void;
   onSelect: (id: string | null) => void;
   onEdit: (b: Bookmark) => void;

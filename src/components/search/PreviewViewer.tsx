@@ -1,7 +1,7 @@
 // Preview Viewer
 //
 import { useEffect, useState } from "react";
-import { Download, ChevronLeft, ChevronRight, X } from "../../components/icons";
+import { Download, ChevronLeft, ChevronRight, X } from "../icons";
 import { createPortal } from "react-dom";
 import type { Dao } from "../../api/models/ead3.types";
 import styles from "./PreviewViewer.module.css";
@@ -256,6 +256,6 @@ export default function PreviewViewer({
         )}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

@@ -9,7 +9,7 @@ import {
 } from "../../components/icons";
 import { useContext, useMemo, useState } from "react";
 import styles from "./BookmarksLayout.module.css";
-import { getLevelLabel, type Bookmark } from "../../api/models/";
+import { getLevelLabel, type Bookmark } from "../../api/models";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 import { useSearch } from "../../context/SearchContext";
 import { SearchDetails } from "../../components/search";
@@ -101,7 +101,7 @@ export default function BookmarksLayout({
 
   const tagMap = useMemo(
     () => new Map(tags.map((t) => [t.name, t.label])),
-    [tags]
+    [tags],
   );
 
   const [dragBookmarkId, setDragBookmarkId] = useState<string | null>(null);
@@ -119,7 +119,7 @@ export default function BookmarksLayout({
       result = result.filter(
         (b) =>
           b.customName.toLowerCase().includes(q) ||
-          b.title.toLowerCase().includes(q)
+          b.title.toLowerCase().includes(q),
       );
     }
     // Filter by level
@@ -147,7 +147,7 @@ export default function BookmarksLayout({
     // Filter by tags (match ALL selected tags)
     if (selectedTags.length > 0) {
       result = result.filter((b) =>
-        selectedTags.every((tag) => b.tags?.includes(tag))
+        selectedTags.every((tag) => b.tags?.includes(tag)),
       );
     }
 
@@ -221,7 +221,7 @@ export default function BookmarksLayout({
     setSelectedTags((prev) =>
       prev.includes(tagName)
         ? prev.filter((t) => t !== tagName)
-        : [...prev, tagName]
+        : [...prev, tagName],
     );
   }
 
@@ -241,13 +241,13 @@ export default function BookmarksLayout({
   // Get unique archives from bookmarks
   const levels = useMemo(() => {
     return Array.from(
-      new Set(bookmarks.map((b) => b.ead3?.level).filter(Boolean))
+      new Set(bookmarks.map((b) => b.ead3?.level).filter(Boolean)),
     );
   }, [bookmarks]);
 
   const types = useMemo(() => {
     return Array.from(
-      new Set(bookmarks.map((b) => b.ead3?.localType).filter(Boolean))
+      new Set(bookmarks.map((b) => b.ead3?.localType).filter(Boolean)),
     );
   }, [bookmarks]);
 

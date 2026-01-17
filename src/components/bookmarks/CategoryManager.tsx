@@ -1,6 +1,6 @@
 // components/bookmarks/CategoryManager.tsx
 import { useContext, useState } from "react";
-import { Save, Pencil, Trash2, X } from "../../components/icons";
+import { Save, Pencil, Trash2, X } from "../icons";
 import styles from "./TagManager.module.css"; // ← reuse styles
 import { BookmarkContext } from "../../context/BookmarkContext";
 

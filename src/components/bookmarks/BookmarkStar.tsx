@@ -3,7 +3,7 @@ import { useContext, useMemo } from "react";
 import type { Ead3Response } from "../search";
 import { BookmarkContext } from "../../context/BookmarkContext";
 import styles from "./BookmarkStar.module.css";
-import { Bookmark } from "../../components/icons";
+import { Bookmark } from "../icons";
 
 interface Props {
   record: Ead3Response;
@@ -33,11 +33,11 @@ export default function BookmarkStar({ record }: Props) {
         window.confirm(
           `Remove "${
             savedBookmark.customName || savedBookmark.title
-          }" from bookmarks?`
+          }" from bookmarks?`,
         )
       ) {
         updateBookmarks((prev) =>
-          prev.filter((b) => b.id !== savedBookmark.id)
+          prev.filter((b) => b.id !== savedBookmark.id),
         );
       }
     } else {

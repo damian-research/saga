@@ -1,6 +1,6 @@
 // TagManager.tsx
 import { useContext, useMemo, useState } from "react";
-import { Save, Pencil, Merge, Trash2, X } from "../../components/icons";
+import { Save, Pencil, Merge, Trash2, X } from "../icons";
 import styles from "./TagManager.module.css";
 import { TagContext } from "../../context/BookmarkContext";
 import { useTagOperations } from "../../api/hooks/useTagOperations";

@@ -1,6 +1,6 @@
 // confirmPopover
 import { useEffect } from "react";
-import { Check, X } from "../../components/icons";
+import { Check, X } from "../icons";
 import styles from "./ConfirmPopover.module.css";
 
 interface ConfirmPopoverProps {

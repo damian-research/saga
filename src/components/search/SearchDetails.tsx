@@ -1,6 +1,6 @@
 // SearchDetails.tsx
 import { useState } from "react";
-import { Eye, ScanSearch, Globe, Download } from "../../components/icons";
+import { Eye, ScanSearch, Globe, Download } from "../icons";
 import { useSearch } from "../../context/SearchContext";
 import { parseRecordDetails } from "../../api/utils/recordParser";
 import { getLevelLabel } from "../../api/models/archive.types";
@@ -8,7 +8,7 @@ import { BookmarkStar } from "../bookmarks";
 import styles from "./SearchDetails.module.css";
 import PreviewViewer from "./PreviewViewer";
 import { useDownloadObjects } from "../../api/hooks/useDownloadObjects";
-import { ConfirmPopover } from "../../components/popover/confirmPopover";
+import { ConfirmPopover } from "../popover/confirmPopover";
 
 interface SearchDetailsProps {
   setBusy: (value: boolean) => void;
@@ -27,7 +27,7 @@ export default function SearchDetails({
   const [pendingDownload, setPendingDownload] = useState<DigitalObjects>([]);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [activeObjects, setActiveObjects] = useState<DigitalObjects | null>(
-    null
+    null,
   );
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
@@ -169,7 +169,7 @@ export default function SearchDetails({
                       className={styles.viewButton}
                       onClick={() => {
                         const found = details.digitalObjects.find(
-                          (dao) => (dao.localType || dao.daoType) === item.type
+                          (dao) => (dao.localType || dao.daoType) === item.type,
                         );
                         if (found) {
                           setActiveObjects([found]);
@@ -240,7 +240,7 @@ export default function SearchDetails({
             onNext={() => setActiveIndex((i) => (i + 1) % activeObjects.length)}
             onPrev={() =>
               setActiveIndex(
-                (i) => (i - 1 + activeObjects.length) % activeObjects.length
+                (i) => (i - 1 + activeObjects.length) % activeObjects.length,
               )
             }
           />

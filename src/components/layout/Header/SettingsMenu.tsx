@@ -21,6 +21,9 @@ export default function SettingsMenu({
   const [draft, setDraft] = useState<AppSettings | null>(null);
   const [editable, setEditable] = useState<Record<string, boolean>>({});
   const [isDirty, setIsDirty] = useState(false);
+  const [migrationStatus, setMigrationStatus] = useState<
+    "pending" | "complete" | "error"
+  >("pending");
 
   useEffect(() => {
     setDraft(loadSettings());
@@ -28,6 +31,35 @@ export default function SettingsMenu({
 
   function enableEdit(key: string) {
     setEditable((prev) => ({ ...prev, [key]: true }));
+  }
+
+  // MIGRATION
+  useEffect(() => {
+    const migrated = localStorage.getItem("saga.migrated_to_sqlite");
+    setMigrationStatus(migrated === "true" ? "complete" : "pending");
+  }, []);
+  async function handleMigration() {
+    try {
+      const categories = JSON.parse(
+        localStorage.getItem("saga.categories.json") || "[]",
+      );
+      const tags = JSON.parse(localStorage.getItem("saga.tags.json") || "[]");
+      const bookmarks = JSON.parse(
+        localStorage.getItem("saga.bookmarks.json") || "[]",
+      );
+
+      await window.electronAPI.migration.fromLocalStorage({
+        categories,
+        tags,
+        bookmarks,
+      });
+
+      localStorage.setItem("saga.migrated_to_sqlite", "true");
+      setMigrationStatus("complete");
+    } catch (err) {
+      console.error("Migration failed:", err);
+      setMigrationStatus("error");
+    }
   }
 
   return (
@@ -169,7 +201,15 @@ export default function SettingsMenu({
         <div>
           Contact: <a href="mailto:saga.dk@pm.me">saga.dk@pm.me</a>
         </div>
-        <div>Version {__APP_VERSION__}</div>
+        {/* <div>Version {__APP_VERSION__}</div> */}
+      </div>
+      <div>
+        <h3>Data Migration</h3>
+        {migrationStatus === "pending" && (
+          <button onClick={handleMigration}>Migrate to SQLite</button>
+        )}
+        {migrationStatus === "complete" && <p>✓ Data migrated</p>}
+        {migrationStatus === "error" && <p>✗ Migration failed</p>}
       </div>
     </div>
   );

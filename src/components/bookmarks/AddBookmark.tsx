@@ -1,6 +1,6 @@
 // AddBookmark.tsx
 import { useState, useContext, useMemo } from "react";
-import { Save } from "../../components/icons";
+import { Save } from "../icons";
 import styles from "./AddBookmark.module.css";
 import type {
   ArchiveName,
@@ -43,7 +43,7 @@ export default function AddBookmark({
   const [categoryId, setCategoryId] = useState(bookmark?.categoryId ?? "");
   const [url, setUrl] = useState(bookmark?.url ?? "");
   const [archive, setArchive] = useState<ArchiveName>(
-    bookmark?.archive ?? "NARA"
+    bookmark?.archive ?? "NARA",
   );
 
   const [resolving, setResolving] = useState(false);
@@ -63,7 +63,7 @@ export default function AddBookmark({
         (t) =>
           typeof t.name === "string" &&
           t.name.startsWith(q) &&
-          !localTags.includes(t.name)
+          !localTags.includes(t.name),
       )
       .slice(0, 6);
   }, [tagInput, tags, localTags]);
