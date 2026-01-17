@@ -4,6 +4,13 @@ import pkg from "./package.json";
 
 export default defineConfig({
   plugins: [react()],
+  base: "./",
+  build: {
+    outDir: "dist",
+  },
+  server: {
+    port: 5173,
+  },
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
