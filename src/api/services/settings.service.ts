@@ -1,4 +1,3 @@
-// api/services/settings.service.ts
 export interface AppSettings {
   darkMode: boolean;
   naraApiKey?: string;
@@ -20,7 +19,6 @@ export function loadSettings(): AppSettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-
     return {
       ...DEFAULT_SETTINGS,
       ...JSON.parse(raw),

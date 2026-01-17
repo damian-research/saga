@@ -8,7 +8,7 @@ import { API_BASE_URL } from "../config";
 // ============================================================================
 
 export async function searchRecords(
-  paramsInput: NaraSearchParams
+  paramsInput: NaraSearchParams,
 ): Promise<Ead3Response[]> {
   const params = new URLSearchParams();
   const paramsInputSafe = paramsInput;
@@ -80,10 +80,10 @@ export async function getRecord(naId: number): Promise<Ead3Response> {
 
 export async function searchChildren(
   parentId: string,
-  limit: number = 50
+  limit: number = 50,
 ): Promise<Ead3Response[]> {
   const res = await fetch(
-    `${API_BASE_URL}/nara/children/${parentId}?limit=${limit}`
+    `${API_BASE_URL}/nara/children/${parentId}?limit=${limit}`,
   );
   if (!res.ok) {
     throw new Error("Failed to load children");
@@ -97,7 +97,7 @@ export async function searchChildren(
 
 export async function downloadRecord(
   naId: number,
-  dir?: string
+  dir?: string,
 ): Promise<void> {
   const url =
     `${API_BASE_URL}/nara/download/${naId}` +
