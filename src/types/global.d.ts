@@ -46,6 +46,12 @@ declare global {
           bookmarks: any[];
         }) => Promise<{ success: boolean }>;
       };
+      downloads: {
+        downloadFile: (payload: {
+          url: string;
+          filename: string;
+        }) => Promise<void>;
+      };
     };
   }
 }

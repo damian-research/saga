@@ -38,4 +38,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
     fromLocalStorage: (data: any) =>
       ipcRenderer.invoke("migrate:fromLocalStorage", data),
   },
+  downloads: {
+    downloadFile: (payload: { url: string; filename: string }) =>
+      ipcRenderer.invoke("downloads:downloadFile", payload),
+  },
+
 });

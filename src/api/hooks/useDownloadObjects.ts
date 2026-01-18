@@ -18,38 +18,29 @@ export function useDownloadObjects({ recordId, setBusy }: Options) {
 
       setBusy?.(true);
 
-      try {
-        const delay = (ms: number) =>
-          new Promise((resolve) => setTimeout(resolve, ms));
+      const delay = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
 
+      try {
         for (const object of objects) {
           try {
-            const res = await fetch(object.href!);
-            const blob = await res.blob();
-
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-
-            a.href = url;
             const originalName = object.href!.split("/").pop() ?? "download";
-            a.download = `${recordId}-${originalName}`;
 
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            await window.electronAPI.downloads.downloadFile({
+              url: object.href!,
+              filename: `${recordId}-${originalName}`,
+            });
 
-            URL.revokeObjectURL(url);
             await delay(300);
           } catch (e) {
-            // console.error("Download failed", e);
-            window.open(object.href!, "_blank");
+            console.warn("Download failed:", object.href, e);
           }
         }
       } finally {
         setBusy?.(false);
       }
     },
-    [recordId, setBusy]
+    [recordId, setBusy],
   );
 
   return { download };

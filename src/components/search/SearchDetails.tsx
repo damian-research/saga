@@ -1,6 +1,7 @@
 // SearchDetails.tsx
 import { useState } from "react";
 import { Eye, ScanSearch, Globe, Download } from "../icons";
+import { Loader } from "../loaders/Loader";
 import { useSearch } from "../../context/SearchContext";
 import { parseRecordDetails } from "../../api/utils/recordParser";
 import { getLevelLabel } from "../../api/models/archive.types";
@@ -30,6 +31,7 @@ export default function SearchDetails({
     null,
   );
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const { download } = useDownloadObjects({
     recordId: selectedRecord?.archDesc?.did?.unitId?.text ?? "",
@@ -41,12 +43,18 @@ export default function SearchDetails({
   }
   const details = parseRecordDetails(selectedRecord);
 
-  function handleDownload(objects: DigitalObjects) {
-    if (objects.length > 30) {
-      setPendingDownload(objects);
-      setDownloadConfirmOpen(true);
-    } else {
-      download(objects);
+  async function handleDownload(objects: DigitalObjects) {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      if (objects.length > 30) {
+        setPendingDownload(objects);
+        setDownloadConfirmOpen(true);
+      } else {
+        await download(objects);
+      }
+    } finally {
+      setIsDownloading(false);
     }
   }
 
@@ -105,10 +113,17 @@ export default function SearchDetails({
           )}
           <button
             className={styles.actionButton}
+            disabled={isDownloading}
             onClick={() => handleDownload(details.digitalObjects)}
             title="Download ALL documents within this unit"
           >
-            <Download size={20} strokeWidth={2} />
+            <span className={styles.iconSlot}>
+              {isDownloading ? (
+                <Loader size="small" />
+              ) : (
+                <Download size={20} strokeWidth={2} />
+              )}
+            </span>
           </button>
           <ConfirmPopover
             open={downloadConfirmOpen}

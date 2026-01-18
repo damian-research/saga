@@ -57,6 +57,8 @@ export default function PreviewViewer({
 
   // LOADER
   const [loading, setLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
+
   useEffect(() => {
     setLoading(true);
     setZoom(1);
@@ -159,9 +161,20 @@ export default function PreviewViewer({
             <button
               className={styles.downloadBtn}
               title="Download this document"
-              onClick={() => download([object])}
+              disabled={isDownloading}
+              onClick={async () => {
+                if (isDownloading) return;
+                setIsDownloading(true);
+                try {
+                  await download([object]);
+                } finally {
+                  setIsDownloading(false);
+                }
+              }}
             >
-              <Download size={14} strokeWidth={2} />
+              <span className={styles.iconSlot}>
+                {isDownloading ? <Loader size="small" /> : <Download size={14} strokeWidth={2} />}
+              </span>
             </button>
             <button className={styles.closeBtn} onClick={onClose} title="Close">
               <X size={16} strokeWidth={2} />

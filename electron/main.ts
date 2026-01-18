@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { initDatabase, closeDatabase, getDatabase } from "../backend/db/client";
 import { createTables } from "../backend/db/schema";
@@ -10,6 +10,9 @@ import { registerCategoriesHandlers } from "./ipc/handlers/categories.handler";
 import { registerTagsHandlers } from "./ipc/handlers/tags.handler";
 import { registerSettingsHandlers } from "./ipc/handlers/settings.handler";
 import { registerMigrationHandlers } from "./ipc/handlers/migration.handler";
+
+import fs from "fs";
+import https from "https";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -32,7 +35,41 @@ function createWindow() {
   }
 }
 
+function downloadToFile(url: string, targetPath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(targetPath);
+
+    https
+      .get(url, (response) => {
+        if (response.statusCode && response.statusCode >= 400) {
+          reject(new Error(`HTTP ${response.statusCode}`));
+          return;
+        }
+
+        response.pipe(file);
+
+        file.on("finish", () => {
+          file.close();
+          resolve();
+        });
+      })
+      .on("error", (err) => {
+        fs.unlink(targetPath, () => reject(err));
+      });
+  });
+}
+
 app.whenReady().then(() => {
+  ipcMain.handle(
+    "downloads:downloadFile",
+    async (_, { url, filename }: { url: string; filename: string }) => {
+      const downloadsDir = app.getPath("downloads");
+      const targetPath = path.join(downloadsDir, filename);
+
+      await downloadToFile(url, targetPath);
+    },
+  );
+
   const db = initDatabase();
   createTables(db);
 
