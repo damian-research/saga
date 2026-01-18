@@ -111,20 +111,22 @@ export default function SearchDetails({
               <Eye size={20} strokeWidth={2} />
             </button>
           )}
-          <button
-            className={styles.actionButton}
-            disabled={isDownloading}
-            onClick={() => handleDownload(details.digitalObjects)}
-            title="Download ALL documents within this unit"
-          >
-            <span className={styles.iconSlot}>
-              {isDownloading ? (
-                <Loader size="small" />
-              ) : (
-                <Download size={20} strokeWidth={2} />
-              )}
-            </span>
-          </button>
+          {(details.level === "item" || details.level === "fileUnit") && (
+            <button
+              className={styles.actionButton}
+              disabled={isDownloading}
+              onClick={() => handleDownload(details.digitalObjects)}
+              title="Download ALL documents within this unit"
+            >
+              <span className={styles.iconSlot}>
+                {isDownloading ? (
+                  <Loader size="small" />
+                ) : (
+                  <Download size={20} strokeWidth={2} />
+                )}
+              </span>
+            </button>
+          )}
           <ConfirmPopover
             open={downloadConfirmOpen}
             text={`You are about to download ${pendingDownload.length} files.\nThis may take some time and put load on the server.\n\nContinue?`}
