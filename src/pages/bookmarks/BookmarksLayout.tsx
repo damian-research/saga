@@ -99,10 +99,14 @@ export default function BookmarksLayout({
 
   const { tags } = tagCtx;
 
-  const tagMap = useMemo(
-    () => new Map(tags.map((t) => [t.name, t.label])),
-    [tags],
-  );
+  // Build tagMap from tag names to labels
+  const tagMap = useMemo(() => {
+    const map = new Map<string, string>();
+    tags.forEach((t) => {
+      map.set(t.name, t.label);
+    });
+    return map;
+  }, [tags]);
 
   const [dragBookmarkId, setDragBookmarkId] = useState<string | null>(null);
 

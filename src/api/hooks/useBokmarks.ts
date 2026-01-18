@@ -6,6 +6,11 @@ export function useBookmarks() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!window.electronAPI?.bookmarks) {
+      console.warn("electronAPI not ready");
+      return;
+    }
+
     setLoading(true);
     window.electronAPI.bookmarks
       .getAll()
@@ -22,12 +27,9 @@ export function useBookmarks() {
         : await window.electronAPI.bookmarks.create(bookmark);
 
       if (saved) {
-        setBookmarks((prev) => {
-          const exists = prev.some((b) => b.id === bookmark.id);
-          return exists
-            ? prev.map((b) => (b.id === bookmark.id ? saved : b))
-            : [...prev, saved];
-        });
+        // Force complete reload from database
+        const fresh = await window.electronAPI.bookmarks.getAll();
+        setBookmarks(fresh);
       }
     } catch (err) {
       console.error("Failed to save bookmark:", err);
@@ -59,6 +61,9 @@ export function useBookmarks() {
 
   async function updateCategory(id: string, categoryId: string) {
     try {
+      const bookmark = bookmarks.find((b) => b.id === id);
+      if (!bookmark) return;
+
       const updated = await window.electronAPI.bookmarks.update(id, {
         categoryId,
       });

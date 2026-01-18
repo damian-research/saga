@@ -57,6 +57,33 @@ export function useTagOperations() {
     return tags.find((t) => t.name === normalized) || null;
   }
 
+  async function mergeTags(fromName: string, toName: string) {
+    // Get all bookmarks with fromName tag
+    const allBookmarks = await window.electronAPI.bookmarks.getAll();
+    const toUpdate = allBookmarks.filter((b) => b.tags?.includes(fromName));
+
+    for (const bookmark of toUpdate) {
+      const newTags = bookmark
+        .tags!.filter((t) => t !== fromName)
+        .concat(toName);
+
+      await window.electronAPI.bookmarks.update(bookmark.id, {
+        tags: [...new Set(newTags)], // deduplicate
+      });
+    }
+  }
+
+  async function removeTagEverywhere(tagName: string) {
+    const allBookmarks = await window.electronAPI.bookmarks.getAll();
+    const toUpdate = allBookmarks.filter((b) => b.tags?.includes(tagName));
+
+    for (const bookmark of toUpdate) {
+      await window.electronAPI.bookmarks.update(bookmark.id, {
+        tags: bookmark.tags!.filter((t) => t !== tagName),
+      });
+    }
+  }
+
   return {
     tags,
     loading,
@@ -64,5 +91,7 @@ export function useTagOperations() {
     updateTag,
     deleteTag,
     findOrCreate,
+    mergeTags,
+    removeTagEverywhere,
   };
 }

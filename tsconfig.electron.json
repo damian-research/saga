@@ -11,5 +11,5 @@
     "allowSyntheticDefaultImports": true
   },
   "include": ["electron/**/*", "backend/**/*"],
-  "exclude": ["node_modules", "src", "dist", "dist-electron"]
+  "exclude": ["node_modules", "src", "dist"]
 }

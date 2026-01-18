@@ -36,9 +36,9 @@ app.whenReady().then(() => {
   const db = initDatabase();
   createTables(db);
 
-  const bookmarksService = new BookmarksService(db);
   const categoriesService = new CategoriesService(db);
   const tagsService = new TagsService(db);
+  const bookmarksService = new BookmarksService(db, tagsService);
 
   registerBookmarksHandlers(bookmarksService);
   registerCategoriesHandlers(categoriesService);

@@ -1,5 +1,6 @@
 import { Database } from "better-sqlite3";
 import { Bookmark } from "../../src/api/models/bookmarks.types";
+import { TagsService } from "./tags.service";
 
 interface BookmarkRow {
   id: string;
@@ -21,47 +22,55 @@ interface BookmarkRow {
 }
 
 export class BookmarksService {
-  constructor(private db: Database) {}
+  constructor(
+    private db: Database,
+    private tagsService?: TagsService,
+  ) {}
 
-  getAll(): Bookmark[] {
+  async getAll(): Promise<Bookmark[]> {
     const stmt = this.db.prepare(`
-      SELECT b.*, GROUP_CONCAT(bt.tag_id) as tag_ids
-      FROM bookmarks b
-      LEFT JOIN bookmark_tags bt ON b.id = bt.bookmark_id
-      GROUP BY b.id
-      ORDER BY b.created_at DESC
-    `);
+    SELECT b.*, GROUP_CONCAT(bt.tag_id) as tag_ids
+    FROM bookmarks b
+    LEFT JOIN bookmark_tags bt ON b.id = bt.bookmark_id
+    GROUP BY b.id
+    ORDER BY b.created_at DESC
+  `);
 
     const rows = stmt.all() as BookmarkRow[];
-    return rows.map(this.rowToBookmark);
+    return Promise.all(rows.map((row) => this.rowToBookmark(row)));
   }
 
-  getById(id: string): Bookmark | null {
+  async getById(id: string): Promise<Bookmark | null> {
     const stmt = this.db.prepare(`
-      SELECT b.*, GROUP_CONCAT(bt.tag_id) as tag_ids
-      FROM bookmarks b
-      LEFT JOIN bookmark_tags bt ON b.id = bt.bookmark_id
-      WHERE b.id = ?
-      GROUP BY b.id
-    `);
+    SELECT b.*, GROUP_CONCAT(bt.tag_id) as tag_ids
+    FROM bookmarks b
+    LEFT JOIN bookmark_tags bt ON b.id = bt.bookmark_id
+    WHERE b.id = ?
+    GROUP BY b.id
+  `);
 
     const row = stmt.get(id) as BookmarkRow | undefined;
     return row ? this.rowToBookmark(row) : null;
   }
 
-  create(bookmark: Bookmark): Bookmark {
+  async create(bookmark: Bookmark): Promise<Bookmark> {
     const now = new Date().toISOString();
-    const { tags, ...data } = bookmark;
+    let { tags, ...data } = bookmark;
+
+    // Resolve tag names to IDs
+    if (tags && tags.length > 0 && this.tagsService) {
+      tags = await this.resolveTagIds(tags, this.tagsService);
+    }
 
     this.db
       .prepare(
         `
-      INSERT INTO bookmarks (
-        id, mode, archive, ead_id, title, path_json,
-        ead3_level, ead3_local_type, ead3_dsc_head, ead3_digital_object_count,
-        category_id, custom_name, note, url, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `,
+    INSERT INTO bookmarks (
+      id, mode, archive, ead_id, title, path_json,
+      ead3_level, ead3_local_type, ead3_dsc_head, ead3_digital_object_count,
+      category_id, custom_name, note, url, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `,
       )
       .run(
         data.id,
@@ -85,38 +94,42 @@ export class BookmarksService {
       this.setTags(data.id, tags);
     }
 
-    return { ...bookmark, createdAt: now };
+    return { ...bookmark, tags, createdAt: now };
   }
 
-  update(id: string, updates: Partial<Bookmark>): void {
+  async update(id: string, updates: Partial<Bookmark>): Promise<void> {
+    let { tags, ...data } = updates;
+
+    // Resolve tag names to IDs
+    if (tags !== undefined && this.tagsService) {
+      tags = await this.resolveTagIds(tags, this.tagsService);
+      this.setTags(id, tags); // THIS MUST EXECUTE even if no other fields change
+    }
+
     const fields: string[] = [];
     const values: any[] = [];
 
-    if (updates.title !== undefined) {
+    if (data.title !== undefined) {
       fields.push("title = ?");
-      values.push(updates.title);
+      values.push(data.title);
     }
-    if (updates.customName !== undefined) {
+    if (data.customName !== undefined) {
       fields.push("custom_name = ?");
-      values.push(updates.customName);
+      values.push(data.customName);
     }
-    if (updates.note !== undefined) {
+    if (data.note !== undefined) {
       fields.push("note = ?");
-      values.push(updates.note);
+      values.push(data.note);
     }
-    if (updates.categoryId !== undefined) {
+    if (data.categoryId !== undefined) {
       fields.push("category_id = ?");
-      values.push(updates.categoryId);
+      values.push(data.categoryId);
     }
 
     if (fields.length > 0) {
       this.db
         .prepare(`UPDATE bookmarks SET ${fields.join(", ")} WHERE id = ?`)
         .run(...values, id);
-    }
-
-    if (updates.tags !== undefined) {
-      this.setTags(id, updates.tags);
     }
   }
 
@@ -139,7 +152,31 @@ export class BookmarksService {
     }
   }
 
-  private rowToBookmark(row: BookmarkRow): Bookmark {
+  private async rowToBookmark(row: BookmarkRow): Promise<Bookmark> {
+    const tagIds = row.tag_ids ? row.tag_ids.split(",") : [];
+
+    const tagNames: string[] = [];
+    if (tagIds.length > 0 && this.tagsService) {
+      const allTags = await this.tagsService.getAll();
+      console.log("[rowToBookmark] tagIds:", tagIds);
+      console.log(
+        "[rowToBookmark] allTags:",
+        allTags.map((t) => `${t.id}:${t.name}`),
+      );
+
+      for (const id of tagIds) {
+        const tag = allTags.find((t) => t.id === id);
+        if (tag) {
+          console.log(`[rowToBookmark] Mapped ${id} → ${tag.name}`);
+          tagNames.push(tag.name);
+        } else {
+          console.warn(`[rowToBookmark] Tag ID ${id} not found`);
+        }
+      }
+    }
+
+    console.log("[rowToBookmark] Final tagNames:", tagNames);
+
     return {
       id: row.id,
       mode: row.mode as any,
@@ -154,11 +191,48 @@ export class BookmarksService {
         digitalObjectCount: row.ead3_digital_object_count,
       },
       categoryId: row.category_id,
-      tags: row.tag_ids ? row.tag_ids.split(",") : [],
+      tags: tagNames,
       customName: row.custom_name,
       note: row.note || undefined,
       url: row.url,
       createdAt: row.created_at,
     };
+  }
+
+  private async resolveTagIds(
+    tagNamesOrIds: string[],
+    tagsService: TagsService,
+  ): Promise<string[]> {
+    const tagIds: string[] = [];
+    const allTags = await tagsService.getAll();
+
+    for (const value of tagNamesOrIds) {
+      // Check if it's already a UUID (has dashes)
+      if (value.includes("-")) {
+        // It's an ID - verify it exists
+        const exists = allTags.find((t) => t.id === value);
+        if (exists) {
+          tagIds.push(value);
+        }
+        continue;
+      }
+
+      // It's a name - find or create
+      const normalized = value.toLowerCase();
+      let tag = allTags.find((t) => t.name === normalized);
+
+      if (!tag) {
+        tag = await tagsService.create({
+          id: crypto.randomUUID(),
+          name: normalized,
+          label: value,
+          createdAt: new Date().toISOString(),
+        });
+      }
+
+      tagIds.push(tag.id);
+    }
+
+    return tagIds;
   }
 }

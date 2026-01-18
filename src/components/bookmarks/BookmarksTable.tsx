@@ -245,25 +245,35 @@ export default function BookmarksTable({
 
                 {/* TAGS */}
                 <td className={styles.tagsCell}>
-                  {b.tags?.length ? (
-                    <div
-                      className={styles.tagList}
-                      title={b.tags.map((t) => tagMap.get(t) ?? t).join(", ")}
-                    >
-                      {b.tags.slice(0, 3).map((t) => (
-                        <span key={t} className={styles.tag}>
-                          {tagMap.get(t) ?? t}
-                        </span>
-                      ))}
-                      {b.tags.length > 3 && (
-                        <span className={styles.tagMore}>
-                          +{b.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    "—"
-                  )}
+                  {(() => {
+                    if (b.tags?.length) {
+                      console.log("Bookmark:", b.customName);
+                      console.log("  b.tags:", b.tags);
+                      console.log("  tagMap size:", tagMap.size);
+                      console.log("  tagMap has ww2?", tagMap.has("ww2"));
+                      console.log("  tagMap.get(ww2):", tagMap.get("ww2"));
+                    }
+
+                    return b.tags?.length ? (
+                      <div
+                        className={styles.tagList}
+                        title={b.tags.map((t) => tagMap.get(t) ?? t).join(", ")}
+                      >
+                        {b.tags.slice(0, 3).map((t) => (
+                          <span key={t} className={styles.tag}>
+                            {tagMap.get(t) ?? t}
+                          </span>
+                        ))}
+                        {b.tags.length > 3 && (
+                          <span className={styles.tagMore}>
+                            +{b.tags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      "—"
+                    );
+                  })()}
                 </td>
 
                 {/* ONLINE */}

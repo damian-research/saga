@@ -1,8 +1,6 @@
-// TagProvider.tsx
 import { useCallback, useEffect, useState } from "react";
 import { TagContext } from "../../context/BookmarkContext";
 import type { Tag } from "../../api/models/bookmarks.types";
-import { loadTags, saveTags } from "../../api/services/bookmarks.service";
 
 function normalize(name: string) {
   return name.trim().toLowerCase();
@@ -24,68 +22,60 @@ export default function TagProvider({
 }) {
   const [tags, setTags] = useState<Tag[]>([]);
 
-  // ===== LOAD =====
   useEffect(() => {
-    const raw = loadTags();
-    const normalized = Array.isArray(raw) ? raw.filter(isValidTag) : [];
-
-    setTags(normalized);
-
-    if (normalized.length !== raw.length) {
-      saveTags(normalized);
+    if (!window.electronAPI?.tags) {
+      console.warn("electronAPI not ready");
+      return;
     }
+
+    window.electronAPI.tags
+      .getAll()
+      .then((loaded) => {
+        const normalized = loaded.filter(isValidTag);
+        setTags(normalized);
+      })
+      .catch((err) => console.error("Failed to load tags:", err));
   }, []);
 
-  // ===== ENSURE =====
-  const ensureTags = useCallback((names: string[]) => {
+  const ensureTags = useCallback(async (names: string[]) => {
     if (!names.length) return;
 
-    setTags((prev) => {
-      const map = new Map(prev.map((t) => [t.name, t]));
-      let changed = false;
+    const allTags = await window.electronAPI.tags.getAll();
+    const existing = new Set(allTags.map((t) => t.name));
 
-      names.forEach((raw) => {
-        const name = normalize(raw);
-        if (!name || map.has(name)) return;
+    for (const raw of names) {
+      const name = normalize(raw);
+      if (!name || existing.has(name)) continue;
 
-        map.set(name, {
-          id: crypto.randomUUID(),
-          name,
-          label: raw.trim(),
-          createdAt: new Date().toISOString(),
-        });
-        changed = true;
-      });
+      const newTag: Tag = {
+        id: crypto.randomUUID(),
+        name,
+        label: raw.trim(),
+        createdAt: new Date().toISOString(),
+      };
 
-      const next = changed ? Array.from(map.values()) : prev;
-      if (changed) saveTags(next); // ← persist tylko gdy zmiana
-      return next;
-    });
+      const created = await window.electronAPI.tags.create(newTag);
+      setTags((prev) => [...prev, created]);
+      existing.add(name);
+    }
+
+    // Critical: wait for state update to propagate
+    await new Promise((resolve) => setTimeout(resolve, 50));
   }, []);
 
-  // ===== RENAME =====
-  const renameTag = useCallback((tagId: string, newLabel: string) => {
+  const renameTag = useCallback(async (tagId: string, newLabel: string) => {
     const label = newLabel.trim();
     if (!label) return;
 
-    const name = normalize(label);
-
-    setTags((prev) => {
-      const next = prev.map((t) =>
-        t.id === tagId ? { ...t, name, label } : t
-      );
-      saveTags(next);
-      return next;
-    });
+    const updated = await window.electronAPI.tags.update(tagId, label);
+    if (updated) {
+      setTags((prev) => prev.map((t) => (t.id === tagId ? updated : t)));
+    }
   }, []);
 
-  // ===== REMOVE =====
-  const removeTag = useCallback((tagId: string) => {
-    setTags((prev) => {
-      const next = prev.filter((t) => t.id !== tagId);
-      saveTags(next);
-      return next;
-    });
+  const removeTag = useCallback(async (tagId: string) => {
+    await window.electronAPI.tags.delete(tagId);
+    setTags((prev) => prev.filter((t) => t.id !== tagId));
   }, []);
 
   return (

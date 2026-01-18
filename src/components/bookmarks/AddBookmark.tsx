@@ -281,7 +281,8 @@ export default function AddBookmark({
 
               if (!resolved) return;
 
-              tagCtx.ensureTags(localTags);
+              // Ensure tags exist before saving
+              await tagCtx.ensureTags(localTags);
 
               onSave({
                 ...resolved,

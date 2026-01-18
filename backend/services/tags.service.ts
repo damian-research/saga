@@ -25,15 +25,24 @@ export class TagsService {
     return row ? this.rowToTag(row) : null;
   }
 
-  create(tag: Tag): Tag {
+  async create(tag: Tag): Promise<Tag> {
     const now = new Date().toISOString();
+
+    // Validate: name must be lowercase string, not UUID
+    if (
+      !tag.name ||
+      tag.name.includes("-") ||
+      tag.name !== tag.name.toLowerCase()
+    ) {
+      throw new Error(`Invalid tag name: ${tag.name}`);
+    }
 
     this.db
       .prepare(
         `
-      INSERT INTO tags (id, name, label, created_at)
-      VALUES (?, ?, ?, ?)
-    `,
+    INSERT INTO tags (id, name, label, created_at)
+    VALUES (?, ?, ?, ?)
+  `,
       )
       .run(tag.id, tag.name, tag.label, now);
 
