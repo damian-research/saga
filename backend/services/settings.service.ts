@@ -45,8 +45,12 @@ export class SettingsService {
 
   save(settings: AppSetting): void {
     // Validate URL format
-    if (settings.naraAddress && !settings.naraAddress.startsWith("http")) {
-      throw new Error("Invalid NARA address - must start with http/https");
+    if (settings.naraAddress) {
+      try {
+        new URL(settings.naraAddress);
+      } catch {
+        throw new Error("Invalid NARA address URL format");
+      }
     }
 
     const stmt = this.db.prepare(

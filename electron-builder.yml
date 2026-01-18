@@ -1,0 +1,25 @@
+appId: com.saga.archive
+productName: Saga Archive
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - package.json
+  - "!**/*.ts"
+  - "!node_modules/@types/**/*"
+  - "!src"
+  - "!electron"
+  - "!backend"
+mac:
+  category: public.app-category.productivity
+  target: dmg
+win:
+  target: nsis
+linux:
+  target: AppImage
+  category: Office
+extraMetadata:
+  env:
+    NODE_ENV: production
