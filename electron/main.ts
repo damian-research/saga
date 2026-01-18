@@ -10,11 +10,26 @@ import { registerCategoriesHandlers } from "./ipc/handlers/categories.handler";
 import { registerTagsHandlers } from "./ipc/handlers/tags.handler";
 import { registerSettingsHandlers } from "./ipc/handlers/settings.handler";
 import { registerMigrationHandlers } from "./ipc/handlers/migration.handler";
-
+import { shell } from "electron";
 import fs from "fs";
 import https from "https";
 
+
 const isDev = process.env.NODE_ENV === "development";
+
+const ALLOWED_EXTERNAL_DOMAINS = [
+  "https://catalog.archives.gov",
+  "https://www.archives.gov",
+];
+
+const ALLOWED_DOWNLOAD_PREFIXES = [
+  "https://s3.amazonaws.com/",
+];
+
+const httpsAgent = new https.Agent({
+  keepAlive: true,
+  maxSockets: 10,
+});
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -25,6 +40,23 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
     },
+  });
+
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (ALLOWED_EXTERNAL_DOMAINS.some((d) => url.startsWith(d))) {
+      shell.openExternal(url);
+    }
+
+    return { action: "deny" };
+  });
+
+  win.webContents.on("will-navigate", (event, url) => {
+    const currentUrl = win.webContents.getURL();
+
+    if (url !== currentUrl) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
   });
 
   if (isDev) {
@@ -40,7 +72,7 @@ function downloadToFile(url: string, targetPath: string): Promise<void> {
     const file = fs.createWriteStream(targetPath);
 
     https
-      .get(url, (response) => {
+      .get(url, { agent: httpsAgent }, (response) => {
         if (response.statusCode && response.statusCode >= 400) {
           reject(new Error(`HTTP ${response.statusCode}`));
           return;
@@ -66,6 +98,10 @@ app.whenReady().then(() => {
       const downloadsDir = app.getPath("downloads");
       const targetPath = path.join(downloadsDir, filename);
 
+      if (!ALLOWED_DOWNLOAD_PREFIXES.some((p) => url.startsWith(p))) {
+        throw new Error("Invalid download source");
+      }
+
       await downloadToFile(url, targetPath);
     },
   );
@@ -76,6 +112,7 @@ app.whenReady().then(() => {
   const categoriesService = new CategoriesService(db);
   const tagsService = new TagsService(db);
   const bookmarksService = new BookmarksService(db, tagsService);
+  // main.ts (Electron)
 
   registerBookmarksHandlers(bookmarksService);
   registerCategoriesHandlers(categoriesService);

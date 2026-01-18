@@ -1,5 +1,4 @@
 // SearchPanel.tsx
-import { useEffect, useState } from "react";
 import { Search, XCircle } from "../icons";
 import styles from "./SearchPanel.module.css";
 import { useSearch } from "../../context/SearchContext";
@@ -17,7 +16,6 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
     setSearchForm,
     withinForm,
     setWithinForm,
-    activeFilter,
     submitSearch,
     mode,
     setMode,
