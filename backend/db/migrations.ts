@@ -6,7 +6,7 @@ import { TagsService } from "../services/tags.service";
 const MIGRATION_FLAG_KEY = "saga.migrated_to_sqlite";
 
 export async function migrateFromLocalStorage(
-  db: Database,
+  _db: Database,
   bookmarksService: BookmarksService,
   categoriesService: CategoriesService,
   tagsService: TagsService,

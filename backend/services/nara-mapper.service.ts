@@ -7,9 +7,7 @@ import {
   Metadata,
   NaraDate,
   Ancestor,
-  PhysicalOccurrence,
-  DigitalObject,
-  Creator,
+  PhysicalOccurrence
 } from "../models/nara-raw-model";
 import {
   Ead,
@@ -27,19 +25,7 @@ import {
   Subject,
   Part,
   MaintenanceHistory,
-  MaintenanceEvent,
-  NoteStmt,
-  ControlNote,
-  ParagraphWithRef,
-  UnitTitle,
-  GenreForm,
-  DaoSet,
-  Dao,
-  ComponentDid,
-  ScopeContent,
-  ChronList,
-  DateSingle,
-  Event,
+  NoteStmt
 } from "../models/ead3.model";
 import {
   LevelOfDescription,

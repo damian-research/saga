@@ -64,26 +64,10 @@ export class NaraClientService {
       : `records/search${queryOrUrl}`;
 
     const fullUrl = `${this.baseUrl}/${url}`;
-    const startTime = Date.now();
-
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
     try {
-      // const headers: Record<string, string> = {
-      //   Accept: "application/json",
-      //   "User-Agent": "Saga/1.0 (Electron)",
-      // };
-
-      // if (this.apiKey) {
-      //   headers["x-api-key"] = this.apiKey;
-      // }
-
-      // const response = await fetch(fullUrl, {
-      //   headers,
-      //   signal: controller.signal,
-      // });
-
       const response = await fetch(fullUrl, {
         headers: {
           Accept: "application/json",
@@ -91,9 +75,6 @@ export class NaraClientService {
         },
         signal: controller.signal,
       });
-
-      const elapsed = Date.now() - startTime;
-      // console.log(`[NARA] Request took ${elapsed} ms | URL: ${url}`);
 
       if (!response.ok) {
         const text = await response.text();

@@ -1,6 +1,6 @@
 // electron/ipc/handlers/settings.handler.ts
 
-import { ipcMain, BrowserWindow } from "electron";
+import { ipcMain } from "electron";
 import { IPC_CHANNELS } from "../channels";
 import { SettingsService } from "../../../backend/services/settings.service";
 import { AppSetting } from "../../../backend/models/settings.types";

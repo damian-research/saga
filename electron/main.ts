@@ -1,7 +1,7 @@
 import type { ClientRequest } from "http";
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
-import { initDatabase, closeDatabase, getDatabase } from "../backend/db/client";
+import { initDatabase, closeDatabase } from "../backend/db/client";
 import { createTables } from "../backend/db/schema";
 import { BookmarksService } from "../backend/services/bookmarks.service";
 import { CategoriesService } from "../backend/services/categories.service";
@@ -30,8 +30,6 @@ const httpsAgent = new https.Agent({
   keepAlive: true,
   maxSockets: 10,
 });
-
-const activeDownloads = new Map<string, ClientRequest>();
 
 function createWindow() {
   const win = new BrowserWindow({
