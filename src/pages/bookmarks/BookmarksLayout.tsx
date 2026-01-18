@@ -9,7 +9,8 @@ import {
 } from "../../components/icons";
 import { useContext, useMemo, useState } from "react";
 import styles from "./BookmarksLayout.module.css";
-import { getLevelLabel, type Bookmark } from "../../api/models";
+import { getLevelLabel } from "../../../backend/models/archive.types";
+import { type Bookmark } from "../../api/models/bookmarks.types";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 import { useSearch } from "../../context/SearchContext";
 import { SearchDetails } from "../../components/search";

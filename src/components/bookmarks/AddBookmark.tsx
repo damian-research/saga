@@ -7,15 +7,15 @@ import type {
   Bookmark,
   WindowMode,
 } from "../../api/models/bookmarks.types";
-import { ARCHIVES } from "../../api/models/archive.types";
-import type { Ead3Response } from "../../api/models/ead3.types";
+import { ARCHIVES } from "../../../backend/models/archive.types";
+import type { Ead } from "../../../backend/models/ead3.model";
 import { getRecord } from "../../api/services/searchRecords.service";
 import { mapEad3ToBookmark } from "../../api/utils/ead3.mapper";
 import { BookmarkContext, TagContext } from "../../context/BookmarkContext";
 
 interface Props {
   mode: WindowMode;
-  record?: Ead3Response;
+  record?: Ead;
   bookmark?: Bookmark;
   onClose: () => void;
   onSave: (bookmark: Bookmark) => void;

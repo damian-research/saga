@@ -2,7 +2,7 @@
 //
 import { useSearch } from "../../context/SearchContext";
 import { getRecordKey } from "../../api/utils/recordParser";
-import type { Ead3Response } from "../../api/models/ead3.types";
+import type { Ead } from "../../../backend/models/ead3.model";
 import styles from "./SearchList.module.css";
 import SearchListItem from "./SearchListItem";
 
@@ -24,7 +24,7 @@ export default function SearchList() {
       <div className={styles.title}>Results ({results.length})</div>
 
       {results
-        .filter((r): r is Ead3Response => Boolean(r))
+        .filter((r): r is Ead => Boolean(r))
         .map((record) => {
           const key = getRecordKey(record);
           return (

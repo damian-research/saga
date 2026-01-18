@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Eye, ScanSearch, Globe, Download } from "../icons";
 import { useSearch } from "../../context/SearchContext";
 import { parseRecordDetails } from "../../api/utils/recordParser";
-import { getLevelLabel } from "../../api/models/archive.types";
+import { getLevelLabel } from "../../../backend/models/archive.types";
 import { BookmarkStar } from "../bookmarks";
 import styles from "./SearchDetails.module.css";
 import PreviewViewer from "./PreviewViewer";

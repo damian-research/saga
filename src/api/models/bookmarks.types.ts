@@ -1,5 +1,8 @@
-import type { PathSegment } from "./ead3.types";
-import type { ArchiveName, WindowMode } from "./archive.types";
+import type { PathSegment } from "../../../backend/models/ead3.model";
+import type {
+  ArchiveName,
+  WindowMode,
+} from "../../../backend/models/archive.types";
 
 export interface BookmarkCategory {
   id: string; // UUID
@@ -40,7 +43,7 @@ export interface Bookmark {
 // Re-export for convenience
 export type {
   ARCHIVES,
-  LEVELS,
+  LevelOfDescription,
   ArchiveName,
   WindowMode,
-} from "./archive.types";
+} from "../../../backend/models/archive.types";

@@ -1,15 +1,16 @@
+// src/api/services/searchRecords.service.ts
+
 import { buildNaraQ, buildNaraParams } from "../utils/queryBuilder";
 import type { NaraSearchParams } from "../dto/naraSearch.dto";
-import type { Ead3Response } from "../models/ead3.types";
-import { API_BASE_URL } from "../config";
+import type { Ead } from "../../../backend/models/ead3.model";
+import { electronApi } from "../electron.api";
 
 // ============================================================================
 // EAD3 ONLY – SEARCH
 // ============================================================================
-
 export async function searchRecords(
   paramsInput: NaraSearchParams,
-): Promise<Ead3Response[]> {
+): Promise<Ead[]> {
   const params = new URLSearchParams();
   const paramsInputSafe = paramsInput;
 
@@ -52,59 +53,40 @@ export async function searchRecords(
     params.set("availableOnline", String(paramsInputSafe.onlineAvailable));
   }
 
-  const res = await fetch(`${API_BASE_URL}/nara/search?${params.toString()}`);
-  if (!res.ok) {
-    throw new Error("Search failed");
-  }
-
-  // API returns EAD3 – passthrough
-  return res.json();
+  return electronApi.nara.search(`?${params.toString()}`);
 }
 
 // ============================================================================
 // EAD3 ONLY – FULL RECORD
 // ============================================================================
-
-export async function getRecord(naId: number): Promise<Ead3Response> {
-  const res = await fetch(`${API_BASE_URL}/nara/full/${naId}`);
-  if (!res.ok) {
-    throw new Error("Failed to load record");
-  }
-
-  return res.json();
+export async function getRecord(naId: number): Promise<Ead> {
+  return electronApi.nara.getFull(naId);
 }
 
 // ============================================================================
 // EAD3 ONLY – GET CHILDREN
 // ============================================================================
-
 export async function searchChildren(
   parentId: string,
   limit: number = 50,
-): Promise<Ead3Response[]> {
-  const res = await fetch(
-    `${API_BASE_URL}/nara/children/${parentId}?limit=${limit}`,
-  );
-  if (!res.ok) {
-    throw new Error("Failed to load children");
-  }
-  return res.json();
+): Promise<Ead[]> {
+  return electronApi.nara.getChildren(Number(parentId), limit);
 }
 
 // ============================================================================
 // DOWNLOAD (NARA-SPECIFIC, OK)
 // ============================================================================
 
-export async function downloadRecord(
-  naId: number,
-  dir?: string,
-): Promise<void> {
-  const url =
-    `${API_BASE_URL}/nara/download/${naId}` +
-    (dir ? `?dir=${encodeURIComponent(dir)}` : "");
+// export async function downloadRecord(
+//   naId: number,
+//   dir?: string,
+// ): Promise<void> {
+//   const url =
+//     `${API_BASE_URL}/nara/download/${naId}` +
+//     (dir ? `?dir=${encodeURIComponent(dir)}` : "");
 
-  const res = await fetch(url, { method: "POST" });
-  if (!res.ok) {
-    throw new Error("Download failed");
-  }
-}
+//   const res = await fetch(url, { method: "POST" });
+//   if (!res.ok) {
+//     throw new Error("Download failed");
+//   }
+// }

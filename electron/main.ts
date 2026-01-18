@@ -14,9 +14,11 @@ import { registerMigrationHandlers } from "./ipc/handlers/migration.handler";
 import { shell } from "electron";
 import fs from "fs";
 import https from "https";
+import { registerNaraHandlers } from "./ipc/handlers/nara.handler";
 
 const isDev = process.env.NODE_ENV === "development";
 
+// DOWNLOAD
 const ALLOWED_EXTERNAL_DOMAINS = [
   "https://catalog.archives.gov",
   "https://www.archives.gov",
@@ -142,8 +144,8 @@ app.whenReady().then(() => {
   const categoriesService = new CategoriesService(db);
   const tagsService = new TagsService(db);
   const bookmarksService = new BookmarksService(db, tagsService);
-  // main.ts (Electron)
 
+  registerNaraHandlers();
   registerBookmarksHandlers(bookmarksService);
   registerCategoriesHandlers(categoriesService);
   registerTagsHandlers(tagsService);
@@ -153,6 +155,7 @@ app.whenReady().then(() => {
   createWindow();
 });
 
+// ##
 app.on("window-all-closed", () => {
   closeDatabase();
   if (process.platform !== "darwin") {

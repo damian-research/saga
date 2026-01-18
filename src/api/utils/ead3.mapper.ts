@@ -1,8 +1,8 @@
 import type { Bookmark } from "../models/bookmarks.types";
-import type { Ead3Response } from "../models/ead3.types";
+import type { Ead } from "../../../backend/models/ead3.model";
 
 export function mapEad3ToBookmark(
-  record: Ead3Response,
+  record: Ead,
   input: {
     mode: "add-manual" | "add-from-search";
     categoryId: string;
@@ -10,7 +10,7 @@ export function mapEad3ToBookmark(
     url: string;
     id?: string;
     createdAt?: string;
-  }
+  },
 ): Bookmark {
   const naId = record.archDesc.did.unitId.text;
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, ChevronLeft, ChevronRight, X } from "../icons";
 import { createPortal } from "react-dom";
-import type { Dao } from "../../api/models/ead3.types";
+import type { Dao } from "../../../backend/models/ead3.model";
 import styles from "./PreviewViewer.module.css";
 import { Loader } from "../loaders/Loader";
 import { useDownloadObjects } from "../../api/hooks/useDownloadObjects";
@@ -175,7 +175,6 @@ export default function PreviewViewer({
               <X size={16} strokeWidth={2} />
             </button>
           </div>
-
         </div>
         {busy && (
           <div className={styles.downloadProgress}>

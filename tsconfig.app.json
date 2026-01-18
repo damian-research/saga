@@ -25,5 +25,10 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "src/api/dto"]
+  "include": [
+    "src",
+    "src/api/dto",
+    "backend/models/ead3.model.ts",
+    "backend/models/archive.types.ts"
+  ]
 }

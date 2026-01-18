@@ -2,7 +2,10 @@
 import { Search, XCircle } from "../icons";
 import styles from "./SearchPanel.module.css";
 import { useSearch } from "../../context/SearchContext";
-import { LEVELS, LEVEL_LABELS } from "../../api/models/archive.types";
+import {
+  LEVEL_OF_DESCRIPTION_VALUES,
+  getLabel,
+} from "../../../backend/models/archive.types";
 import type { SearchFormState } from "../../api/models/search.types";
 
 interface SearchPanelProps {
@@ -251,9 +254,10 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
                 }
               >
                 <option value="">Any</option>
-                {LEVELS.map((level) => (
+
+                {LEVEL_OF_DESCRIPTION_VALUES.map((level) => (
                   <option key={level} value={level}>
-                    {LEVEL_LABELS[level]}
+                    {getLabel(level)}
                   </option>
                 ))}
               </select>
@@ -485,9 +489,10 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
                 }
               >
                 <option value="">Any</option>
-                {LEVELS.map((level) => (
+
+                {LEVEL_OF_DESCRIPTION_VALUES.map((level) => (
                   <option key={level} value={level}>
-                    {LEVEL_LABELS[level]}
+                    {getLabel(level)}
                   </option>
                 ))}
               </select>

@@ -1,6 +1,13 @@
+// electron/preload.ts
 import { contextBridge, ipcRenderer } from "electron";
 
-contextBridge.exposeInMainWorld("electronAPI", {
+declare global {
+  interface Window {
+    electronAPI: typeof electronAPI;
+  }
+}
+
+const electronAPI = {
   bookmarks: {
     getAll: () => ipcRenderer.invoke("bookmarks:getAll"),
     getById: (id: string) => ipcRenderer.invoke("bookmarks:getById", id),
@@ -41,9 +48,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   downloads: {
     start: (payload: { url: string; filename: string }) =>
       ipcRenderer.invoke("downloads:start", payload),
-
     cancel: () => ipcRenderer.send("downloads:cancel"),
-
     onProgress: (cb: (received: number, total: number) => void) => {
       const handler = (_: any, data: { received: number; total: number }) =>
         cb(data.received, data.total);
@@ -51,4 +56,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
       return () => ipcRenderer.removeListener("downloads:progress", handler);
     },
   },
-});
+  nara: {
+    search: (queryString: string) =>
+      ipcRenderer.invoke("nara:search", queryString),
+    getFull: (naId: number) => ipcRenderer.invoke("nara:getFull", naId),
+    getChildren: (parentId: number, limit?: number) =>
+      ipcRenderer.invoke("nara:getChildren", parentId, limit),
+  },
+};
+
+contextBridge.exposeInMainWorld("electronAPI", electronAPI);

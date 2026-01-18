@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import styles from "./BookmarksTable.module.css";
 import type { Bookmark } from "../../api/models/bookmarks.types";
-import { getLevelLabel } from "../../api/models/archive.types";
+import { getLevelLabel } from "../../../backend/models/archive.types";
 
 interface Props {
   items: Bookmark[];

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
     "dev:vite": "vite",
-    "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
+    "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron --inspect=5858 .",
     "build": "tsc && vite build && tsc -p tsconfig.electron.json",
     "build:electron": "electron-builder",
     "preview": "vite preview"

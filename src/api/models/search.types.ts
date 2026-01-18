@@ -1,5 +1,5 @@
 // ===== search.types.ts =====
-import type { LevelOfDescription } from "./archive.types";
+import type { LevelOfDescription } from "../../../backend/models/archive.types";
 
 export interface SearchFormState {
   q: string;

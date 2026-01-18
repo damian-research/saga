@@ -1,14 +1,14 @@
 // SearchListItem
 //
 import { memo } from "react";
-import type { Ead3Response } from "../../api/models/ead3.types";
+import type { Ead } from "../../../backend/models/ead3.model";
 import { useSearch } from "../../context/SearchContext";
 import { parseListItem } from "../../api/utils/recordParser";
 import styles from "./SearchListItem.module.css";
 import PathShell from "./PathShell";
 
 interface SearchListItemProps {
-  record: Ead3Response;
+  record: Ead;
   isSelected: boolean;
 }
 

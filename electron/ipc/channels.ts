@@ -28,4 +28,11 @@ export const IPC_CHANNELS = {
 
   // Migrate
   MIGRATE_DATA: "migrate:fromLocalStorage",
+
+  // NARA
+  nara: {
+    search: "nara:search",
+    getFull: "nara:getFull",
+    getChildren: "nara:getChildren",
+  },
 } as const;

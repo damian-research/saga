@@ -1,6 +1,6 @@
 // context/SearchContext.tsx
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { Ead3Response } from "../api/models/ead3.types";
+import type { Ead } from "../../backend/models/ead3.model";
 import type { SearchFormState, SagaTabId } from "../api/models/search.types";
 import {
   searchRecords,
@@ -17,14 +17,14 @@ interface SearchError {
 
 interface ActiveFilter {
   type: "all" | "within" | "archive";
-  record?: Ead3Response;
+  record?: Ead;
   form?: SearchFormState;
 }
 
 interface SearchContextValue {
   // State
-  results: Ead3Response[];
-  selectedRecord: Ead3Response | null;
+  results: Ead[];
+  selectedRecord: Ead | null;
   loading: boolean;
   error: SearchError | null;
   activeFilter: ActiveFilter | null;
@@ -36,9 +36,9 @@ interface SearchContextValue {
 
   // Actions
   search: (form: SearchFormState) => Promise<void>;
-  selectRecord: (record: Ead3Response) => void;
+  selectRecord: (record: Ead) => void;
   selectByPathSegment: (segmentId: string) => Promise<void>;
-  searchWithin: (record: Ead3Response) => Promise<void>;
+  searchWithin: (record: Ead) => Promise<void>;
   clearError: () => void;
   clearResults: () => void;
   submitSearch: (form: SearchFormState, isWithinMode: boolean) => Promise<void>;
@@ -57,10 +57,8 @@ interface SearchProviderProps {
 }
 
 export function SearchProvider({ children }: SearchProviderProps) {
-  const [results, setResults] = useState<Ead3Response[]>([]);
-  const [selectedRecord, setSelectedRecord] = useState<Ead3Response | null>(
-    null,
-  );
+  const [results, setResults] = useState<Ead[]>([]);
+  const [selectedRecord, setSelectedRecord] = useState<Ead | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<SearchError | null>(null);
   const [mode, setMode] = useState<SearchMode>("search");
@@ -107,7 +105,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
     }
   }
 
-  function selectRecord(record: Ead3Response) {
+  function selectRecord(record: Ead) {
     setSelectedRecord(record);
   }
 
@@ -127,7 +125,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
     }
   }
 
-  async function searchWithin(record: Ead3Response) {
+  async function searchWithin(record: Ead) {
     const parentId = record.archDesc?.did?.unitId?.text;
     if (!parentId) {
       setError({ message: "No parent ID found", type: "validation" });
@@ -156,7 +154,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
     setLoading(true);
     setError(null);
     try {
-      let data: Ead3Response[];
+      let data: Ead[];
 
       if (isWithinMode && form.firstChildOnly && form.ancestorNaId) {
         // Direct children only

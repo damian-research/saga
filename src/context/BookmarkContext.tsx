@@ -1,6 +1,6 @@
 // context/BookmarkContext.ts
 import { createContext } from "react";
-import type { Ead3Response } from "../api/models/ead3.types";
+import type { Ead } from "../../backend/models/ead3.model";
 import type {
   Bookmark,
   BookmarkCategory,
@@ -11,7 +11,7 @@ import type {
 // ===== BOOKMARK MODAL =====
 export interface OpenAddBookmarkPayload {
   mode: WindowMode;
-  record?: Ead3Response;
+  record?: Ead;
   bookmark?: Bookmark;
 }
 

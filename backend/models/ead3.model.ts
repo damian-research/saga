@@ -4,7 +4,7 @@ import type { LevelOfDescription } from "./archive.types";
 // EAD3 TYPESCRIPT MODELS
 // ============================================================================
 
-export interface Ead3Response {
+export interface Ead {
   control: Control;
   archDesc: ArchDesc;
   path?: PathSegment[];

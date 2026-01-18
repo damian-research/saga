@@ -1,6 +1,6 @@
 // recordParser.ts
-import type { Ead3Response, Dao } from "../models/ead3.types";
-import { getLevelLabel } from "../models/archive.types";
+import type { Ead, Dao } from "../../../backend/models/ead3.model";
+import { getLevelLabel } from "../../../backend/models/archive.types";
 
 export interface ParsedRecordDetails {
   title: string;
@@ -26,7 +26,7 @@ function normalize(v: unknown): string | null {
   return typeof v === "string" ? v.toLowerCase() : null;
 }
 
-function extractDigitalObjects(record: Ead3Response): Dao[] {
+function extractDigitalObjects(record: Ead): Dao[] {
   const archDesc = record.archDesc;
   let digitalObjects: Dao[] = [];
 
@@ -56,7 +56,7 @@ function summarizeObjects(digitalObjects: Dao[]): ObjectSummary[] {
   return Object.entries(typeCounts).map(([type, count]) => ({ type, count }));
 }
 
-function extractRestrictions(record: Ead3Response) {
+function extractRestrictions(record: Ead) {
   const archDesc = record.archDesc;
   let accessRestriction: string | null = null;
   let useRestriction: string | null = null;
@@ -97,7 +97,7 @@ function extractRestrictions(record: Ead3Response) {
   };
 }
 
-export function parseRecordDetails(record: Ead3Response): ParsedRecordDetails {
+export function parseRecordDetails(record: Ead): ParsedRecordDetails {
   const archDesc = record.archDesc;
   const control = record.control;
 
@@ -138,7 +138,7 @@ export interface ParsedListItem {
   digitalObjectCount: number;
 }
 
-export function parseListItem(record: Ead3Response): ParsedListItem {
+export function parseListItem(record: Ead): ParsedListItem {
   const archDesc = record.archDesc;
 
   const title = archDesc.did.unitTitle;
@@ -163,7 +163,7 @@ export function parseListItem(record: Ead3Response): ParsedListItem {
   };
 }
 
-export function getRecordKey(record: Ead3Response | null | undefined): string {
+export function getRecordKey(record: Ead | null | undefined): string {
   if (!record) return "__invalid__";
 
   return (

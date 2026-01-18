@@ -2,6 +2,7 @@ declare const __APP_VERSION__: string;
 
 import { Bookmark, BookmarkCategory, Tag } from "../api/models/bookmarks.types";
 import { AppSettings } from "../api/services/settings.service";
+import { Ead } from "../backend/models/ead3.model";
 
 declare global {
   interface Window {
@@ -52,6 +53,11 @@ declare global {
         onProgress: (
           cb: (received: number, total: number) => void,
         ) => () => void;
+      };
+      nara: {
+        search: (queryString: string) => Promise<Ead[]>;
+        getFull: (naId: number) => Promise<Ead>;
+        getChildren: (parentId: number, limit?: number) => Promise<Ead[]>;
       };
     };
   }
