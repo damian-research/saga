@@ -25,7 +25,7 @@ export default function PreviewViewer({
   onNext,
   onPrev,
 }: Props) {
-  const { download } = useDownloadObjects({ recordId });
+  const { download, cancel, progress, busy } = useDownloadObjects(recordId);
 
   // ZOOM
   const [zoom, setZoom] = useState(1);
@@ -57,7 +57,6 @@ export default function PreviewViewer({
 
   // LOADER
   const [loading, setLoading] = useState(true);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -160,27 +159,37 @@ export default function PreviewViewer({
             </button>
             <button
               className={styles.downloadBtn}
+              disabled={busy}
+              onClick={() => download([object])}
               title="Download this document"
-              disabled={isDownloading}
-              onClick={async () => {
-                if (isDownloading) return;
-                setIsDownloading(true);
-                try {
-                  await download([object]);
-                } finally {
-                  setIsDownloading(false);
-                }
-              }}
             >
               <span className={styles.iconSlot}>
-                {isDownloading ? <Loader size="small" /> : <Download size={14} strokeWidth={2} />}
+                {busy ? (
+                  <Loader size="small" />
+                ) : (
+                  <Download size={14} strokeWidth={2} />
+                )}
               </span>
             </button>
             <button className={styles.closeBtn} onClick={onClose} title="Close">
               <X size={16} strokeWidth={2} />
             </button>
           </div>
+
         </div>
+        {busy && (
+          <div className={styles.downloadProgress}>
+            <div className={styles.downloadProgressActions}>
+              <span className={styles.downloadProgressLabel}>
+                Downloading {Math.round(progress * 100)}%
+              </span>
+              <button className={styles.cancelButton} onClick={cancel}>
+                Cancel
+              </button>
+            </div>
+            <progress value={progress} max={1} />
+          </div>
+        )}
         {/* Viewer */}
         {!isSingle && (
           <button
