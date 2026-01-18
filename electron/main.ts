@@ -1,3 +1,4 @@
+import type { ClientRequest } from "http";
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { initDatabase, closeDatabase, getDatabase } from "../backend/db/client";
@@ -14,7 +15,6 @@ import { shell } from "electron";
 import fs from "fs";
 import https from "https";
 
-
 const isDev = process.env.NODE_ENV === "development";
 
 const ALLOWED_EXTERNAL_DOMAINS = [
@@ -22,14 +22,14 @@ const ALLOWED_EXTERNAL_DOMAINS = [
   "https://www.archives.gov",
 ];
 
-const ALLOWED_DOWNLOAD_PREFIXES = [
-  "https://s3.amazonaws.com/",
-];
+const ALLOWED_DOWNLOAD_PREFIXES = ["https://s3.amazonaws.com/"];
 
 const httpsAgent = new https.Agent({
   keepAlive: true,
   maxSockets: 10,
 });
+
+const activeDownloads = new Map<string, ClientRequest>();
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -67,44 +67,74 @@ function createWindow() {
   }
 }
 
-function downloadToFile(url: string, targetPath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(targetPath);
-
-    https
-      .get(url, { agent: httpsAgent }, (response) => {
-        if (response.statusCode && response.statusCode >= 400) {
-          reject(new Error(`HTTP ${response.statusCode}`));
-          return;
-        }
-
-        response.pipe(file);
-
-        file.on("finish", () => {
-          file.close();
-          resolve();
-        });
-      })
-      .on("error", (err) => {
-        fs.unlink(targetPath, () => reject(err));
-      });
-  });
-}
-
 app.whenReady().then(() => {
-  ipcMain.handle(
-    "downloads:downloadFile",
-    async (_, { url, filename }: { url: string; filename: string }) => {
-      const downloadsDir = app.getPath("downloads");
-      const targetPath = path.join(downloadsDir, filename);
+  // Single active download
+  let currentDownload: {
+    req: ClientRequest;
+    file: fs.WriteStream;
+    path: string;
+  } | null = null;
 
+  ipcMain.handle(
+    "downloads:start",
+    async (event, { url, filename }: { url: string; filename: string }) => {
       if (!ALLOWED_DOWNLOAD_PREFIXES.some((p) => url.startsWith(p))) {
         throw new Error("Invalid download source");
       }
 
-      await downloadToFile(url, targetPath);
+      // Cancel existing download
+      if (currentDownload) {
+        currentDownload.req.destroy();
+        currentDownload.file.close();
+        currentDownload = null;
+      }
+
+      const downloadsDir = app.getPath("downloads");
+      const targetPath = path.join(downloadsDir, filename);
+      const file = fs.createWriteStream(targetPath);
+
+      return new Promise<void>((resolve, reject) => {
+        const req = https.get(url, { agent: httpsAgent }, (response) => {
+          const total = Number(response.headers["content-length"] || 0);
+          let received = 0;
+
+          if (response.statusCode && response.statusCode >= 400) {
+            reject(new Error(`HTTP ${response.statusCode}`));
+            return;
+          }
+
+          response.on("data", (chunk) => {
+            received += chunk.length;
+            event.sender.send("downloads:progress", { received, total });
+          });
+
+          response.pipe(file);
+
+          file.on("finish", () => {
+            file.close();
+            currentDownload = null;
+            resolve();
+          });
+        });
+
+        req.on("error", (err) => {
+          currentDownload = null;
+          fs.unlink(targetPath, () => reject(err));
+        });
+
+        currentDownload = { req, file, path: targetPath };
+      });
     },
   );
+
+  ipcMain.on("downloads:cancel", () => {
+    if (currentDownload) {
+      currentDownload.req.destroy();
+      currentDownload.file.close();
+      fs.unlink(currentDownload.path, () => {});
+      currentDownload = null;
+    }
+  });
 
   const db = initDatabase();
   createTables(db);

@@ -47,10 +47,11 @@ declare global {
         }) => Promise<{ success: boolean }>;
       };
       downloads: {
-        downloadFile: (payload: {
-          url: string;
-          filename: string;
-        }) => Promise<void>;
+        start: (payload: { url: string; filename: string }) => Promise<void>;
+        cancel: () => void;
+        onProgress: (
+          cb: (received: number, total: number) => void,
+        ) => () => void;
       };
     };
   }

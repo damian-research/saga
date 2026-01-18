@@ -1,47 +1,61 @@
 // useDownloadObjects.ts
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 
-type DownloadItem = {
-  href?: string;
-};
+type DownloadItem = { href?: string };
 
-type Options = {
-  recordId: string;
-  setBusy?: (value: boolean) => void;
-};
+export function useDownloadObjects(recordId: string) {
+  const [progress, setProgress] = useState<number>(0);
+  const [busy, setBusy] = useState(false);
+  const cancelledRef = useRef(false);
 
-export function useDownloadObjects({ recordId, setBusy }: Options) {
   const download = useCallback(
     async (items: DownloadItem[]) => {
       const objects = items.filter((o) => o.href);
-      if (objects.length === 0) return;
+      if (objects.length === 0 || busy) return;
 
-      setBusy?.(true);
-
-      const delay = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
+      setBusy(true);
+      setProgress(0);
+      cancelledRef.current = false;
 
       try {
-        for (const object of objects) {
-          try {
-            const originalName = object.href!.split("/").pop() ?? "download";
+        for (let i = 0; i < objects.length; i++) {
+          if (cancelledRef.current) break;
 
-            await window.electronAPI.downloads.downloadFile({
-              url: object.href!,
-              filename: `${recordId}-${originalName}`,
-            });
+          const filename = `${recordId}-${objects[i].href!.split("/").pop()}`;
 
-            await delay(300);
-          } catch (e) {
-            console.warn("Download failed:", object.href, e);
-          }
+          // Track per-file progress and combine with total
+          let fileProgress = 0;
+          const cleanup = window.electronAPI.downloads.onProgress(
+            (received, total) => {
+              if (total > 0) {
+                fileProgress = received / total;
+                const totalProgress = (i + fileProgress) / objects.length;
+                setProgress(totalProgress);
+              }
+            },
+          );
+
+          await window.electronAPI.downloads.start({
+            url: objects[i].href!,
+            filename,
+          });
+
+          cleanup();
         }
+      } catch (err) {
+        console.error("Download failed:", err);
       } finally {
-        setBusy?.(false);
+        setBusy(false);
+        setProgress(0);
       }
     },
-    [recordId, setBusy],
+    [recordId, busy],
   );
 
-  return { download };
+  const cancel = useCallback(() => {
+    cancelledRef.current = true;
+    window.electronAPI.downloads.cancel();
+  }, []);
+
+  return { download, cancel, progress, busy };
 }

@@ -259,11 +259,66 @@
   font-weight: var(--font-weight-normal);
 }
 
+/* === Download Progress === */
+.downloadProgress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  margin-top: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-sm);
+}
 
-.iconSlot {
-  display: inline-flex;
-  width: 20px;
-  height: 20px;
+.downloadProgress progress {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+.downloadProgress progress::-webkit-progress-bar {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.downloadProgress progress::-webkit-progress-value {
+  background: var(--accent-primary);
+  border-radius: var(--radius-sm);
+  transition: width 0.3s ease;
+}
+
+.downloadProgress progress::-moz-progress-bar {
+  background: var(--accent-primary);
+  border-radius: var(--radius-sm);
+}
+
+.downloadProgressActions {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+}
+
+.downloadProgressLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.cancelButton {
+  padding: 4px 12px;
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cancelButton:hover {
+  background: var(--accent-primary-err);
+  color: white;
+  border-color: var(--accent-primary-err);
 }

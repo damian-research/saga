@@ -1,7 +1,6 @@
 // SearchDetails.tsx
 import { useState } from "react";
 import { Eye, ScanSearch, Globe, Download } from "../icons";
-import { Loader } from "../loaders/Loader";
 import { useSearch } from "../../context/SearchContext";
 import { parseRecordDetails } from "../../api/utils/recordParser";
 import { getLevelLabel } from "../../api/models/archive.types";
@@ -9,7 +8,6 @@ import { BookmarkStar } from "../bookmarks";
 import styles from "./SearchDetails.module.css";
 import PreviewViewer from "./PreviewViewer";
 import { useDownloadObjects } from "../../api/hooks/useDownloadObjects";
-import { ConfirmPopover } from "../popover/confirmPopover";
 import { type Ead3Response } from "../../pages/search";
 import { type SearchFormState } from "../../api/models/search.types";
 
@@ -33,12 +31,10 @@ export default function SearchDetails({
     null,
   );
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [isDownloading, setIsDownloading] = useState(false);
 
-  const { download } = useDownloadObjects({
-    recordId: selectedRecord?.archDesc?.did?.unitId?.text ?? "",
-    setBusy,
-  });
+  const { download, cancel, progress, busy } = useDownloadObjects(
+    selectedRecord?.archDesc?.did?.unitId?.text ?? "",
+  );
 
   if (!selectedRecord) {
     return <div className={styles.empty}>Select a record to view details</div>;
@@ -46,17 +42,13 @@ export default function SearchDetails({
   const details = parseRecordDetails(selectedRecord);
 
   async function handleDownload(objects: DigitalObjects) {
-    if (isDownloading) return;
-    setIsDownloading(true);
-    try {
-      if (objects.length > 30) {
-        setPendingDownload(objects);
-        setDownloadConfirmOpen(true);
-      } else {
-        await download(objects);
-      }
-    } finally {
-      setIsDownloading(false);
+    if (busy) return;
+
+    if (objects.length > 30) {
+      setPendingDownload(objects);
+      setDownloadConfirmOpen(true);
+    } else {
+      await download(objects);
     }
   }
 
@@ -121,28 +113,13 @@ export default function SearchDetails({
           {(details.level === "item" || details.level === "fileUnit") && (
             <button
               className={styles.actionButton}
-              disabled={isDownloading}
+              disabled={busy}
               onClick={() => handleDownload(details.digitalObjects)}
               title="Download ALL documents within this unit"
             >
-              <span className={styles.iconSlot}>
-                {isDownloading ? (
-                  <Loader size="small" />
-                ) : (
-                  <Download size={20} strokeWidth={2} />
-                )}
-              </span>
+              <Download size={20} strokeWidth={2} />
             </button>
           )}
-          <ConfirmPopover
-            open={downloadConfirmOpen}
-            text={`You are about to download ${pendingDownload.length} files.\nThis may take some time and put load on the server.\n\nContinue?`}
-            onConfirm={() => {
-              download(pendingDownload);
-              setDownloadConfirmOpen(false);
-            }}
-            onCancel={() => setDownloadConfirmOpen(false)}
-          />
           {details.level !== "item" && details.level !== "fileUnit" && (
             <button
               className={styles.actionButton}
@@ -161,6 +138,21 @@ export default function SearchDetails({
           </button>
           {showBookmarkAction && <BookmarkStar record={selectedRecord} />}
         </div>
+
+        {/* DOWNLOAD PROGRESS */}
+        {busy && (
+          <div className={styles.downloadProgress}>
+            <div className={styles.downloadProgressActions}>
+              <span className={styles.downloadProgressLabel}>
+                Downloading {Math.round(progress * 100)}%
+              </span>
+              <button className={styles.cancelButton} onClick={cancel}>
+                Cancel
+              </button>
+            </div>
+            <progress value={progress} max={1} />
+          </div>
+        )}
 
         {/* DESCRIPTION */}
         {details.description && (

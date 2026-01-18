@@ -39,8 +39,16 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.invoke("migrate:fromLocalStorage", data),
   },
   downloads: {
-    downloadFile: (payload: { url: string; filename: string }) =>
-      ipcRenderer.invoke("downloads:downloadFile", payload),
-  },
+    start: (payload: { url: string; filename: string }) =>
+      ipcRenderer.invoke("downloads:start", payload),
 
+    cancel: () => ipcRenderer.send("downloads:cancel"),
+
+    onProgress: (cb: (received: number, total: number) => void) => {
+      const handler = (_: any, data: { received: number; total: number }) =>
+        cb(data.received, data.total);
+      ipcRenderer.on("downloads:progress", handler);
+      return () => ipcRenderer.removeListener("downloads:progress", handler);
+    },
+  },
 });
