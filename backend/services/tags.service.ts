@@ -28,15 +28,6 @@ export class TagsService {
   async create(tag: Tag): Promise<Tag> {
     const now = new Date().toISOString();
 
-    // Validate: name must be lowercase string, not UUID
-    if (
-      !tag.name ||
-      tag.name.includes("-") ||
-      tag.name !== tag.name.toLowerCase()
-    ) {
-      throw new Error(`Invalid tag name: ${tag.name}`);
-    }
-
     this.db
       .prepare(
         `

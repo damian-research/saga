@@ -181,13 +181,23 @@ export default function SettingsMenu({
         </button>
       </div>
 
-      <div className={styles.section}>
+      <div className={`${styles.section} ${styles.migrationSection}`}>
         <h4 className={styles.sectionTitle}>Data Migration</h4>
         {migrationStatus === "pending" && (
-          <button onClick={handleMigration}>Migrate to SQLite</button>
+          <button className={styles.migrationButton} onClick={handleMigration}>
+            Migrate localStorage to SQLite
+          </button>
         )}
-        {migrationStatus === "complete" && <p>✓ Data migrated</p>}
-        {migrationStatus === "error" && <p>✗ Migration failed</p>}
+        {migrationStatus === "complete" && (
+          <div className={`${styles.migrationStatus} ${styles.complete}`}>
+            ✓ Migration complete
+          </div>
+        )}
+        {migrationStatus === "error" && (
+          <div className={`${styles.migrationStatus} ${styles.error}`}>
+            ✗ Migration failed - check console
+          </div>
+        )}
       </div>
 
       <div className={styles.settingsFooter}>

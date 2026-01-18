@@ -114,7 +114,8 @@
   background-color: var(--accent-primary);
   color: var(--text-primary);
   cursor: pointer;
-  transition: background-color var(--transition-fast),
+  transition:
+    background-color var(--transition-fast),
     border-color var(--transition-fast);
 }
 
@@ -185,4 +186,64 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* MIGARTION */
+/* Migration section */
+.migrationSection {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-secondary);
+}
+
+.migrationButton {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background-color: var(--accent-primary);
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.migrationButton:hover {
+  background-color: var(--accent-primary-hover);
+  border-color: var(--accent-primary);
+}
+
+.migrationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.migrationStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-secondary);
+}
+
+.migrationStatus.complete {
+  color: var(--accent-success);
+  border: 1px solid var(--accent-success);
+}
+
+.migrationStatus.error {
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
+}
+
+.dark-mode .migrationSection {
+  border-top-color: var(--border-tertiary);
+}
+
+.dark-mode .migrationButton {
+  background-color: var(--accent-primary);
+  border-color: var(--border-tertiary);
 }
