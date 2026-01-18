@@ -72,7 +72,8 @@
   color: var(--text-primary);
   cursor: pointer;
   user-select: none;
-  transition: background-color var(--transition-fast),
+  transition:
+    background-color var(--transition-fast),
     border-color var(--transition-fast);
 }
 
@@ -235,7 +236,7 @@
   right: 0;
   width: 320px;
   height: calc(100vh - var(--app-header-height));
-  background: var(--panel-bg);
+  background: var(--bg-primary);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
   z-index: 50;

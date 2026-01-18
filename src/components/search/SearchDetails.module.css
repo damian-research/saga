@@ -155,7 +155,6 @@
 }
 
 .objectCount {
-  margin-left: auto;
   color: var(--text-secondary);
 }
 
@@ -170,6 +169,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-left: auto;
 }
 
 .viewButton:hover {
