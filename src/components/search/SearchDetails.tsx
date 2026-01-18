@@ -10,6 +10,8 @@ import styles from "./SearchDetails.module.css";
 import PreviewViewer from "./PreviewViewer";
 import { useDownloadObjects } from "../../api/hooks/useDownloadObjects";
 import { ConfirmPopover } from "../popover/confirmPopover";
+import { type Ead3Response } from "../../pages/search";
+import { type SearchFormState } from "../../api/models/search.types";
 
 interface SearchDetailsProps {
   setBusy: (value: boolean) => void;
@@ -20,7 +22,7 @@ export default function SearchDetails({
   setBusy,
   showBookmarkAction = true,
 }: SearchDetailsProps) {
-  const { selectedRecord, searchWithin, switchToSearchTab } = useSearch();
+  const { selectedRecord, submitSearch, setWithinForm, setMode } = useSearch();
   type DigitalObjects = RecordDetails["digitalObjects"];
   type RecordDetails = ReturnType<typeof parseRecordDetails>;
 
@@ -58,15 +60,20 @@ export default function SearchDetails({
     }
   }
 
-  async function handleSearchWithin() {
-    if (!selectedRecord) return;
-    setBusy(true);
-    try {
-      switchToSearchTab();
-      await searchWithin(selectedRecord);
-    } finally {
-      setBusy(false);
-    }
+  async function handleSearchWithin(record: Ead3Response) {
+    const ancestorNaId = record.archDesc?.did?.unitId?.text;
+    if (!ancestorNaId) return;
+
+    const form: SearchFormState = {
+      q: "",
+      limit: 50,
+      onlineAvailable: true,
+      firstChildOnly: false,
+      ancestorNaId,
+    };
+    setMode("within");
+    setWithinForm(form);
+    await submitSearch(form, true);
   }
 
   // DESCRIPTION
@@ -139,7 +146,7 @@ export default function SearchDetails({
           {details.level !== "item" && details.level !== "fileUnit" && (
             <button
               className={styles.actionButton}
-              onClick={handleSearchWithin}
+              onClick={() => handleSearchWithin(selectedRecord)}
               title="Run search within this unit"
             >
               <ScanSearch size={20} strokeWidth={2} />

@@ -8,6 +8,8 @@ import {
   searchChildren,
 } from "../api/services/searchRecords.service";
 
+type SearchMode = "search" | "within";
+
 interface SearchError {
   message: string;
   type: "network" | "validation" | "server" | "unknown";
@@ -29,6 +31,8 @@ interface SearchContextValue {
   activeTab: SagaTabId;
   switchToSearchTab: () => void;
   switchToBookmarksTab: () => void;
+  mode: SearchMode;
+  setMode: React.Dispatch<React.SetStateAction<SearchMode>>;
 
   // Actions
   search: (form: SearchFormState) => Promise<void>;
@@ -55,11 +59,11 @@ interface SearchProviderProps {
 export function SearchProvider({ children }: SearchProviderProps) {
   const [results, setResults] = useState<Ead3Response[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<Ead3Response | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<SearchError | null>(null);
-
+  const [mode, setMode] = useState<SearchMode>("search");
   const [activeTab, setActiveTab] = useState<SagaTabId>("search");
 
   function switchToSearchTab() {
@@ -193,6 +197,8 @@ export function SearchProvider({ children }: SearchProviderProps) {
         error,
         activeFilter,
         activeTab,
+        mode,
+        setMode,
         switchToSearchTab,
         switchToBookmarksTab,
         search,

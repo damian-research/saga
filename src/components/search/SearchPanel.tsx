@@ -10,8 +10,6 @@ interface SearchPanelProps {
   setBusy: (value: boolean) => void;
 }
 
-type SearchMode = "search" | "within";
-
 export default function SearchPanel({ setBusy }: SearchPanelProps) {
   const {
     clearResults,
@@ -21,8 +19,9 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
     setWithinForm,
     activeFilter,
     submitSearch,
+    mode,
+    setMode,
   } = useSearch();
-  const [mode, setMode] = useState<SearchMode>("search");
 
   // Get active form and setter based on mode
   const form = mode === "search" ? searchForm : withinForm;
@@ -34,22 +33,6 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
   ) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
-
-  useEffect(() => {
-    if (activeFilter?.type === "within") {
-      setMode("within");
-
-      const ancestorNaId =
-        activeFilter.record?.archDesc?.did?.unitId?.text ?? "";
-
-      setWithinForm((prev) => ({
-        ...prev,
-        ancestorNaId,
-        onlineAvailable: false,
-        firstChildOnly: true,
-      }));
-    }
-  }, [activeFilter, setWithinForm]);
 
   function hasAnySearchValue(form: SearchFormState): boolean {
     return Boolean(
@@ -72,6 +55,22 @@ export default function SearchPanel({ setBusy }: SearchPanelProps) {
     setBusy(true);
     try {
       await submitSearch(form, mode === "within");
+      // Reset inactive form to default state
+      if (mode === "search") {
+        setWithinForm({
+          q: "",
+          limit: 50,
+          onlineAvailable: true,
+          firstChildOnly: false,
+          ancestorNaId: "",
+        });
+      } else if (mode === "within") {
+        setSearchForm({
+          q: "",
+          limit: 50,
+          onlineAvailable: true,
+        });
+      }
     } finally {
       setBusy(false);
     }
