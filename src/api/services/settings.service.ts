@@ -1,15 +1,9 @@
-export interface AppSettings {
-  darkMode: boolean;
-  naraApiKey?: string;
-  downloadPath: string;
-  archivePath: string;
-  databaseAddress: string;
-}
+import type { AppSetting } from "../../../backend/models/settings.types";
 
-export async function loadSettings(): Promise<AppSettings> {
+export async function loadSettings(): Promise<AppSetting> {
   return window.electronAPI.settings.get();
 }
 
-export async function saveSettings(settings: AppSettings): Promise<void> {
+export async function saveSettings(settings: AppSetting): Promise<void> {
   await window.electronAPI.settings.save(settings);
 }

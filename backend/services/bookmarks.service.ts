@@ -1,3 +1,5 @@
+// backend/services/bookmarks.service.ts
+
 import { Database } from "better-sqlite3";
 import { Bookmark } from "../../src/api/models/bookmarks.types";
 import { TagsService } from "./tags.service";
@@ -29,35 +31,44 @@ export class BookmarksService {
 
   async getAll(): Promise<Bookmark[]> {
     const stmt = this.db.prepare(`
-    SELECT b.*, GROUP_CONCAT(bt.tag_id) as tag_ids
-    FROM bookmarks b
-    LEFT JOIN bookmark_tags bt ON b.id = bt.bookmark_id
-    GROUP BY b.id
-    ORDER BY b.created_at DESC
-  `);
+      SELECT b.*, GROUP_CONCAT(bt.tag_id) as tag_ids
+      FROM bookmarks b
+      LEFT JOIN bookmark_tags bt ON b.id = bt.bookmark_id
+      GROUP BY b.id
+      ORDER BY b.created_at DESC
+    `);
 
     const rows = stmt.all() as BookmarkRow[];
-    return Promise.all(rows.map((row) => this.rowToBookmark(row)));
+
+    // Load tags once for all bookmarks
+    const allTags = this.tagsService ? await this.tagsService.getAll() : [];
+    const tagMap = new Map(allTags.map((t) => [t.id, t.name]));
+
+    return rows.map((row) => this.rowToBookmark(row, tagMap));
   }
 
   async getById(id: string): Promise<Bookmark | null> {
     const stmt = this.db.prepare(`
-    SELECT b.*, GROUP_CONCAT(bt.tag_id) as tag_ids
-    FROM bookmarks b
-    LEFT JOIN bookmark_tags bt ON b.id = bt.bookmark_id
-    WHERE b.id = ?
-    GROUP BY b.id
-  `);
+      SELECT b.*, GROUP_CONCAT(bt.tag_id) as tag_ids
+      FROM bookmarks b
+      LEFT JOIN bookmark_tags bt ON b.id = bt.bookmark_id
+      WHERE b.id = ?
+      GROUP BY b.id
+    `);
 
     const row = stmt.get(id) as BookmarkRow | undefined;
-    return row ? this.rowToBookmark(row) : null;
+    if (!row) return null;
+
+    const allTags = this.tagsService ? await this.tagsService.getAll() : [];
+    const tagMap = new Map(allTags.map((t) => [t.id, t.name]));
+
+    return this.rowToBookmark(row, tagMap);
   }
 
   async create(bookmark: Bookmark): Promise<Bookmark> {
     const now = new Date().toISOString();
     let { tags, ...data } = bookmark;
 
-    // Resolve tag names to IDs
     if (tags && tags.length > 0 && this.tagsService) {
       tags = await this.resolveTagIds(tags, this.tagsService);
     }
@@ -65,12 +76,12 @@ export class BookmarksService {
     this.db
       .prepare(
         `
-    INSERT INTO bookmarks (
-      id, mode, archive, ead_id, title, path_json,
-      ead3_level, ead3_local_type, ead3_dsc_head, ead3_digital_object_count,
-      category_id, custom_name, note, url, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `,
+        INSERT INTO bookmarks (
+          id, mode, archive, ead_id, title, path_json,
+          ead3_level, ead3_local_type, ead3_dsc_head, ead3_digital_object_count,
+          category_id, custom_name, note, url, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
       )
       .run(
         data.id,
@@ -100,10 +111,9 @@ export class BookmarksService {
   async update(id: string, updates: Partial<Bookmark>): Promise<void> {
     let { tags, ...data } = updates;
 
-    // Resolve tag names to IDs
     if (tags !== undefined && this.tagsService) {
       tags = await this.resolveTagIds(tags, this.tagsService);
-      this.setTags(id, tags); // THIS MUST EXECUTE even if no other fields change
+      this.setTags(id, tags);
     }
 
     const fields: string[] = [];
@@ -152,30 +162,14 @@ export class BookmarksService {
     }
   }
 
-  private async rowToBookmark(row: BookmarkRow): Promise<Bookmark> {
+  private rowToBookmark(
+    row: BookmarkRow,
+    tagMap: Map<string, string>,
+  ): Bookmark {
     const tagIds = row.tag_ids ? row.tag_ids.split(",") : [];
-
-    const tagNames: string[] = [];
-    if (tagIds.length > 0 && this.tagsService) {
-      const allTags = await this.tagsService.getAll();
-      console.log("[rowToBookmark] tagIds:", tagIds);
-      console.log(
-        "[rowToBookmark] allTags:",
-        allTags.map((t) => `${t.id}:${t.name}`),
-      );
-
-      for (const id of tagIds) {
-        const tag = allTags.find((t) => t.id === id);
-        if (tag) {
-          console.log(`[rowToBookmark] Mapped ${id} → ${tag.name}`);
-          tagNames.push(tag.name);
-        } else {
-          console.warn(`[rowToBookmark] Tag ID ${id} not found`);
-        }
-      }
-    }
-
-    console.log("[rowToBookmark] Final tagNames:", tagNames);
+    const tagNames = tagIds
+      .map((id) => tagMap.get(id))
+      .filter((name): name is string => name !== undefined);
 
     return {
       id: row.id,
@@ -207,9 +201,7 @@ export class BookmarksService {
     const allTags = await tagsService.getAll();
 
     for (const value of tagNamesOrIds) {
-      // Check if it's already a UUID (has dashes)
       if (value.includes("-")) {
-        // It's an ID - verify it exists
         const exists = allTags.find((t) => t.id === value);
         if (exists) {
           tagIds.push(value);
@@ -217,7 +209,6 @@ export class BookmarksService {
         continue;
       }
 
-      // It's a name - find or create
       const normalized = value.toLowerCase();
       let tag = allTags.find((t) => t.name === normalized);
 

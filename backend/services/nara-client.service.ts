@@ -69,33 +69,31 @@ export class NaraClientService {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-    console.log(`[NARA] base${this.baseUrl} | URL: ${url}`);
-
     try {
-      const headers: Record<string, string> = {
-        Accept: "application/json",
-        "User-Agent": "Saga/1.0 (Electron)",
-      };
+      // const headers: Record<string, string> = {
+      //   Accept: "application/json",
+      //   "User-Agent": "Saga/1.0 (Electron)",
+      // };
 
-      if (this.apiKey) {
-        headers["x-api-key"] = this.apiKey;
-      }
-
-      const response = await fetch(fullUrl, {
-        headers,
-        signal: controller.signal,
-      });
+      // if (this.apiKey) {
+      //   headers["x-api-key"] = this.apiKey;
+      // }
 
       // const response = await fetch(fullUrl, {
-      //   headers: {
-      //     Accept: "application/json",
-      //     "x-api-key": this.apiKey,
-      //   },
+      //   headers,
       //   signal: controller.signal,
       // });
 
+      const response = await fetch(fullUrl, {
+        headers: {
+          Accept: "application/json",
+          "x-api-key": this.apiKey,
+        },
+        signal: controller.signal,
+      });
+
       const elapsed = Date.now() - startTime;
-      console.log(`[NARA] Request took ${elapsed} ms | URL: ${url}`);
+      // console.log(`[NARA] Request took ${elapsed} ms | URL: ${url}`);
 
       if (!response.ok) {
         const text = await response.text();

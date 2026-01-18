@@ -59,6 +59,11 @@ export function createTables(db: Database): void {
       reset_at TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_bookmarks_category ON bookmarks(category_id);
     CREATE INDEX IF NOT EXISTS idx_bookmarks_ead ON bookmarks(ead_id);
     CREATE INDEX IF NOT EXISTS idx_bookmarks_archive ON bookmarks(archive);

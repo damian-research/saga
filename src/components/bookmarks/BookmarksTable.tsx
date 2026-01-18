@@ -246,14 +246,6 @@ export default function BookmarksTable({
                 {/* TAGS */}
                 <td className={styles.tagsCell}>
                   {(() => {
-                    if (b.tags?.length) {
-                      console.log("Bookmark:", b.customName);
-                      console.log("  b.tags:", b.tags);
-                      console.log("  tagMap size:", tagMap.size);
-                      console.log("  tagMap has ww2?", tagMap.has("ww2"));
-                      console.log("  tagMap.get(ww2):", tagMap.get("ww2"));
-                    }
-
                     return b.tags?.length ? (
                       <div
                         className={styles.tagList}

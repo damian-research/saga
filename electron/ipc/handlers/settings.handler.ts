@@ -1,41 +1,39 @@
-import { ipcMain, app } from "electron";
+// electron/ipc/handlers/settings.handler.ts
+
+import { ipcMain, BrowserWindow } from "electron";
 import { IPC_CHANNELS } from "../channels";
-import fs from "fs";
-import path from "path";
+import { SettingsService } from "../../../backend/services/settings.service";
+import { AppSetting } from "../../../backend/models/settings.types";
+import type { Database } from "better-sqlite3";
 
-interface AppSettings {
-  darkMode: boolean;
-  naraApiKey?: string;
-  downloadPath: string;
-  archivePath: string;
-  databaseAddress: string;
-}
+export function registerSettingsHandlers(db: Database) {
+  const settingsService = new SettingsService(db);
 
-const DEFAULT_SETTINGS: AppSettings = {
-  darkMode: false,
-  downloadPath: "",
-  archivePath: "",
-  databaseAddress: "",
-};
-
-function getSettingsPath(): string {
-  return path.join(app.getPath("userData"), "settings.json");
-}
-
-export function registerSettingsHandlers() {
-  ipcMain.handle(IPC_CHANNELS.SETTINGS_GET, (): AppSettings => {
+  ipcMain.handle(IPC_CHANNELS.SETTINGS_GET, (): AppSetting => {
     try {
-      const data = fs.readFileSync(getSettingsPath(), "utf-8");
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(data) };
-    } catch {
-      return DEFAULT_SETTINGS;
+      return settingsService.load();
+    } catch (error) {
+      console.error("[NARA] Settings load failed:", error);
+      throw new Error(
+        error instanceof Error ? error.message : "Settings load failed",
+      );
     }
   });
 
   ipcMain.handle(
     IPC_CHANNELS.SETTINGS_SAVE,
-    (_event, settings: AppSettings) => {
-      fs.writeFileSync(getSettingsPath(), JSON.stringify(settings, null, 2));
+    (event, settings: AppSetting): void => {
+      try {
+        settingsService.save(settings);
+
+        // Invalidate NARA client
+        event.sender.send("nara:settings-updated");
+      } catch (error) {
+        console.error("[NARA] Settings save failed:", error);
+        throw new Error(
+          error instanceof Error ? error.message : "Settings save failed",
+        );
+      }
     },
   );
 }

@@ -5,8 +5,8 @@ import styles from "./SettingsMenu.module.css";
 import {
   loadSettings,
   saveSettings,
-  type AppSettings,
 } from "../../../api/services/settings.service";
+import type { AppSetting } from "../../../../backend/models/settings.types";
 
 interface SettingsMenuProps {
   isDarkMode: boolean;
@@ -17,7 +17,7 @@ export default function SettingsMenu({
   isDarkMode,
   onToggleDarkMode,
 }: SettingsMenuProps) {
-  const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [settings, setSettings] = useState<AppSetting | null>(null);
   const [loading, setLoading] = useState(true);
   const [editable, setEditable] = useState<Record<string, boolean>>({});
   const [isDirty, setIsDirty] = useState(false);
@@ -75,7 +75,7 @@ export default function SettingsMenu({
     onToggleDarkMode();
   }
 
-  function updateField(field: keyof AppSettings, value: string) {
+  function updateField(field: keyof AppSetting, value: string) {
     if (!settings) return;
     setSettings({ ...settings, [field]: value });
     setIsDirty(true);
@@ -120,7 +120,19 @@ export default function SettingsMenu({
           }}
           onBlur={() => disableEdit("naraApiKey")}
           onChange={(e) => updateField("naraApiKey", e.target.value)}
-          placeholder="Not used yet"
+          // placeholder="Not used yet"
+        />
+        <label className={styles.label}>NARA API Address</label>
+        <input
+          type="text"
+          value={settings.naraAddress}
+          readOnly={!editable.naraAddress}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            enableEdit("naraAddress");
+          }}
+          onBlur={() => disableEdit("naraAddress")}
+          onChange={(e) => updateField("naraAddress", e.target.value)}
         />
       </div>
 
@@ -137,7 +149,7 @@ export default function SettingsMenu({
           }}
           onBlur={() => disableEdit("downloadPath")}
           onChange={(e) => updateField("downloadPath", e.target.value)}
-          placeholder="/path/to/downloads"
+          // placeholder="/path/to/downloads"
         />
         <label className={styles.label}>Archive repository</label>
         <input
@@ -150,7 +162,7 @@ export default function SettingsMenu({
           }}
           onBlur={() => disableEdit("archivePath")}
           onChange={(e) => updateField("archivePath", e.target.value)}
-          placeholder="/path/to/archive"
+          // placeholder="/path/to/archive"
         />
       </div>
 
@@ -167,7 +179,7 @@ export default function SettingsMenu({
           }}
           onBlur={() => disableEdit("databaseAddress")}
           onChange={(e) => updateField("databaseAddress", e.target.value)}
-          placeholder="localhost:5432"
+          // placeholder="localhost:5432"
         />
       </div>
 

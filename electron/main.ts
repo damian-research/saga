@@ -140,16 +140,16 @@ app.whenReady().then(() => {
 
   const db = initDatabase();
   createTables(db);
+  registerSettingsHandlers(db);
 
   const categoriesService = new CategoriesService(db);
   const tagsService = new TagsService(db);
   const bookmarksService = new BookmarksService(db, tagsService);
 
-  registerNaraHandlers();
+  registerNaraHandlers(db);
   registerBookmarksHandlers(bookmarksService);
   registerCategoriesHandlers(categoriesService);
   registerTagsHandlers(tagsService);
-  registerSettingsHandlers();
   registerMigrationHandlers(bookmarksService, categoriesService, tagsService);
 
   createWindow();

@@ -5,29 +5,62 @@ import { Bookmark } from "../../../src/api/models/bookmarks.types";
 
 export function registerBookmarksHandlers(service: BookmarksService) {
   ipcMain.handle(IPC_CHANNELS.BOOKMARKS_GET_ALL, () => {
-    return service.getAll();
+    try {
+      return service.getAll();
+    } catch (error) {
+      console.error("[NARA] Bookmark getall failed:", error);
+      throw new Error(
+        error instanceof Error ? error.message : "Bookmark getall failed",
+      );
+    }
   });
 
   ipcMain.handle(IPC_CHANNELS.BOOKMARKS_GET_BY_ID, (_event, id: string) => {
-    return service.getById(id);
+    try {
+      return service.getById(id);
+    } catch (error) {
+      console.error("[NARA] Bookmark getbyid failed:", error);
+      throw new Error(
+        error instanceof Error ? error.message : "Bookmark getbyid failed",
+      );
+    }
   });
 
   ipcMain.handle(
     IPC_CHANNELS.BOOKMARKS_CREATE,
     (_event, bookmark: Bookmark) => {
-      return service.create(bookmark);
+      try {
+        return service.create(bookmark);
+      } catch (error) {
+        console.error("[NARA] Bookmark create failed:", error);
+        throw new Error(
+          error instanceof Error ? error.message : "Bookmark create failed",
+        );
+      }
     },
   );
 
   ipcMain.handle(
     IPC_CHANNELS.BOOKMARKS_UPDATE,
     (_event, id: string, updates: Partial<Bookmark>) => {
-      service.update(id, updates);
-      return service.getById(id);
+      try {
+        service.update(id, updates);
+        return service.getById(id);
+      } catch (error) {
+        console.error("[NARA] Bookmark update failed:", error);
+        throw new Error(
+          error instanceof Error ? error.message : "Bookmark update failed",
+        );
+      }
     },
   );
 
   ipcMain.handle(IPC_CHANNELS.BOOKMARKS_DELETE, (_event, id: string) => {
-    service.delete(id);
+    try {
+      service.delete(id);
+    } catch (error) {
+      console.error("[NARA] Search failed:", error);
+      throw new Error(error instanceof Error ? error.message : "Search failed");
+    }
   });
 }
