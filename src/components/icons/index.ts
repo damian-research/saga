@@ -1,6 +1,7 @@
 // icons/index.ts
 export {
   Eye,
+  EyeOff,
   Pencil,
   Trash2,
   Cloud,

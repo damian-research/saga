@@ -1,6 +1,6 @@
 // Header/SettingsMenu.tsx
 import { useState, useEffect } from "react";
-import { Save } from "../../icons/index";
+import { Save, Eye, EyeOff } from "../../icons/index";
 import styles from "./SettingsMenu.module.css";
 import {
   loadSettings,
@@ -21,6 +21,7 @@ export default function SettingsMenu({
   const [loading, setLoading] = useState(true);
   const [editable, setEditable] = useState<Record<string, boolean>>({});
   const [isDirty, setIsDirty] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
   const [migrationStatus, setMigrationStatus] = useState<
     "pending" | "complete" | "error"
   >("pending");
@@ -110,18 +111,27 @@ export default function SettingsMenu({
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>Integration</h4>
         <label className={styles.label}>NARA API Key</label>
-        <input
-          type="password"
-          value={settings.naraApiKey ?? ""}
-          readOnly={!editable.naraApiKey}
-          onDoubleClick={(e) => {
-            e.stopPropagation();
-            enableEdit("naraApiKey");
-          }}
-          onBlur={() => disableEdit("naraApiKey")}
-          onChange={(e) => updateField("naraApiKey", e.target.value)}
-          // placeholder="Not used yet"
-        />
+        <div className={styles.inputWithIcon}>
+          <input
+            type={showApiKey ? "text" : "password"}
+            value={settings.naraApiKey ?? ""}
+            readOnly={!editable.naraApiKey}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              enableEdit("naraApiKey");
+            }}
+            onBlur={() => disableEdit("naraApiKey")}
+            onChange={(e) => updateField("naraApiKey", e.target.value)}
+          />
+          <button
+            type="button"
+            className={styles.iconButton}
+            onClick={() => setShowApiKey(!showApiKey)}
+            aria-label={showApiKey ? "Hide API key" : "Show API key"}
+          >
+            {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
         <label className={styles.label}>NARA API Address</label>
         <input
           type="text"
@@ -149,7 +159,6 @@ export default function SettingsMenu({
           }}
           onBlur={() => disableEdit("downloadPath")}
           onChange={(e) => updateField("downloadPath", e.target.value)}
-          // placeholder="/path/to/downloads"
         />
         <label className={styles.label}>Archive repository</label>
         <input
@@ -162,7 +171,6 @@ export default function SettingsMenu({
           }}
           onBlur={() => disableEdit("archivePath")}
           onChange={(e) => updateField("archivePath", e.target.value)}
-          // placeholder="/path/to/archive"
         />
       </div>
 
@@ -179,7 +187,6 @@ export default function SettingsMenu({
           }}
           onBlur={() => disableEdit("databaseAddress")}
           onChange={(e) => updateField("databaseAddress", e.target.value)}
-          // placeholder="localhost:5432"
         />
       </div>
 

@@ -247,3 +247,32 @@
   background-color: var(--accent-primary);
   border-color: var(--border-tertiary);
 }
+
+.inputWithIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputWithIcon input {
+  flex: 1;
+  padding-right: 40px;
+}
+
+.iconButton {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+
+.iconButton:hover {
+  color: var(--text-primary);
+}
