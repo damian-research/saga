@@ -276,3 +276,43 @@
 .iconButton:hover {
   color: var(--text-primary);
 }
+
+.pathRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pathRow input {
+  flex: 1;
+  cursor: default;
+}
+
+/* BROWSE BUTTON */
+.browseButton {
+  padding: 6px 8px;
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-secondary);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.browseButton:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-hover);
+}
+
+.dark-mode .browseButton {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-tertiary);
+}
+
+.browseButton:active {
+  transform: translateY(1px);
+}

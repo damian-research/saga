@@ -1,6 +1,6 @@
 // electron/ipc/handlers/settings.handler.ts
 
-import { ipcMain } from "electron";
+import { ipcMain, dialog } from "electron";
 import { IPC_CHANNELS } from "../channels";
 import { SettingsService } from "../../../backend/services/settings.service";
 import { AppSetting } from "../../../backend/models/settings.types";
@@ -36,4 +36,16 @@ export function registerSettingsHandlers(db: Database) {
       }
     },
   );
+
+  ipcMain.handle("settings:pickDirectory", async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ["openDirectory", "createDirectory"],
+    });
+
+    if (result.canceled || result.filePaths.length === 0) {
+      return null;
+    }
+
+    return result.filePaths[0];
+  });
 }

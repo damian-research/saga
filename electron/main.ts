@@ -78,7 +78,14 @@ app.whenReady().then(() => {
 
   ipcMain.handle(
     "downloads:start",
-    async (event, { url, filename }: { url: string; filename: string }) => {
+    async (
+      event,
+      {
+        url,
+        filename,
+        directory,
+      }: { url: string; filename: string; directory?: string },
+    ) => {
       if (!ALLOWED_DOWNLOAD_PREFIXES.some((p) => url.startsWith(p))) {
         throw new Error("Invalid download source");
       }
@@ -90,7 +97,13 @@ app.whenReady().then(() => {
         currentDownload = null;
       }
 
-      const downloadsDir = app.getPath("downloads");
+      const downloadsDir =
+        directory && directory.length > 0
+          ? directory
+          : app.getPath("downloads");
+
+      fs.mkdirSync(downloadsDir, { recursive: true });
+
       const targetPath = path.join(downloadsDir, filename);
       const file = fs.createWriteStream(targetPath);
 

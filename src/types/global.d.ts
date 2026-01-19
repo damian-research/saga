@@ -39,6 +39,7 @@ declare global {
       settings: {
         get: () => Promise<AppSettings>;
         save: (settings: AppSettings) => Promise<void>;
+        pickDirectory: () => Promise<string | null>;
       };
       migration: {
         fromLocalStorage: (data: {
@@ -48,7 +49,11 @@ declare global {
         }) => Promise<{ success: boolean }>;
       };
       downloads: {
-        start: (payload: { url: string; filename: string }) => Promise<void>;
+        start: (payload: {
+          url: string;
+          filename: string;
+          directory?: string;
+        }) => Promise<void>;
         cancel: () => void;
         onProgress: (
           cb: (received: number, total: number) => void,

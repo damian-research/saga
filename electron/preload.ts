@@ -40,13 +40,14 @@ const electronAPI = {
   settings: {
     get: () => ipcRenderer.invoke("settings:get"),
     save: (settings: any) => ipcRenderer.invoke("settings:save", settings),
+    pickDirectory: () => ipcRenderer.invoke("settings:pickDirectory"),
   },
   migration: {
     fromLocalStorage: (data: any) =>
       ipcRenderer.invoke("migrate:fromLocalStorage", data),
   },
   downloads: {
-    start: (payload: { url: string; filename: string }) =>
+    start: (payload: { url: string; filename: string; directory?: string }) =>
       ipcRenderer.invoke("downloads:start", payload),
     cancel: () => ipcRenderer.send("downloads:cancel"),
     onProgress: (cb: (received: number, total: number) => void) => {

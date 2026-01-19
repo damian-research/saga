@@ -1,4 +1,3 @@
-// Header/SettingsMenu.tsx
 import { useState, useEffect } from "react";
 import { Save, Eye, EyeOff } from "../../icons/index";
 import styles from "./SettingsMenu.module.css";
@@ -90,6 +89,16 @@ export default function SettingsMenu({
     setEditable((prev) => ({ ...prev, [key]: false }));
   }
 
+  async function pickDownloadPath() {
+    if (!settings) return;
+
+    const path = await window.electronAPI.settings.pickDirectory();
+    if (path) {
+      setSettings({ ...settings, downloadPath: path });
+      setIsDirty(true);
+    }
+  }
+
   if (loading || !settings) {
     return <div className={styles.panel}>Loading settings...</div>;
   }
@@ -149,17 +158,20 @@ export default function SettingsMenu({
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>Storage</h4>
         <label className={styles.label}>Download location</label>
-        <input
-          type="text"
-          value={settings.downloadPath}
-          readOnly={!editable.downloadPath}
-          onDoubleClick={(e) => {
-            e.stopPropagation();
-            enableEdit("downloadPath");
-          }}
-          onBlur={() => disableEdit("downloadPath")}
-          onChange={(e) => updateField("downloadPath", e.target.value)}
-        />
+        <div className={styles.pathRow}>
+          <input
+            type="text"
+            value={settings.downloadPath}
+            readOnly
+          />
+          <button
+            type="button"
+            className={styles.browseButton}
+            onClick={pickDownloadPath}
+          >
+            Browse…
+          </button>
+        </div>
         <label className={styles.label}>Archive repository</label>
         <input
           type="text"

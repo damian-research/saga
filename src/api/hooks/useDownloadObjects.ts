@@ -1,5 +1,6 @@
 // useDownloadObjects.ts
 import { useCallback, useRef, useState } from "react";
+import { loadSettings } from "../services/settings.service";
 
 type DownloadItem = { href?: string };
 
@@ -18,6 +19,9 @@ export function useDownloadObjects(recordId: string) {
       cancelledRef.current = false;
 
       try {
+        const settings = await loadSettings();
+        const basePath = settings.downloadPath;
+
         for (let i = 0; i < objects.length; i++) {
           if (cancelledRef.current) break;
 
@@ -38,6 +42,7 @@ export function useDownloadObjects(recordId: string) {
           await window.electronAPI.downloads.start({
             url: objects[i].href!,
             filename,
+            directory: basePath,
           });
 
           cleanup();
