@@ -63,12 +63,13 @@ function createWindow() {
     win.loadURL("http://localhost:5173");
     win.webContents.openDevTools();
   } else {
-    win.loadFile(path.join(__dirname, "../dist/index.html"));
+    const indexPath = path.join(app.getAppPath(), "dist", "index.html");
+    win.loadFile(indexPath);
   }
 }
 
 app.whenReady().then(() => {
-  // Single active download
+  // Single active downlcdoad
   let currentDownload: {
     req: ClientRequest;
     file: fs.WriteStream;

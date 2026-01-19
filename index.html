@@ -1,17 +1,17 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <meta
-      charset="UTF-8"
       http-equiv="Content-Security-Policy"
       content="
-    default-src 'self';
-    script-src 'self';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' data: blob: https://s3.amazonaws.com https://*.amazonaws.com;
-    font-src 'self';
-    connect-src 'self' https://catalog.archives.gov https://*.amazonaws.com http://localhost:*;
-  "
+        default-src 'self';
+        script-src 'self';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: blob: file: https://s3.amazonaws.com https://*.amazonaws.com;
+        font-src 'self';
+        connect-src 'self' https://catalog.archives.gov https://*.amazonaws.com http://localhost:*;
+      "
     />
     <link
       rel="icon"

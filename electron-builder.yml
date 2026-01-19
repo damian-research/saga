@@ -7,12 +7,15 @@ files:
   - dist/**/*
   - dist-electron/**/*
   - package.json
-  - "!**/*.ts"
-  - "!node_modules/@types/**/*"
-  - "!src"
-  - "!electron"
-  - "!backend"
+  - node_modules/**/*
+  - "!node_modules/**/{CHANGELOG.md,README.md,*.ts}"
+  - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
+  - "!.editorconfig"
+  - "!**/._*"
+  - "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}"
+icon: build/icon.png
 mac:
+  icon: build/icon.png
   category: public.app-category.productivity
   target: dmg
 win:
