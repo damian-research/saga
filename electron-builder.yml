@@ -1,5 +1,5 @@
 appId: com.saga.archive
-productName: Saga Archive
+productName: Saga
 directories:
   output: release
   buildResources: build
@@ -7,6 +7,7 @@ files:
   - dist/**/*
   - dist-electron/**/*
   - package.json
+  - public/**/*
   - node_modules/**/*
   - "!node_modules/**/{CHANGELOG.md,README.md,*.ts}"
   - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"

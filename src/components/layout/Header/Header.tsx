@@ -1,5 +1,7 @@
 // Header.tsx
 import { useState, useRef, useEffect } from "react";
+import logoLight from "/public/logo/saga_logo_small.png";
+import logoDark from "/public/logo/saga_logo_small_dark.png";
 import SettingsMenu from "./SettingsMenu";
 import styles from "./Header.module.css";
 import { Settings } from "../../icons/index";
@@ -42,11 +44,7 @@ export default function Header({
     <header className={styles.header}>
       <div className={styles.logo}>
         <img
-          src={
-            isDarkMode
-              ? "/logo/saga_logo_small_dark.png"
-              : "/logo/saga_logo_small.png"
-          }
+          src={isDarkMode ? logoDark : logoLight}
           alt="Saga"
           className="styled-logo"
         />

@@ -6,7 +6,7 @@
       http-equiv="Content-Security-Policy"
       content="
         default-src 'self';
-        script-src 'self';
+        script-src 'self' 'unsafe-eval' 'unsafe-inline';
         style-src 'self' 'unsafe-inline';
         img-src 'self' data: blob: file: https://s3.amazonaws.com https://*.amazonaws.com;
         font-src 'self';

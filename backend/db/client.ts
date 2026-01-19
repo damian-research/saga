@@ -6,13 +6,16 @@ import fs from "fs";
 let db: Database.Database | null = null;
 
 export function initDatabase(): Database.Database {
+  const isDev = process.env.NODE_ENV === "development";
+  const dbName = isDev ? "saga.dev.db" : "saga.db";
   const userDataPath = app.getPath("userData");
-  const dbPath = path.join(userDataPath, "saga.db");
+  const dbPath = path.join(userDataPath, dbName);
 
-  // Ensure directory exists
   fs.mkdirSync(userDataPath, { recursive: true });
 
-  db = new Database(dbPath, { verbose: console.log });
+  // Only verbose in dev
+  const options = isDev ? { verbose: console.log } : {};
+  db = new Database(dbPath, options);
   db.pragma("journal_mode = WAL");
 
   return db;
