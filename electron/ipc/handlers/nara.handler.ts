@@ -1,6 +1,6 @@
 // electron/ipc/handlers/nara.handler.ts
 
-import { ipcMain } from "electron";
+import { ipcMain, app } from "electron";
 import { NaraClientService } from "../../../backend/services/nara-client.service";
 import { SettingsService } from "../../../backend/services/settings.service";
 import type { Database } from "better-sqlite3";
@@ -12,7 +12,7 @@ function getNaraClient(db: Database): NaraClientService {
     const settingsService = new SettingsService(db);
     const settings = settingsService.load();
 
-    if (!settings.naraApiKey && process.env.NODE_ENV === "production") {
+    if (!settings.naraApiKey && app.isPackaged) {
       throw new Error("NARA API key not configured. Set it in Settings.");
     }
 
@@ -20,7 +20,7 @@ function getNaraClient(db: Database): NaraClientService {
       baseUrl: settings.naraAddress || "",
       apiKey: settings.naraApiKey || "",
       timeoutSeconds: 30,
-      useMock: process.env.USE_MOCK === "false",
+      useMock: false,
     });
 
     console.log("[NARA] Client initialized with:", {

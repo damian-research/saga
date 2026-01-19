@@ -16,7 +16,7 @@ import fs from "fs";
 import https from "https";
 import { registerNaraHandlers } from "./ipc/handlers/nara.handler";
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = !app.isPackaged;
 
 // DOWNLOAD
 const ALLOWED_EXTERNAL_DOMAINS = [

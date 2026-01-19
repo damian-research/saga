@@ -6,7 +6,7 @@ import fs from "fs";
 let db: Database.Database | null = null;
 
 export function initDatabase(): Database.Database {
-  const isDev = process.env.NODE_ENV === "development";
+  const isDev = !app.isPackaged;
   const dbName = isDev ? "saga.dev.db" : "saga.db";
   const userDataPath = app.getPath("userData");
   const dbPath = path.join(userDataPath, dbName);
@@ -18,13 +18,6 @@ export function initDatabase(): Database.Database {
   db = new Database(dbPath, options);
   db.pragma("journal_mode = WAL");
 
-  return db;
-}
-
-export function getDatabase(): Database.Database {
-  if (!db) {
-    throw new Error("Database not initialized");
-  }
   return db;
 }
 
