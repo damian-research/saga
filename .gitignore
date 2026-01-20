@@ -89,3 +89,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Electron
+dist-electron/
+release/
+
+# Vite / React
+dist/
+node_modules/
+
+# Runtime data
+*.sqlite
+*.db
+*.log
