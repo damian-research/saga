@@ -20,7 +20,18 @@ mac:
   category: public.app-category.productivity
   target: dmg
 win:
-  target: nsis
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.ico
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
 linux:
   target: AppImage
   category: Office
