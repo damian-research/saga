@@ -32,7 +32,6 @@ yarn-error.log*
 pnpm-debug.log*
 
 dist/
-build/
 .vite/
 downloads
 mocks
