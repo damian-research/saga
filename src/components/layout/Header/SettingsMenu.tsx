@@ -159,11 +159,7 @@ export default function SettingsMenu({
         <h4 className={styles.sectionTitle}>Storage</h4>
         <label className={styles.label}>Download location</label>
         <div className={styles.pathRow}>
-          <input
-            type="text"
-            value={settings.downloadPath}
-            readOnly
-          />
+          <input type="text" value={settings.downloadPath} readOnly />
           <button
             type="button"
             className={styles.browseButton}
@@ -232,7 +228,7 @@ export default function SettingsMenu({
       </div>
 
       <div className={styles.settingsFooter}>
-        <div>Project Saga - Damian Kurgan</div>
+        <div>Project Saga - Apache 2.0</div>
         <div>
           Contact: <a href="mailto:saga.dk@pm.me">saga.dk@pm.me</a>
         </div>
